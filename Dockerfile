@@ -27,7 +27,7 @@ USER 3301
 WORKDIR /app
 # Copy node modules and app
 COPY --chown=node:node --from=build /app/node_modules /app/node_modules
-COPY --chown=node:node --from=build /app/build build
+COPY --chown=node:node --from=build /app/.next /app/.next
 # Expose port for serve
 EXPOSE 3000
 # Start app
