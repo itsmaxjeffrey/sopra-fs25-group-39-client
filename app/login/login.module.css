@@ -1,0 +1,95 @@
+.pageContainer {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainContainer {
+  max-width: 80%;
+  width: fit-content;
+  margin: 60px auto;
+  padding: 32px 32px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 5px 10px 16px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Verringere vertikalen Abstand zwischen den Zeilen */
+}
+
+.segment {
+  width: 300px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+}
+
+.title {
+  font-size: 1.5rem;
+}
+
+.input {
+  width: 300px;
+}
+
+.error {
+  margin-bottom: 12px;
+}
+
+.button {
+  width: 100%;
+}
+
+/* Driver form styles */
+
+.driverContainer {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.formSection {
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: row;
+}
+
+.formButtonGroup {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.uploadProfile {
+  margin-left: 20px;
+}
+
+/* Loading popup styles */
+.registerCenter {
+  text-align: center;
+  padding: 20px;
+}
+
+.registerSpinner {
+  margin: 20px 0;
+}
+
+.registerSuccess {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.registerError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
