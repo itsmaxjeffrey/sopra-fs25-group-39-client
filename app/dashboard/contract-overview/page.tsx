@@ -7,6 +7,7 @@ const ContractOverview = () => {
   return (
     <div>
       <h1> Driver&apos;s Map Screen</h1>
+
       <DriverMap /> {/* Use the map component here */}
     </div>
   );
