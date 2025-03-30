@@ -1,9 +1,14 @@
-import React from 'react'
+"use client"
+import React from 'react';
+import DriverMap from '../components/DriverMap';
+
 
 const ContractOverview = () => {
   return (
-    <div>ContractOverview</div>
-  )
-}
-
-export default ContractOverview
+    <div>
+      <h1> Driver's Map Screen</h1>
+      <DriverMap /> {/* Use the map component here */}
+    </div>
+  );
+};
+export default ContractOverview;
