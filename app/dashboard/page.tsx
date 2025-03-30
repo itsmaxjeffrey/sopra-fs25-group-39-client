@@ -1,9 +1,13 @@
-import React from 'react'
+"use client";
+import React from 'react';
+import DriverMap from './components/DriverMap'; 
 
 const HomePage = () => {
   return (
-    <div>HomePage</div>
-  )
-}
+    <div>
+      <DriverMap /> {/* Use the map component here */}
+    </div>
+  );
+};
 
-export default HomePage
+export default HomePage;
