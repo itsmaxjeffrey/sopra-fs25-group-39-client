@@ -1,9 +1,14 @@
 "use client";
-import React from "react";
-import DriverMap from "./components/DriverMap";
+import React from 'react';
+import DriverMap from './components/DriverMap'; 
 
 const HomePage = () => {
   return (
+    <div>
+      <DriverMap /> {/* Use the map component here */}
+    </div>
+  );
+};
     <div>
       <DriverMap /> {/* Use the map component here */}
     </div>
