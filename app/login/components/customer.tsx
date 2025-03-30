@@ -1,11 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   Form,
   Input,
   DatePicker,
-  Upload,
   Button,
   Typography,
   Row,
@@ -14,18 +12,19 @@ import {
   Spin,
 } from "antd";
 import {
-  UploadOutlined,
   LoadingOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
 } from "@ant-design/icons";
 import styles from "../login.module.css";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const { Title } = Typography;
 
 const Customer = () => {
-  const router = useRouter();
-  const [formData, setFormData] = useState<any>({});
+  const [setFormData] = useState<any>({}); // later add "formData" to use it 
+
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
     "loading"

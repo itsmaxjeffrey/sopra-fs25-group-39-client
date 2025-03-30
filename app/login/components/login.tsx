@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Input, Button, Alert } from "antd";
 import styles from "../login.module.css";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

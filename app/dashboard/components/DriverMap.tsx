@@ -1,7 +1,6 @@
 // component responsible for rendering the Google Map
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleMap, LoadScript, Marker, Autocomplete } from '@react-google-maps/api';
-import { env } from 'process';
 
 const mapContainerStyle = {
   width: '100%',
