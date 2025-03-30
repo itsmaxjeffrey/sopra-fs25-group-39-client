@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   Form,
   Input,
@@ -23,9 +22,10 @@ import styles from "../login.module.css";
 
 const { Title } = Typography;
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const Driver = () => {
-  const router = useRouter();
-  const [formData, setFormData] = useState<any>({});
+  const [ setFormData] = useState<any>({}); // later add "formData" to use it 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
     "loading"

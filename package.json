@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "deno lint",
+    "lint": "next lint",
     "fmt": "deno fmt"
   },
   "dependencies": {
