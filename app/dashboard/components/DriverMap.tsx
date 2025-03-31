@@ -22,7 +22,8 @@ const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 const DriverMap = () => {
   const [selectedLocation, setSelectedLocation] = useState(center);
-  const [proposals, setProposals] = useState([]);
+  const [allProposals, setAllProposals] = useState([]);
+  const [filteredProposals, setFilteredProposals] = useState([]);
   const [mapError, setMapError] = useState<string | null>(null);
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -48,6 +49,8 @@ const DriverMap = () => {
     setMapInstance(map);
     console.log('Google Map Loaded Successfully');
     setMapError(null); // Reset any error if map is loaded successfully
+
+    filterProposalsByBounds();
   };
 
   // Handle error in loading map
@@ -62,7 +65,9 @@ const DriverMap = () => {
     try {
       const response = await fetch(`${BASE_URL}/api/v1/map/proposals?lat=${location.lat}&lng=${location.lng}&radius=5000&filters={}`);
       const data = await response.json();
-      setProposals(data.features);
+      setAllProposals(data.features);
+
+      filterProposalsByBounds();
 
     } catch (error) {
       console.error('Error fetching proposals:', error);
@@ -75,26 +80,36 @@ const DriverMap = () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace();
       if (place?.geometry?.location) {
-        setSelectedLocation({
+        const newLocation ={
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
-        });
+        };
+        setSelectedLocation(newLocation);
+
+        fetchProposals(newLocation);
       } else {
         console.error("No location data available for this place.");
       }
     }
   };
 
-  const handleMapDragEnd = () => {
-    if (mapInstance){
-      const center = mapInstance.getCenter();
-    if (center) {
-      setSelectedLocation({
-        lat: center.lat(),
-        lng: center.lng(),
+  const filterProposalsByBounds = () => {
+    if (mapInstance) {
+      const bounds = mapInstance.getBounds();
+      if (!bounds) return;
+
+      const filtered = allProposals.filter((proposal: any) => {
+        const proposalLat = proposal.geometry.coordinates[0];
+        const proposalLng = proposal.geometry.coordinates[1];
+        return bounds.contains(new google.maps.LatLng(proposalLat, proposalLng));
       });
+
+      setFilteredProposals(filtered);
     }
-  }
+  };
+
+  const handleMapDragEnd = () => {
+    filterProposalsByBounds();
   };
 
   // Display an error message if there is an error
@@ -142,7 +157,7 @@ const DriverMap = () => {
           </Autocomplete>
           </div>
 
-          {proposals.map((proposal: any) =>(
+          {filteredProposals.map((proposal: any) =>(
         <Marker key = {proposal.id} position={{ lat: proposal.geometry.coordinates[0], lng: proposal.geometry.coordinates[1] }} />
           ))}
         </GoogleMap>
