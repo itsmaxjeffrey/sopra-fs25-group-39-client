@@ -71,7 +71,7 @@ const DriverMap = () => {
     if (isLoadingRef.current) return; // Prevent fetch if already loading
     isLoadingRef.current = true;
     try {
-      const response = await fetch(`${BASE_URL}/api/v1/map/proposals?lat=${location.lat}&lng=${location.lng}&radius=5000&filters={}`);
+      const response = await fetch(`${BASE_URL}/api/v1/map/contracts?lat=${location.lat}&lng=${location.lng}&radius=5000&filters={}`);
       const data = await response.json();
       setAllProposals(data.features);
       
