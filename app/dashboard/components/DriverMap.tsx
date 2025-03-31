@@ -29,7 +29,6 @@ const DriverMap = () => {
   const [filteredProposals, setFilteredProposals] = useState([]);
   const [mapError, setMapError] = useState<string | null>(null);
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
-  const [zoom, setZoom] = useState(12);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const isLoadingRef = useRef(false);
 
@@ -149,7 +148,6 @@ const DriverMap = () => {
 
   const handleMapZoom = () => {
     if (mapInstance) {
-      setZoom(mapInstance.getZoom() || 12); // Update zoom level state
       filterProposalsByBounds(); // Re-filter proposals when zooming or panning
     }
   };
@@ -178,7 +176,7 @@ const DriverMap = () => {
         onDragEnd={handleMapDragEnd}
 
         onZoomChanged={handleMapZoom}
-      > 
+      >
         {/* Search Input */}
         <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
           <Autocomplete
