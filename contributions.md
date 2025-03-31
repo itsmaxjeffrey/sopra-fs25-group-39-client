@@ -36,7 +36,7 @@ reason).
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **[@ojg9]**        |30.03.2025| https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/735028b16aa610a00535349a142082d8fce078b5 | Implemented Map View for Driver on Home Screen | Base for Driver Home Screen |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@fksm2003]** | 29.03.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/b628a6b59587d4b7394a0abfeeb0538795336589 | [Brief description of the task] | Implemented Driver & Requester Login, with error messages. Implemented user specific Registration Page (incl. file, picture upload, password validation, etc.). Implemented Home/start page. Implemented Naviagtion bar with logic of pages. Implemented logout.  |
+| **[@fksm2003]** | 29.03.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/b628a6b59587d4b7394a0abfeeb0538795336589 | Implemented Driver & Requester Login, with error messages. Implemented user specific Registration Page (incl. file, picture upload, password validation, etc.). Implemented Home/start page. Implemented Naviagtion bar with logic of pages. Implemented logout. |  Basic framework of entire frontend logic. User usage. |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
