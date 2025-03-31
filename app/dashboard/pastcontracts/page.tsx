@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const PastContracts = () => {
-  return (
-    <div>PastContracts</div>
-  )
-}
+  return <div>PastContracts</div>;
+};
 
-export default PastContracts
+export default PastContracts;

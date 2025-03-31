@@ -32,16 +32,16 @@ reason).
 
 ## Contributions Week 1 - [Begin Date] to [End Date]
 
-| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
-| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@ojg9]**        |30.03.2025| https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/735028b16aa610a00535349a142082d8fce078b5 | Implemented Map View for Driver on Home Screen | Base for Driver Home Screen |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **Student**        | **Date**   | **Link to Commit**                                                                                          | **Description**                                | **Relevance**                       |
+| ------------------ | ---------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ----------------------------------- |
+| **[@ojg9]**        | 30.03.2025 | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/735028b16aa610a00535349a142082d8fce078b5 | Implemented Map View for Driver on Home Screen | Base for Driver Home Screen         |
+|                    | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]                | [Why this contribution is relevant] |
+| **[@githubUser2]** | [date]     | [Link to Commit 1]                                                                                          | [Brief description of the task]                | [Why this contribution is relevant] |
+|                    | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]                | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]     | [Link to Commit 1]                                                                                          | [Brief description of the task]                | [Why this contribution is relevant] |
+|                    | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]                | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]     | [Link to Commit 1]                                                                                          | [Brief description of the task]                | [Why this contribution is relevant] |
+|                    | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]                | [Why this contribution is relevant] |
 
 ---
 

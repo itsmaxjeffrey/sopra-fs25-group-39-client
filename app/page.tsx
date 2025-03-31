@@ -1,7 +1,7 @@
 "use client";
 import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
-import { Button, Typography, Layout } from "antd";
+import { Button, Layout, Typography } from "antd";
 import Image from "next/image";
 import styles from "./home.module.css";
 
@@ -27,18 +27,18 @@ export default function Home() {
       <Content className={styles.content}>
         <div className={styles.hero}>
           <div className={styles.text}>
-            <Title style={{ fontSize: '4rem', lineHeight: 1.2 }}>
+            <Title style={{ fontSize: "4rem", lineHeight: 1.2 }}>
               Your move. <br />
-              <span style={{ color: '#22426b' }}>Easier than ever.</span>
+              <span style={{ color: "#22426b" }}>Easier than ever.</span>
             </Title>
-            <Paragraph style={{ fontSize: '1.3rem', marginTop: '1rem' }}>
+            <Paragraph style={{ fontSize: "1.3rem", marginTop: "1rem" }}>
               🚛 ⁠Decentralizes logistics<br />
               💪 Promotes sharing economy
             </Paragraph>
             <Button
               type="primary"
               size="large"
-              style={{ marginTop: '2rem' }}
+              style={{ marginTop: "2rem" }}
               onClick={() => router.push("/login")}
             >
               Get started now

@@ -1,20 +1,20 @@
 "use client";
 import React, { useState } from "react";
 import {
+  Button,
+  Col,
+  DatePicker,
   Form,
   Input,
-  DatePicker,
-  Button,
-  Typography,
-  Row,
-  Col,
   Modal,
+  Row,
   Spin,
+  Typography,
 } from "antd";
 import {
-  LoadingOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import styles from "../login.module.css";
 
@@ -23,11 +23,11 @@ import styles from "../login.module.css";
 const { Title } = Typography;
 
 const Customer = () => {
-  const [setFormData] = useState<any>({}); // later add "formData" to use it 
+  const [setFormData] = useState<any>({}); // later add "formData" to use it
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
-    "loading"
+    "loading",
   );
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -56,10 +56,11 @@ const Customer = () => {
             }),
           })
             .then((res) => {
-              if (!res.ok)
+              if (!res.ok) {
                 return res.json().then((data) => {
                   throw new Error(data.message || "Registration failed");
                 });
+              }
               return res.json();
             })
             .then(() => {
@@ -194,7 +195,7 @@ const Customer = () => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("Passwords do not match")
+                          new Error("Passwords do not match"),
                         );
                       },
                     }),

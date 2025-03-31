@@ -1,5 +1,5 @@
 import Sidebar from "@/components/sidebar/sidebar";
-import LayoutWrapper from './layout-wrapper';
+import LayoutWrapper from "./layout-wrapper";
 
 export default function DashboardLayout({
   children,
@@ -15,4 +15,3 @@ export default function DashboardLayout({
     </LayoutWrapper>
   );
 }
-

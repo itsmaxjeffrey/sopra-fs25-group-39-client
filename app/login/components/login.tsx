@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Input, Button, Alert } from "antd";
+import { Alert, Button, Input } from "antd";
 import styles from "../login.module.css";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
