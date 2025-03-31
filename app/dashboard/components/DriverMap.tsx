@@ -44,13 +44,21 @@ const DriverMap = () => {
     }
   }, [selectedLocation]);
 
+  useEffect(() => {
+    if (mapInstance && allProposals.length > 0) {
+      filterProposalsByBounds();
+    }
+  }, [mapInstance, allProposals]);
+
   // Handle successful map load
   const handleMapLoad = (map: google.maps.Map) => {
     setMapInstance(map);
     console.log('Google Map Loaded Successfully');
     setMapError(null); // Reset any error if map is loaded successfully
 
-    filterProposalsByBounds();
+    if (allProposals.length > 0) {
+      setTimeout(filterProposalsByBounds, 100);
+    }
   };
 
   // Handle error in loading map
@@ -66,8 +74,11 @@ const DriverMap = () => {
       const response = await fetch(`${BASE_URL}/api/v1/map/proposals?lat=${location.lat}&lng=${location.lng}&radius=5000&filters={}`);
       const data = await response.json();
       setAllProposals(data.features);
-
-      filterProposalsByBounds();
+      
+      //ensure map is ready
+      if (mapInstance){
+        setTimeout(filterProposalsByBounds, 100); //small delay to ensure boudns are available
+      }
 
     } catch (error) {
       console.error('Error fetching proposals:', error);
