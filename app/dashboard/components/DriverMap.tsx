@@ -1,7 +1,10 @@
 // component responsible for rendering the Google Map
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, LoadScript, Marker, Autocomplete } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, Libraries, Autocomplete } from '@react-google-maps/api';
 
+
+// Define MAP_LIBRARIES outside the component to avoid redefinition on every render
+const MAP_LIBRARIES: Libraries = ["places"];
 
 const mapContainerStyle = {
   width: '100%',
@@ -15,19 +18,34 @@ const center = {
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
+
+
 const DriverMap = () => {
   const [selectedLocation, setSelectedLocation] = useState(center);
+  const [proposals, setProposals] = useState([]);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const isLoadingRef = useRef(false);
+
+
+  const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://sopra-fs25-group-39-client.vercel.app/" // Production API URL
+    : "http://localhost:5001"; // Development API URL, change to 3000 as soon as the backend has implemented the get contracts endpoint
 
   useEffect(() => {
     if (!GOOGLE_MAPS_API_KEY) {
       setMapError('Google Maps API key is missing.');
     }
-  }, []);
+    if (selectedLocation) {
+      fetchProposals(selectedLocation);
+    }
+  }, [selectedLocation]);
 
   // Handle successful map load
-  const handleMapLoad = () => {
+  const handleMapLoad = (map: google.maps.Map) => {
+    setMapInstance(map);
     console.log('Google Map Loaded Successfully');
     setMapError(null); // Reset any error if map is loaded successfully
   };
@@ -38,18 +56,45 @@ const DriverMap = () => {
     setMapError('Failed to load Google Map. Please try again later.');
   };
 
+  const fetchProposals = async (location: { lat: number; lng: number }) => {
+    if (isLoadingRef.current) return; // Prevent fetch if already loading
+    isLoadingRef.current = true;
+    try {
+      const response = await fetch(`${BASE_URL}/api/v1/map/proposals?lat=${location.lat}&lng=${location.lng}&radius=5000&filters={}`);
+      const data = await response.json();
+      setProposals(data.features);
+
+    } catch (error) {
+      console.error('Error fetching proposals:', error);
+    } finally {
+      isLoadingRef.current = false;
+    }
+  }
+
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace();
-      if (!place || !place.geometry || !place.geometry.location) {
-        console.error("No location data available for this place.");
-        return;
-      }
-      setSelectedLocation({
+      if (place?.geometry?.location) {
+        setSelectedLocation({
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
         });
+      } else {
+        console.error("No location data available for this place.");
       }
+    }
+  };
+
+  const handleMapDragEnd = () => {
+    if (mapInstance){
+      const center = mapInstance.getCenter();
+    if (center) {
+      setSelectedLocation({
+        lat: center.lat(),
+        lng: center.lng(),
+      });
+    }
+  }
   };
 
   // Display an error message if there is an error
@@ -67,27 +112,40 @@ const DriverMap = () => {
   return (
     <LoadScript 
         googleMapsApiKey={GOOGLE_MAPS_API_KEY}
-        libraries={["places"]} 
-        onLoad={handleMapLoad}
+        libraries={MAP_LIBRARIES} 
         onError={handleMapError}
     >
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         center={selectedLocation}
         zoom={12}
+        onLoad={handleMapLoad}
+        onDragEnd={handleMapDragEnd}
       > 
         {/* Search Input */}
         <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 10 }}>
-          <Autocomplete onLoad={(auto) => (autocompleteRef.current = auto)} onPlaceChanged={handlePlaceChanged}>
+        <Autocomplete
+            onLoad={(auto) => (autocompleteRef.current = auto)}
+            onPlaceChanged={handlePlaceChanged}
+          >
             <input
               type="text"
               placeholder="Search location..."
-              style={{ width: '250px', padding: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '4px', }}
+              style={{
+                width: '250px',
+                padding: '10px',
+                fontSize: '16px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+              }}
             />
           </Autocomplete>
           </div>
-        <Marker position={selectedLocation} />
-      </GoogleMap>
+
+          {proposals.map((proposal: any) =>(
+        <Marker key = {proposal.id} position={{ lat: proposal.geometry.coordinates[0], lng: proposal.geometry.coordinates[1] }} />
+          ))}
+        </GoogleMap>
     </LoadScript>
   );
 };
