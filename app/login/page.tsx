@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Segmented, Button, Typography } from "antd";
+import { Button, Segmented, Typography } from "antd";
 import Login from "./components/login";
 import Driver from "./components/driver";
 import styles from "./login.module.css";
@@ -72,7 +72,8 @@ const AuthPage = () => {
                 type="default"
                 size="large"
                 style={{ padding: "12px 24px" }}
-                onClick={() => setSelectedRole("driver")}
+                onClick={() =>
+                  setSelectedRole("driver")}
               >
                 I am a driver 🚚
               </Button>
