@@ -65,9 +65,13 @@ const DriverMap = () => {
     console.log("Google Map Loaded Successfully");
     setMapError(null); // Reset any error if map is loaded successfully
 
+<<<<<<< HEAD
     if (allProposals.length > 0) {
       setTimeout(filterProposalsByBounds, 100);
     }
+=======
+    filterProposalsByBounds();
+>>>>>>> f598986 (Markers work, just not the first time the map is loaded)
   };
 
   // Handle error in loading map
@@ -85,6 +89,11 @@ const DriverMap = () => {
       );
       const data = await response.json();
       setAllProposals(data.features);
+<<<<<<< HEAD
+=======
+
+      filterProposalsByBounds();
+>>>>>>> f598986 (Markers work, just not the first time the map is loaded)
 
       // Filter proposals immediately after fetching
       if (mapInstance) {
@@ -114,7 +123,11 @@ const DriverMap = () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace();
       if (place?.geometry?.location) {
+<<<<<<< HEAD
         const newLocation = {
+=======
+        const newLocation ={
+>>>>>>> f598986 (Markers work, just not the first time the map is loaded)
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
         };
@@ -132,6 +145,7 @@ const DriverMap = () => {
       const bounds = mapInstance.getBounds();
       if (!bounds) return;
 
+<<<<<<< HEAD
       const filtered = allProposals.filter(
         (proposal: { geometry: { coordinates: [number, number] } }) => {
           const proposalLat = proposal.geometry.coordinates[0];
@@ -154,6 +168,20 @@ const DriverMap = () => {
     if (mapInstance) {
       filterProposalsByBounds(); // Re-filter proposals when zooming or panning
     }
+=======
+      const filtered = allProposals.filter((proposal: any) => {
+        const proposalLat = proposal.geometry.coordinates[0];
+        const proposalLng = proposal.geometry.coordinates[1];
+        return bounds.contains(new google.maps.LatLng(proposalLat, proposalLng));
+      });
+
+      setFilteredProposals(filtered);
+    }
+  };
+
+  const handleMapDragEnd = () => {
+    filterProposalsByBounds();
+>>>>>>> f598986 (Markers work, just not the first time the map is loaded)
   };
 
   // Display an error message if there is an error
@@ -200,6 +228,7 @@ const DriverMap = () => {
           </Autocomplete>
         </div>
 
+<<<<<<< HEAD
         {filteredProposals.map((
           proposal: { id: string; geometry: { coordinates: [number, number] } },
         ) => (
@@ -212,6 +241,12 @@ const DriverMap = () => {
           />
         ))}
       </GoogleMap>
+=======
+          {filteredProposals.map((proposal: any) =>(
+        <Marker key = {proposal.id} position={{ lat: proposal.geometry.coordinates[0], lng: proposal.geometry.coordinates[1] }} />
+          ))}
+        </GoogleMap>
+>>>>>>> f598986 (Markers work, just not the first time the map is loaded)
     </LoadScript>
   );
 };
