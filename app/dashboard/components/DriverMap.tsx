@@ -23,6 +23,8 @@ const center = {
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
+
+
 const DriverMap = () => {
   const [selectedLocation, setSelectedLocation] = useState(center);
   const [allProposals, setAllProposals] = useState([]);
