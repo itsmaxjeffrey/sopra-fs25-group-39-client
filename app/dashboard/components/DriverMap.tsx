@@ -23,8 +23,6 @@ const center = {
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-
-
 const DriverMap = () => {
   const [selectedLocation, setSelectedLocation] = useState(center);
   const [allProposals, setAllProposals] = useState([]);
@@ -48,12 +46,6 @@ const DriverMap = () => {
   }, [selectedLocation]);
 
   useEffect(() => {
-    if (mapInstance) {
-      fetchProposals(selectedLocation);
-    }
-  }, [mapInstance]);
-
-  useEffect(() => {
     if (mapInstance && allProposals.length > 0) {
       filterProposalsByBounds();
     }
@@ -65,13 +57,9 @@ const DriverMap = () => {
     console.log("Google Map Loaded Successfully");
     setMapError(null); // Reset any error if map is loaded successfully
 
-<<<<<<< HEAD
     if (allProposals.length > 0) {
       setTimeout(filterProposalsByBounds, 100);
     }
-=======
-    filterProposalsByBounds();
->>>>>>> f598986 (Markers work, just not the first time the map is loaded)
   };
 
   // Handle error in loading map
@@ -89,11 +77,11 @@ const DriverMap = () => {
       );
       const data = await response.json();
       setAllProposals(data.features);
-<<<<<<< HEAD
-=======
 
-      filterProposalsByBounds();
->>>>>>> f598986 (Markers work, just not the first time the map is loaded)
+      //ensure map is ready
+      if (mapInstance) {
+        setTimeout(filterProposalsByBounds, 100); //small delay to ensure bounds are available
+      }
 
       // Filter proposals immediately after fetching
       if (mapInstance) {
@@ -118,16 +106,11 @@ const DriverMap = () => {
     }
   };
 
-
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace();
       if (place?.geometry?.location) {
-<<<<<<< HEAD
         const newLocation = {
-=======
-        const newLocation ={
->>>>>>> f598986 (Markers work, just not the first time the map is loaded)
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
         };
@@ -145,7 +128,6 @@ const DriverMap = () => {
       const bounds = mapInstance.getBounds();
       if (!bounds) return;
 
-<<<<<<< HEAD
       const filtered = allProposals.filter(
         (proposal: { geometry: { coordinates: [number, number] } }) => {
           const proposalLat = proposal.geometry.coordinates[0];
@@ -162,26 +144,6 @@ const DriverMap = () => {
 
   const handleMapDragEnd = () => {
     filterProposalsByBounds();
-  };
-
-  const handleMapZoom = () => {
-    if (mapInstance) {
-      filterProposalsByBounds(); // Re-filter proposals when zooming or panning
-    }
-=======
-      const filtered = allProposals.filter((proposal: any) => {
-        const proposalLat = proposal.geometry.coordinates[0];
-        const proposalLng = proposal.geometry.coordinates[1];
-        return bounds.contains(new google.maps.LatLng(proposalLat, proposalLng));
-      });
-
-      setFilteredProposals(filtered);
-    }
-  };
-
-  const handleMapDragEnd = () => {
-    filterProposalsByBounds();
->>>>>>> f598986 (Markers work, just not the first time the map is loaded)
   };
 
   // Display an error message if there is an error
@@ -206,7 +168,6 @@ const DriverMap = () => {
         zoom={12}
         onLoad={handleMapLoad}
         onDragEnd={handleMapDragEnd}
-        onZoomChanged={handleMapZoom}
       >
         {/* Search Input */}
         <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
@@ -228,25 +189,18 @@ const DriverMap = () => {
           </Autocomplete>
         </div>
 
-<<<<<<< HEAD
-        {filteredProposals.map((
-          proposal: { id: string; geometry: { coordinates: [number, number] } },
-        ) => (
-          <Marker
-            key={proposal.id}
-            position={{
-              lat: proposal.geometry.coordinates[0],
-              lng: proposal.geometry.coordinates[1],
-            }}
-          />
-        ))}
+        {filteredProposals.map(
+          (proposal: { id: string; geometry: { coordinates: [number, number] } }) => (
+            <Marker
+              key={proposal.id}
+              position={{
+                lat: proposal.geometry.coordinates[0],
+                lng: proposal.geometry.coordinates[1],
+              }}
+            />
+          )
+        )}
       </GoogleMap>
-=======
-          {filteredProposals.map((proposal: any) =>(
-        <Marker key = {proposal.id} position={{ lat: proposal.geometry.coordinates[0], lng: proposal.geometry.coordinates[1] }} />
-          ))}
-        </GoogleMap>
->>>>>>> f598986 (Markers work, just not the first time the map is loaded)
     </LoadScript>
   );
 };
