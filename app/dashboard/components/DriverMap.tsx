@@ -46,6 +46,12 @@ const DriverMap = () => {
   }, [selectedLocation]);
 
   useEffect(() => {
+    if (mapInstance) {
+      fetchProposals(selectedLocation);
+    }
+  }, [mapInstance]);
+
+  useEffect(() => {
     if (mapInstance && allProposals.length > 0) {
       filterProposalsByBounds();
     }
@@ -78,9 +84,21 @@ const DriverMap = () => {
       const data = await response.json();
       setAllProposals(data.features);
 
-      //ensure map is ready
+      // Filter proposals immediately after fetching
       if (mapInstance) {
-        setTimeout(filterProposalsByBounds, 100); //small delay to ensure boudns are available
+        const bounds = mapInstance.getBounds();
+        if (bounds) {
+          const filtered = data.features.filter(
+            (proposal: { geometry: { coordinates: [number, number] } }) => {
+              const proposalLat = proposal.geometry.coordinates[0];
+              const proposalLng = proposal.geometry.coordinates[1];
+              return bounds.contains(
+                new google.maps.LatLng(proposalLat, proposalLng),
+              );
+            },
+          );
+          setFilteredProposals(filtered);
+        }
       }
     } catch (error) {
       console.error("Error fetching proposals:", error);
@@ -88,6 +106,7 @@ const DriverMap = () => {
       isLoadingRef.current = false;
     }
   };
+
 
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {
