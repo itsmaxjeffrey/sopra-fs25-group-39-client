@@ -46,6 +46,12 @@ const DriverMap = () => {
   }, [selectedLocation]);
 
   useEffect(() => {
+    if (mapInstance) {
+      fetchProposals(selectedLocation);
+    }
+  }, [mapInstance]);
+
+  useEffect(() => {
     if (mapInstance && allProposals.length > 0) {
       filterProposalsByBounds();
     }
@@ -78,11 +84,6 @@ const DriverMap = () => {
       const data = await response.json();
       setAllProposals(data.features);
 
-      //ensure map is ready
-      if (mapInstance) {
-        setTimeout(filterProposalsByBounds, 100); //small delay to ensure bounds are available
-      }
-
       // Filter proposals immediately after fetching
       if (mapInstance) {
         const bounds = mapInstance.getBounds();
@@ -105,6 +106,7 @@ const DriverMap = () => {
       isLoadingRef.current = false;
     }
   };
+
 
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {
