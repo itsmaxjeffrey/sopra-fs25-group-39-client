@@ -51,8 +51,8 @@ reason).
 | **@itsmaxjeffrey** | 30.03.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/pull/317 | implemented spring security(was later removed because team decided to have stateful auth) |authentication and sec |
 | **@itsmaxjeffrey** | 30.03.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/37632cb737956484af19bb6ed0cb87781837c292 | added lambok to remove boilerplate code (getter/setters) | easier code readabilty  |
 | **@itsmaxjeffrey** | 01.04.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/271a0614d32b74ac49f6920c13bc8698d075704c | stateful authentication using AuthService and AuthController (approach similar to M1 assignment) | authentication |
-| **[@dariohug]** | [28.03.2025]   | [64f0a54] | [Uniqueness testing of user attributes, fitting testcases, TestUser creation simplification to minimize code repetition.] | [Some User Attributes must be unique to fulfill purbose, e.g. username. ] |
-|                    | [29.03.2025]   | [9186f80] | [Added UserToken to User Object and creation logic of token to userService] | [Token is required to manage users permissions.] |
+| **[@dariohug]** | [28.03.2025]   | [[64f0a54](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/f1f34b5ac0c93cc6aa20014e0da0f9c637d783eb)] | [Uniqueness testing of user attributes, fitting testcases, TestUser creation simplification to minimize code repetition.] | [Some User Attributes must be unique to fulfill purbose, e.g. username. ] |
+|                    | [29.03.2025]   | [[9186f80](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/e72b2b5a27f3e0e8b0aaa3af53456e45014383ed)] | [Added UserToken to User Object and creation logic of token to userService] | [Token is required to manage users permissions.] |
 
 ---
 
