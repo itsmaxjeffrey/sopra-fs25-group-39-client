@@ -78,13 +78,16 @@ const HomePage = () => {
   };
 
   return (
+    
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-    <div style={{ flexGrow: 1, position: "relative" }}>
-      <DriverMap containerStyle={mapContainerStyle} /> {/* Map Component */}
+    <div style={{ flexGrow: 1, position: "relative" }}> {/* Map Component */}
+      <DriverMap containerStyle={mapContainerStyle} onCenterChanged={(lat, lng) => {
+          updateFilter("lat", lat);
+          updateFilter("lng", lng);
+      }}/> 
     </div>
     
-    {/* Button to open filter settings drawer */}
-    {/* Floating Action Button */}
+    {/* Button to open filter settings drawer (Floating Action Button) */}
     <Tooltip title="Filter Results">
         <Button
           type="primary"

@@ -20,9 +20,10 @@ const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 interface DriverMapProps {
   containerStyle: React.CSSProperties;
+  onCenterChanged?: (lat: number, lng: number) => void;
 }
 
-const DriverMap: React.FC<DriverMapProps> = ({ containerStyle }) => {
+const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, onCenterChanged }) => {
   const [selectedLocation, setSelectedLocation] = useState(center);
   const [allProposals, setAllProposals] = useState([]);
   const [filteredProposals, setFilteredProposals] = useState([]);
@@ -144,6 +145,12 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle }) => {
   };
 
   const handleMapDragEnd = () => {
+    if (mapInstance) {
+      const center = mapInstance.getCenter();
+      if (center && onCenterChanged) {
+        onCenterChanged(center.lat(), center.lng());
+      }
+    }
     filterProposalsByBounds();
   };
 
