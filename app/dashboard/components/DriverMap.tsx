@@ -178,6 +178,7 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle }) => {
         mapContainerStyle={containerStyle}
         center={selectedLocation}
         zoom={12}
+        options={{ fullscreenControl: false, streetViewControl: false }}
         onLoad={handleMapLoad}
         onDragEnd={handleMapDragEnd}
         onZoomChanged={handleMapZoom}
