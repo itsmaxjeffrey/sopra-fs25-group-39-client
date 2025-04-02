@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Spin, Modal } from "antd";
+import axios from "axios";
 import styles from "./sidebar.module.css";
 
 const Sidebar = () => {
@@ -17,14 +18,14 @@ const Sidebar = () => {
     const token = localStorage.getItem("token");
 
     if (userId && token) {
-      fetch(`http://localhost:5001/api/v1/users/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setAccountType(data.accountType);
+      axios
+        .get(`http://localhost:5001/api/v1/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          setAccountType(res.data.user.accountType);
         })
         .catch((err) => {
           console.error("Failed to fetch user:", err);

@@ -23,11 +23,10 @@ import styles from "../login.module.css";
 const { Title } = Typography;
 
 const Customer = () => {
-  const [setFormData] = useState<any>({}); // later add "formData" to use it
-
+  const [formData, setFormData] = useState<any>({}); // later add "formData" to use it
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
-    "loading",
+    "loading"
   );
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -37,7 +36,15 @@ const Customer = () => {
         layout="vertical"
         onFinish={(values) => {
           setFormData(values);
-          const { username, password, phone, email } = values;
+          const {
+            firstName,
+            lastName,
+            birthdate,
+            email,
+            phone,
+            username,
+            password,
+          } = values;
 
           setModalVisible(true);
           setModalState("loading");
@@ -48,11 +55,14 @@ const Customer = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
+              firstName,
+              lastName,
+              birthdate,
+              email,
+              phone,
               username,
               password,
               accountType: "customer",
-              phone,
-              email,
             }),
           })
             .then((res) => {
@@ -195,7 +205,7 @@ const Customer = () => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("Passwords do not match"),
+                          new Error("Passwords do not match")
                         );
                       },
                     }),
