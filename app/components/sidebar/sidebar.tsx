@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Spin } from "antd";
+import { Spin, Modal } from "antd";
 import styles from "./sidebar.module.css";
 
 const Sidebar = () => {
@@ -10,6 +10,7 @@ const Sidebar = () => {
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [accountType, setAccountType] = useState<string | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     const userId = localStorage.getItem("id");
@@ -106,11 +107,23 @@ const Sidebar = () => {
       </nav>
 
       <button
-        onClick={handleLogout}
+        onClick={() => setShowConfirm(true)}
         className={`${styles.navItem} ${styles.logoutButton}`}
       >
         Logout
       </button>
+
+      <Modal
+        title="Confirm Logout"
+        open={showConfirm}
+        onOk={handleLogout}
+        onCancel={() => setShowConfirm(false)}
+        okText="Yes, logout"
+        cancelText="Cancel"
+        centered
+      >
+        <p>Are you sure you want to log out?</p>
+      </Modal>
     </div>
   );
 };
