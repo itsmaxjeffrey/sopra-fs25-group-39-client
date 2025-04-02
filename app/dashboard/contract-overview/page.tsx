@@ -1,14 +1,12 @@
 "use client";
 import React from "react";
-import DriverMap from "../components/DriverMap";
 
 const ContractOverview = () => {
   return (
     <div>
-      <h1>Driver&apos;s Map Screen</h1>
-
-      <DriverMap /> 
     </div>
   );
 };
 export default ContractOverview;
+
+http://localhost:3000/api/v1/map/contracts?lat=null&lng=null&radius=50&filters=%5Bobject+Object%5D

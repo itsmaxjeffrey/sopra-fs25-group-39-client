@@ -11,11 +11,6 @@ import {
 // Define MAP_LIBRARIES outside the component to avoid redefinition on every render
 const MAP_LIBRARIES: Libraries = ["places"];
 
-const mapContainerStyle = {
-  width: "100%",
-  height: "100%",
-};
-
 const center = {
   lat: 47.3769, // Default to Zurich coordinates
   lng: 8.5417,

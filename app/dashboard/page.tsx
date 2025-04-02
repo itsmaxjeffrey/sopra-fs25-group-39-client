@@ -6,25 +6,30 @@ import { Button, Drawer, Slider, InputNumber, Input, Checkbox, DatePicker, Toolt
 import { FilterOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
+interface Location {
+  latitude: number;
+  longitude: number;
+}
+
 const HomePage = () => {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
   const [filters, setFilters] = useState({
     lat: null,
     lng: null,
-    radius: 50,
-    price: 100,
-    weight: 0,
-    height: 0,
-    length: 0,
-    width: 0,
-    requiredPeople: 1,
-    fragile: false,
-    coolingRequired: false,
-    rideAlong: false,
-    startPosition: "",
-    endPosition: "",
-    date: null,
+    radius: undefined,
+    price: undefined,
+    weight: null,
+    height: null,
+    length: null,
+    width: null,
+    requiredPeople: null,
+    fragile: null,
+    coolingRequired: null,
+    rideAlong: null,
+    fromAddress: null as Location | null,
+    toAddress: null as Location | null,
+    moveDateTime: null as dayjs.Dayjs | null,
   });
 
   const updateFilter = (key: keyof typeof filters, value: any) => {
@@ -32,28 +37,38 @@ const HomePage = () => {
   };
 
   const applyFilter = () => {
-    const query = {
-      lat: filters.lat,
-      lng: filters.lng,
-      radius: filters.radius,
-      filters: {
-        price: filters.price,
-        weight: filters.weight,
-        dimensions: {
-          height: filters.height,
-          length: filters.length,
-          width: filters.width,
-        },
-        requiredPeople: filters.requiredPeople,
-        fragile: filters.fragile,
-        coolingRequired: filters.coolingRequired,
-        rideAlong: filters.rideAlong,
-        startPosition: filters.startPosition,
-        endPosition: filters.endPosition,
-        date: filters.date ? dayjs(filters.date).format("YYYY-MM-DD") : null,
-      },
-    };
-    router.push(`/api/v1/map/contracts?${new URLSearchParams(query as any).toString()}`);
+    const query: any = {};
+
+    if (filters.lat !== null) query.lat = filters.lat;
+    if (filters.lng !== null) query.lng = filters.lng;
+
+    const filterParams: any = {};
+
+    if (filters.radius !== null) filterParams.radius = filters.radius;
+    if (filters.price !== null) filterParams.price = filters.price;
+    if (filters.weight !== null) filterParams.weight = filters.weight;
+    if (filters.height !== null) filterParams.height = filters.height;
+    if (filters.length !== null) filterParams.length = filters.length;
+    if (filters.width !== null) filterParams.width = filters.width;
+    if (filters.requiredPeople !== null) filterParams.requiredPeople = filters.requiredPeople;
+    if (filters.fragile !== null) filterParams.fragile = filters.fragile;
+    if (filters.coolingRequired !== null) filterParams.coolingRequired = filters.coolingRequired;
+    if (filters.rideAlong !== null) filterParams.rideAlong = filters.rideAlong;
+    if (filters.fromAddress !== null) {
+      filterParams.fromAddress = `${filters.fromAddress.latitude},${filters.fromAddress.longitude}`;
+    }
+    if (filters.toAddress !== null) {
+      filterParams.toAddress = `${filters.toAddress.latitude},${filters.toAddress.longitude}`;
+    }
+    if (filters.moveDateTime !== null) {
+      filterParams.moveDateTime = filters.moveDateTime.format('YYYY-MM-DDTHH:mm:ss');
+    }
+
+    if (Object.keys(filterParams).length > 0) {
+      query.filters = JSON.stringify(filterParams);
+    }
+
+    router.push(`/api/v1/map/contracts?${new URLSearchParams(query).toString()}`);
     setVisible(false);
   };
 
@@ -97,7 +112,7 @@ const HomePage = () => {
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label>Radius</label>
-            <Slider min={1} max={100} value={filters.radius} onChange={(val) => updateFilter("radius", val)} style={{ flex: 1, marginLeft: "10px" }} />
+            <Slider min={0} max={100} value={filters.radius} onChange={(val) => updateFilter("radius", val)} style={{ flex: 1, marginLeft: "10px" }} />
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label>Price</label>
@@ -124,21 +139,27 @@ const HomePage = () => {
             <InputNumber min={0} value={filters.requiredPeople} onChange={(val) => updateFilter("requiredPeople", val)} style={{ flex: 1, marginLeft: "10px" }} />
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Checkbox checked={filters.fragile} onChange={(e) => updateFilter("fragile", e.target.checked)}>Fragile</Checkbox>
-            <Checkbox checked={filters.coolingRequired} onChange={(e) => updateFilter("coolingRequired", e.target.checked)}>Cooling Required</Checkbox>
-            <Checkbox checked={filters.rideAlong} onChange={(e) => updateFilter("rideAlong", e.target.checked)}>Ride Along</Checkbox>
+            <Checkbox checked={!!filters.fragile} onChange={(e) => updateFilter("fragile", e.target.checked)}>Fragile</Checkbox>
+            <Checkbox checked={!!filters.coolingRequired} onChange={(e) => updateFilter("coolingRequired", e.target.checked)}>Cooling Required</Checkbox>
+            <Checkbox checked={!!filters.rideAlong} onChange={(e) => updateFilter("rideAlong", e.target.checked)}>Ride Along</Checkbox>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label>Start Position</label>
-            <Input value={filters.startPosition} onChange={(e) => updateFilter("startPosition", e.target.value)} style={{ flex: 1, marginLeft: "10px" }} />
+            <Input value={filters.fromAddress ? `${filters.fromAddress.latitude},${filters.fromAddress.longitude}` : ''} onChange={(e) => {
+              const [lat, lng] = e.target.value.split(",");
+              updateFilter("fromAddress", { latitude: parseFloat(lat), longitude: parseFloat(lng) });
+            }} style={{ flex: 1, marginLeft: "10px" }} />
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label>End Position</label>
-            <Input value={filters.endPosition} onChange={(e) => updateFilter("endPosition", e.target.value)} style={{ flex: 1, marginLeft: "10px" }} />
+            <Input value={filters.toAddress ? `${filters.toAddress.latitude},${filters.toAddress.longitude}` : ''} onChange={(e) => {
+              const [lat, lng] = e.target.value.split(",");
+              updateFilter("toAddress", { latitude: parseFloat(lat), longitude: parseFloat(lng) });
+            }} style={{ flex: 1, marginLeft: "10px" }} />
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label>Date</label>
-            <DatePicker onChange={(date) => updateFilter("date", date)} style={{ flex: 1, marginLeft: "10px" }} />
+            <DatePicker onChange={(date) => updateFilter("moveDateTime", date)} style={{ flex: 1, marginLeft: "10px" }} />
           </div>
           <Button type="primary" onClick={applyFilter} style={{ marginTop: "20px" }}>Apply Filter</Button>
         </div>
