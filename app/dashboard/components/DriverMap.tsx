@@ -13,7 +13,7 @@ const MAP_LIBRARIES: Libraries = ["places"];
 
 const mapContainerStyle = {
   width: "100%",
-  height: "700px",
+  height: "100%",
 };
 
 const center = {
@@ -23,7 +23,11 @@ const center = {
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-const DriverMap = () => {
+interface DriverMapProps {
+  containerStyle: React.CSSProperties;
+}
+
+const DriverMap: React.FC<DriverMapProps> = ({ containerStyle }) => {
   const [selectedLocation, setSelectedLocation] = useState(center);
   const [allProposals, setAllProposals] = useState([]);
   const [filteredProposals, setFilteredProposals] = useState([]);
@@ -171,7 +175,7 @@ const DriverMap = () => {
       onError={handleMapError}
     >
       <GoogleMap
-        mapContainerStyle={mapContainerStyle}
+        mapContainerStyle={containerStyle}
         center={selectedLocation}
         zoom={12}
         onLoad={handleMapLoad}
