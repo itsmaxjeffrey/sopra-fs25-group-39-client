@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import DriverMap from "./components/DriverMap";
 import { useRouter } from "next/navigation";
-import { Button, Drawer, Slider, InputNumber, Input, Checkbox, DatePicker } from "antd";
+import { Button, Drawer, Slider, InputNumber, Input, Checkbox, DatePicker, Tooltip } from "antd";
+import { FilterOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 const HomePage = () => {
@@ -68,37 +69,79 @@ const HomePage = () => {
     </div>
     
     {/* Button to open filter settings drawer */}
-    <div style={{ position: "absolute", top: 20, right: 20 }}>
-      <Button type="primary" onClick={() => setVisible(true)}>
-        Open Filter Settings
-      </Button>
-    </div>
+    {/* Floating Action Button */}
+    <Tooltip title="Filter Results">
+        <Button
+          type="primary"
+          shape="circle"
+          icon={<FilterOutlined style={{ fontSize: "28px", color: "white" }} />}
+          size="large"
+          style={{
+            position: "fixed",
+            top: 20,
+            right: 20,
+            zIndex: 1000,
+            width: "64px",  
+            height: "64px", 
+            fontSize: "20px", 
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "black",
+          }}
+          onClick={() => setVisible(true)}
+        />
+      </Tooltip>
 
       <Drawer title="Edit Filters" placement="right" onClose={() => setVisible(false)} open={visible}>
-        <label>Radius</label>
-        <Slider min={1} max={100} value={filters.radius} onChange={(val) => updateFilter("radius", val)} />
-        <label>Price</label>
-        <Slider min={0} max={1000} value={filters.price} onChange={(val) => updateFilter("price", val)} />
-        <label>Weight</label>
-        <InputNumber min={0} value={filters.weight} onChange={(val) => updateFilter("weight", val)} />
-        <label>Height</label>
-        <InputNumber min={0} value={filters.height} onChange={(val) => updateFilter("height", val)} />
-        <label>Length</label>
-        <InputNumber min={0} value={filters.length} onChange={(val) => updateFilter("length", val)} />
-        <label>Width</label>
-        <InputNumber min={0} value={filters.width} onChange={(val) => updateFilter("width", val)} />
-        <label>Required People</label>
-        <InputNumber min={1} value={filters.requiredPeople} onChange={(val) => updateFilter("requiredPeople", val)} />
-        <Checkbox checked={filters.fragile} onChange={(e) => updateFilter("fragile", e.target.checked)}>Fragile</Checkbox>
-        <Checkbox checked={filters.coolingRequired} onChange={(e) => updateFilter("coolingRequired", e.target.checked)}>Cooling Required</Checkbox>
-        <Checkbox checked={filters.rideAlong} onChange={(e) => updateFilter("rideAlong", e.target.checked)}>Ride Along</Checkbox>
-        <label>Start Position</label>
-        <Input value={filters.startPosition} onChange={(e) => updateFilter("startPosition", e.target.value)} />
-        <label>End Position</label>
-        <Input value={filters.endPosition} onChange={(e) => updateFilter("endPosition", e.target.value)} />
-        <label>Date</label>
-        <DatePicker onChange={(date) => updateFilter("date", date)} />
-        <Button type="primary" onClick={applyFilter} style={{ marginTop: "20px" }}>Apply Filter</Button>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label>Radius</label>
+            <Slider min={1} max={100} value={filters.radius} onChange={(val) => updateFilter("radius", val)} style={{ flex: 1, marginLeft: "10px" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label>Price</label>
+            <Slider min={0} max={1000} value={filters.price} onChange={(val) => updateFilter("price", val)} style={{ flex: 1, marginLeft: "10px" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label>Weight</label>
+            <InputNumber min={0} value={filters.weight} onChange={(val) => updateFilter("weight", val)} style={{ flex: 1, marginLeft: "10px" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label>Height</label>
+            <InputNumber min={0} value={filters.height} onChange={(val) => updateFilter("height", val)} style={{ flex: 1, marginLeft: "10px" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label>Length</label>
+            <InputNumber min={0} value={filters.length} onChange={(val) => updateFilter("length", val)} style={{ flex: 1, marginLeft: "10px" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label>Width</label>
+            <InputNumber min={0} value={filters.width} onChange={(val) => updateFilter("width", val)} style={{ flex: 1, marginLeft: "10px" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label>Required People</label>
+            <InputNumber min={0} value={filters.requiredPeople} onChange={(val) => updateFilter("requiredPeople", val)} style={{ flex: 1, marginLeft: "10px" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Checkbox checked={filters.fragile} onChange={(e) => updateFilter("fragile", e.target.checked)}>Fragile</Checkbox>
+            <Checkbox checked={filters.coolingRequired} onChange={(e) => updateFilter("coolingRequired", e.target.checked)}>Cooling Required</Checkbox>
+            <Checkbox checked={filters.rideAlong} onChange={(e) => updateFilter("rideAlong", e.target.checked)}>Ride Along</Checkbox>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label>Start Position</label>
+            <Input value={filters.startPosition} onChange={(e) => updateFilter("startPosition", e.target.value)} style={{ flex: 1, marginLeft: "10px" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label>End Position</label>
+            <Input value={filters.endPosition} onChange={(e) => updateFilter("endPosition", e.target.value)} style={{ flex: 1, marginLeft: "10px" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label>Date</label>
+            <DatePicker onChange={(date) => updateFilter("date", date)} style={{ flex: 1, marginLeft: "10px" }} />
+          </div>
+          <Button type="primary" onClick={applyFilter} style={{ marginTop: "20px" }}>Apply Filter</Button>
+        </div>
       </Drawer>
     </div>
   );
