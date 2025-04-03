@@ -1,9 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Tabs, Spin, Typography, Input, DatePicker, Button } from "antd";
-import dayjs from "dayjs";
+import { Tabs, Spin, Typography } from "antd";
 import axios from "axios";
 import styles from "./Account.module.css";
+import UserDataTab from "./Tabs/UserData";
+import VehicleDataTab from "./Tabs/VehicleData";
+import ActionsTab from "./Tabs/Actions";
 
 const { Title } = Typography;
 
@@ -68,104 +70,13 @@ const AccountPage = () => {
             key: "1",
             label: "Personal Data",
             children: (
-              <div className={styles.tabContent}>
-                <Title level={5}>Personal Information</Title>
-                <div className={styles.formGrid}>
-                  <div>
-                    <label>First Name</label>
-                    <Input
-                      value={editedData?.firstName}
-                      onChange={(e) => {
-                        setChanged(true);
-                        setEditedData({
-                          ...editedData,
-                          firstName: e.target.value,
-                        });
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label>Last Name</label>
-                    <Input
-                      value={editedData?.lastName}
-                      onChange={(e) => {
-                        setChanged(true);
-                        setEditedData({
-                          ...editedData,
-                          lastName: e.target.value,
-                        });
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label>Username</label>
-                    <Input
-                      value={editedData?.username}
-                      onChange={(e) => {
-                        setChanged(true);
-                        setEditedData({
-                          ...editedData,
-                          username: e.target.value,
-                        });
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label>Birthdate</label>
-                    <DatePicker
-                      style={{ width: "100%" }}
-                      value={
-                        editedData?.birthdate
-                          ? dayjs(editedData.birthdate)
-                          : null
-                      }
-                      onChange={(date) => {
-                        setChanged(true);
-                        setEditedData({
-                          ...editedData,
-                          birthdate: date?.toISOString(),
-                        });
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label>Email</label>
-                    <Input
-                      value={editedData?.email}
-                      onChange={(e) => {
-                        setChanged(true);
-                        setEditedData({ ...editedData, email: e.target.value });
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label>Phone</label>
-                    <Input
-                      value={editedData?.phone}
-                      onChange={(e) => {
-                        setChanged(true);
-                        setEditedData({ ...editedData, phone: e.target.value });
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.actions}>
-                  <Button type="primary" disabled={!changed}>
-                    Save Changes
-                  </Button>
-                  {changed && (
-                    <Button
-                      onClick={() => {
-                        setEditedData(userData);
-                        setChanged(false);
-                      }}
-                    >
-                      Reset
-                    </Button>
-                  )}
-                </div>
-              </div>
+              <UserDataTab
+                editedData={editedData}
+                userData={userData}
+                setEditedData={setEditedData}
+                changed={changed}
+                setChanged={setChanged}
+              />
             ),
           },
           ...(userData.accountType === "driver"
@@ -174,83 +85,22 @@ const AccountPage = () => {
                   key: "2",
                   label: "Vehicle Info",
                   children: (
-                    <div className={styles.tabContent}>
-                      <Title level={5}>Vehicle Information</Title>
-                      <div className={styles.formGrid}>
-                        <div>
-                          <label>Vehicle Model</label>
-                          <Input
-                            value={editedData?.vehicleModel}
-                            onChange={(e) => {
-                              setChanged(true);
-                              setEditedData({
-                                ...editedData,
-                                vehicleModel: e.target.value,
-                              });
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label>License Plate</label>
-                          <Input
-                            value={editedData?.licensePlate}
-                            onChange={(e) => {
-                              setChanged(true);
-                              setEditedData({
-                                ...editedData,
-                                licensePlate: e.target.value,
-                              });
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label>Weight Capacity</label>
-                          <Input
-                            value={editedData?.weightCapacity}
-                            onChange={(e) => {
-                              setChanged(true);
-                              setEditedData({
-                                ...editedData,
-                                weightCapacity: e.target.value,
-                              });
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label>Volume Capacity</label>
-                          <Input
-                            value={editedData?.volumeCapacity}
-                            onChange={(e) => {
-                              setChanged(true);
-                              setEditedData({
-                                ...editedData,
-                                volumeCapacity: e.target.value,
-                              });
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      <div className={styles.actions}>
-                        <Button type="primary" disabled={!changed}>
-                          Save Changes
-                        </Button>
-                        {changed && (
-                          <Button
-                            onClick={() => {
-                              setEditedData(userData);
-                              setChanged(false);
-                            }}
-                          >
-                            Reset
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+                    <VehicleDataTab
+                      editedData={editedData}
+                      userData={userData}
+                      setEditedData={setEditedData}
+                      changed={changed}
+                      setChanged={setChanged}
+                    />
                   ),
                 },
               ]
             : []),
+          {
+            key: "3",
+            label: "Actions",
+            children: <ActionsTab />,
+          },
         ]}
       />
     </div>

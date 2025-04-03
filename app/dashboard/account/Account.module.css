@@ -45,8 +45,28 @@
   margin-bottom: 6px;
 }
 
+.formGrid button {
+  width: 100%;
+}
+
 .actions {
   display: flex;
   gap: 12px;
   margin-top: 32px;
+}
+
+.profilePicSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profilePicPlaceholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
