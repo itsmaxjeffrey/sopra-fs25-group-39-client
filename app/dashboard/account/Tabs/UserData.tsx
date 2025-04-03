@@ -6,6 +6,8 @@ import dayjs from "dayjs";
 import styles from "../Account.module.css";
 //import axios from "axios";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const { Title } = Typography;
 
 const UserDataTab = ({

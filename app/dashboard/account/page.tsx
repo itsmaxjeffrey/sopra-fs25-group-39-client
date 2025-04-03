@@ -7,6 +7,8 @@ import UserDataTab from "./Tabs/UserData";
 import VehicleDataTab from "./Tabs/VehicleData";
 import ActionsTab from "./Tabs/Actions";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const { Title } = Typography;
 
 const AccountPage = () => {

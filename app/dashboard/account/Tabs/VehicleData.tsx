@@ -4,6 +4,8 @@ import { Input, Button, Typography, Upload, Image } from "antd";
 import { UploadOutlined, FileImageOutlined } from "@ant-design/icons";
 import styles from "../Account.module.css";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const { Title } = Typography;
 
 const VehicleDataTab = ({
@@ -82,7 +84,7 @@ const VehicleDataTab = ({
 
       <div className={styles.uploadSection}>
         <div className={styles.uploadItem}>
-          <label>Driver's License</label>
+          <label>Driver&apos;s License</label>
           <div className={styles.uploadWrapper}>
             {editedData?.driversLicense ? (
               <Image
