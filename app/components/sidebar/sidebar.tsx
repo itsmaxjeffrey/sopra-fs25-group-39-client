@@ -2,28 +2,30 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Spin } from "antd";
-import styles from "./sidebar.module.css";
+import { Spin, Modal } from "antd";
+import axios from "axios";
+
 
 const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [accountType, setAccountType] = useState<string | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     const userId = localStorage.getItem("id");
     const token = localStorage.getItem("token");
 
     if (userId && token) {
-      fetch(`http://localhost:5001/api/v1/users/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setAccountType(data.accountType);
+      axios
+        .get(`http://localhost:5001/api/v1/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          setAccountType(res.data.user.accountType);
         })
         .catch((err) => {
           console.error("Failed to fetch user:", err);
@@ -106,11 +108,23 @@ const Sidebar = () => {
       </nav>
 
       <button
-        onClick={handleLogout}
+        onClick={() => setShowConfirm(true)}
         className={`${styles.navItem} ${styles.logoutButton}`}
       >
         Logout
       </button>
+
+      <Modal
+        title="Confirm Logout"
+        open={showConfirm}
+        onOk={handleLogout}
+        onCancel={() => setShowConfirm(false)}
+        okText="Yes, logout"
+        cancelText="Cancel"
+        centered
+      >
+        <p>Are you sure you want to log out?</p>
+      </Modal>
     </div>
   );
 };

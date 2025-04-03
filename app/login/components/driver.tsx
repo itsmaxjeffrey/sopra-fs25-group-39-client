@@ -25,6 +25,7 @@ const { Title } = Typography;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const Driver = () => {
+
   const [setFormData] = useState<any>({}); // later add "formData" to use it
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
@@ -38,7 +39,19 @@ const Driver = () => {
         layout="vertical"
         onFinish={(values) => {
           setFormData(values);
-          const { username, password, phone, email } = values;
+          const {
+            firstName,
+            lastName,
+            birthdate,
+            email,
+            phone,
+            username,
+            password,
+            vehicleModel,
+            licensePlate,
+            weightCapacity,
+            volumeCapacity,
+          } = values;
 
           setModalVisible(true);
           setModalState("loading");
@@ -49,11 +62,18 @@ const Driver = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
+              firstName,
+              lastName,
+              birthdate,
+              email,
+              phone,
               username,
               password,
+              vehicleModel,
+              licensePlate,
+              weightCapacity,
+              volumeCapacity,
               accountType: "driver",
-              phone,
-              email,
             }),
           })
             .then((res) => {
