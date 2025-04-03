@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
-import { Input, Button, Typography } from "antd";
+import { Input, Button, Typography, Upload, Image } from "antd";
+import { UploadOutlined, FileImageOutlined } from "@ant-design/icons";
 import styles from "../Account.module.css";
 
 const { Title } = Typography;
@@ -76,6 +77,66 @@ const VehicleDataTab = ({
               });
             }}
           />
+        </div>
+      </div>
+
+      <div className={styles.uploadSection}>
+        <div className={styles.uploadItem}>
+          <label>Driver's License</label>
+          <div className={styles.uploadWrapper}>
+            {editedData?.driversLicense ? (
+              <Image
+                width={160}
+                height={100}
+                src={editedData.driversLicense}
+                style={{ objectFit: "cover", borderRadius: 4 }}
+              />
+            ) : (
+              <div className={styles.uploadPlaceholder}>
+                <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
+              </div>
+            )}
+            <Upload
+              showUploadList={false}
+              beforeUpload={(file) => {
+                console.log("Upload driver's license:", file);
+                return false;
+              }}
+            >
+              <Button icon={<UploadOutlined />}>
+                {editedData?.driversLicense ? "Replace" : "Upload"}
+              </Button>
+            </Upload>
+          </div>
+        </div>
+
+        <div className={styles.uploadItem}>
+          <label>Insurance Proof</label>
+          <div className={styles.uploadWrapper}>
+            {editedData?.insuranceProof ? (
+              <Image
+                width={160}
+                height={100}
+                src={editedData.insuranceProof}
+                style={{ objectFit: "cover", borderRadius: 4 }}
+              />
+            ) : (
+              <div className={styles.uploadPlaceholder}>
+                <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
+              </div>
+            )}
+            <Upload
+              showUploadList={false}
+              beforeUpload={(file) => {
+                console.log("Upload insurance proof:", file);
+                return false;
+              }}
+            >
+              <Button icon={<UploadOutlined />}>
+                {editedData?.insuranceProof ? "Replace" : "Upload"}
+              </Button>
+            </Upload>
+          </div>
         </div>
       </div>
 
