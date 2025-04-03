@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useEffect, useState } from "react";
 import { Tabs, Spin, Typography } from "antd";
@@ -107,6 +108,7 @@ const AccountPage = () => {
       />
     </div>
   );
+
 };
 
 export default AccountPage;
