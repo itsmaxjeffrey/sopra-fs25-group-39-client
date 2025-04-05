@@ -6,6 +6,8 @@ import useLocalStorage from "./useLocalStorage";
 
 export const useApi = () => {
   const {value: token} = useLocalStorage('token',null);
+  const {value: userId} = useLocalStorage('id', null);
+
 
   return useMemo(() =>{
     const service = new ApiService();
@@ -13,7 +15,10 @@ export const useApi = () => {
     if (token) {
       service.setAuthToken(token);
     }
+    if (userId) {
+      service.setUserId(userId);
+    }
     return service;
-  },[token]);
+  },[token, userId]);
 
 };

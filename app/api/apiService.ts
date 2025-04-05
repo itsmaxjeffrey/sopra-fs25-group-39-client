@@ -5,9 +5,13 @@ export class ApiService {
   private baseURL: string;
   private defaultHeaders: HeadersInit;
 
-  //handling header data(token). the token will be saved in the field called "Authorization"
+  //handling header data(token and userId). the token and userId will be saved in the field called "Authorization"
   private authToken: string | null = null;
+  private userId: string | null = null;
+
   setAuthToken(token: string) { this.authToken = token;}
+  setUserId(id: string) { this.userId = id; }
+
   private getHeaders(): HeadersInit {
     const headers: Record<string, string> = {
       "Content-Type": "application/json"
@@ -17,6 +21,10 @@ export class ApiService {
       console.log("Using auth token for request:", this.authToken);
       headers["Authorization"] = this.authToken;
     }
+    if (this.userId) {
+      headers["User-Id"] = this.userId;
+    }
+    
     return headers;
   }
 
