@@ -5,6 +5,22 @@ export class ApiService {
   private baseURL: string;
   private defaultHeaders: HeadersInit;
 
+  //handling header data(token). the token will be saved in the field called "Authorization"
+  private authToken: string | null = null;
+  setAuthToken(token: string) { this.authToken = token;}
+  private getHeaders(): HeadersInit {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json"
+    };
+
+    if (this.authToken){
+      console.log("Using auth token for request:", this.authToken);
+      headers["Authorization"] = this.authToken;
+    }
+    return headers;
+  }
+
+
   constructor() {
     this.baseURL = getApiDomain();
     this.defaultHeaders = {
@@ -64,7 +80,7 @@ export class ApiService {
     const url = `${this.baseURL}${endpoint}`;
     const res = await fetch(url, {
       method: "GET",
-      headers: this.defaultHeaders,
+      headers: this.getHeaders(),
     });
     return this.processResponse<T>(
       res,
@@ -82,7 +98,7 @@ export class ApiService {
     const url = `${this.baseURL}${endpoint}`;
     const res = await fetch(url, {
       method: "POST",
-      headers: this.defaultHeaders,
+      headers: this.getHeaders(),
       body: JSON.stringify(data),
     });
     return this.processResponse<T>(
@@ -101,7 +117,7 @@ export class ApiService {
     const url = `${this.baseURL}${endpoint}`;
     const res = await fetch(url, {
       method: "PUT",
-      headers: this.defaultHeaders,
+      headers: this.getHeaders(),
       body: JSON.stringify(data),
     });
     return this.processResponse<T>(
@@ -119,7 +135,7 @@ export class ApiService {
     const url = `${this.baseURL}${endpoint}`;
     const res = await fetch(url, {
       method: "DELETE",
-      headers: this.defaultHeaders,
+      headers: this.getHeaders(),
     });
     return this.processResponse<T>(
       res,
