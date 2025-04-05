@@ -66,7 +66,7 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+ **[@dariohug]**    | [05.04.2025] | [eef2cce](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/eef2cce865b0590f7306b6c6a6bcf9f64ab1dc1f) | [Implementing Backend LongPolling -> 5 Testcases] | [Keed Drivers updated about new contracts of interest in (almost) realtime (<1s)] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
