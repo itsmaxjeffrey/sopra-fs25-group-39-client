@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DriverMap from "./components/DriverMap";
 import { useRouter } from "next/navigation";
 import { Button, Drawer, Slider, InputNumber, Input, Checkbox, DatePicker, Tooltip } from "antd";
@@ -15,8 +15,8 @@ const HomePage = () => {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
   const [filters, setFilters] = useState({
-    lat: null,
-    lng: null,
+    lat: 47.3769, // Default to Zurich coordinates
+    lng: 8.5417,
     radius: undefined,
     price: undefined,
     weight: null,
@@ -31,12 +31,14 @@ const HomePage = () => {
     toAddress: null as Location | null,
     moveDateTime: null as dayjs.Dayjs | null,
   });
+  const [filteredProposals, setFilteredProposals] = useState([]);
 
   const updateFilter = (key: keyof typeof filters, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  const applyFilter = () => {
+  const applyFilter = async() => {
+    
     const query: any = {};
 
     if (filters.lat !== null) query.lat = filters.lat;
@@ -63,14 +65,14 @@ const HomePage = () => {
     if (filters.moveDateTime !== null) {
       filterParams.moveDateTime = filters.moveDateTime.format('YYYY-MM-DDTHH:mm:ss');
     }
-
-    if (Object.keys(filterParams).length > 0) {
-      query.filters = JSON.stringify(filterParams);
-    }
-
-    router.push(`/api/v1/map/contracts?${new URLSearchParams(query).toString()}`);
+    
+    router.push("/dashboard")
     setVisible(false);
   };
+
+  useEffect(() => {
+    applyFilter(); 
+  }, [])
 
   const mapContainerStyle = {
     width: "100%",
@@ -81,9 +83,12 @@ const HomePage = () => {
     
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
     <div style={{ flexGrow: 1, position: "relative" }}> {/* Map Component */}
-      <DriverMap containerStyle={mapContainerStyle} onCenterChanged={(lat, lng) => {
+      <DriverMap containerStyle={mapContainerStyle}
+        filters = {filters}
+        onCenterChanged={(lat, lng) => {
           updateFilter("lat", lat);
           updateFilter("lng", lng);
+          applyFilter();
       }}/> 
     </div>
     
