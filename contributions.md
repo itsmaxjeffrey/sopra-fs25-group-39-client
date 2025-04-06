@@ -60,7 +60,7 @@ reason).
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@ojg9]** | 06.04.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/f6395954b27ddafef9f0d8f06a50fa02242adf52 | Implemented Filters (Except Location Picker) for Contracts on Driver Home Screen | Second Acceptance Criterium of User Story S11 |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
