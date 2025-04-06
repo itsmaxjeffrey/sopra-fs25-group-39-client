@@ -20,9 +20,7 @@ const HomePage = () => {
     radius: undefined,
     price: undefined,
     weight: null,
-    height: null,
-    length: null,
-    width: null,
+    volume: null,
     requiredPeople: null,
     fragile: null,
     coolingRequired: null,
@@ -49,9 +47,7 @@ const HomePage = () => {
     if (filters.radius !== null) filterParams.radius = filters.radius;
     if (filters.price !== null) filterParams.price = filters.price;
     if (filters.weight !== null) filterParams.weight = filters.weight;
-    if (filters.height !== null) filterParams.height = filters.height;
-    if (filters.length !== null) filterParams.length = filters.length;
-    if (filters.width !== null) filterParams.width = filters.width;
+    if (filters.volume !== null) filterParams.volume = filters.volume;
     if (filters.requiredPeople !== null) filterParams.requiredPeople = filters.requiredPeople;
     if (filters.fragile !== null) filterParams.fragile = filters.fragile;
     if (filters.coolingRequired !== null) filterParams.coolingRequired = filters.coolingRequired;
@@ -69,6 +65,29 @@ const HomePage = () => {
     router.push("/dashboard")
     setVisible(false);
   };
+
+  const undoFilter = async() => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      radius: undefined,
+      price: undefined,
+      weight: null,
+      volume: null,
+      requiredPeople: null,
+      fragile: null,
+      coolingRequired: null,
+      rideAlong: null,
+      fromAddress: null,
+      toAddress: null,
+      moveDateTime: null,
+    }));
+    setVisible(false);
+  };
+
+  useEffect(() => {
+    applyFilter(); 
+  }, [])
+
 
   useEffect(() => {
     applyFilter(); 
@@ -131,16 +150,8 @@ const HomePage = () => {
             <InputNumber min={0} value={filters.weight} onChange={(val) => updateFilter("weight", val)} style={{ flex: 1, marginLeft: "10px" }} />
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <label>Height</label>
-            <InputNumber min={0} value={filters.height} onChange={(val) => updateFilter("height", val)} style={{ flex: 1, marginLeft: "10px" }} />
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <label>Length</label>
-            <InputNumber min={0} value={filters.length} onChange={(val) => updateFilter("length", val)} style={{ flex: 1, marginLeft: "10px" }} />
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <label>Width</label>
-            <InputNumber min={0} value={filters.width} onChange={(val) => updateFilter("width", val)} style={{ flex: 1, marginLeft: "10px" }} />
+            <label>Volume</label>
+            <InputNumber min={0} value={filters.volume} onChange={(val) => updateFilter("volume", val)} style={{ flex: 1, marginLeft: "10px" }} />
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label>Required People</label>
@@ -170,6 +181,7 @@ const HomePage = () => {
             <DatePicker onChange={(date) => updateFilter("moveDateTime", date)} style={{ flex: 1, marginLeft: "10px" }} />
           </div>
           <Button type="primary" onClick={applyFilter} style={{ marginTop: "20px" }}>Apply Filter</Button>
+          <Button type="default" onClick={undoFilter} style={{ marginTop: "10px" }}>Undo Filter</Button>
         </div>
       </Drawer>
     </div>
