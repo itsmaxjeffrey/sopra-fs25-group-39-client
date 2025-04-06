@@ -98,9 +98,7 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
       if (filters.radius !== null) filterParams.radius = filters.radius;
       if (filters.price !== null) filterParams.price = filters.price;
       if (filters.weight !== null) filterParams.weight = filters.weight;
-      if (filters.height !== null) filterParams.height = filters.height;
-      if (filters.length !== null) filterParams.length = filters.length;
-      if (filters.width !== null) filterParams.width = filters.width;
+      if (filters.volume !== null) filterParams.volume = filters.volume;
       if (filters.requiredPeople !== null) filterParams.requiredPeople = filters.requiredPeople;
       if (filters.fragile !== null) filterParams.fragile = filters.fragile;
       if (filters.coolingRequired !== null) filterParams.coolingRequired = filters.coolingRequired;
@@ -118,7 +116,9 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
       if (Object.keys(filterParams).length > 0) {
         query.filters = JSON.stringify(filterParams);
       }
-
+  
+      console.log("Filters passed to the API call:", query)
+      
       const response = await fetch(
         `${BASE_URL}/api/v1/map/contracts?lat=${location.lat}&lng=${location.lng}&filters=${encodeURIComponent(query.filters)}`,
       );
@@ -184,7 +184,7 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
     }
   
     const filtered = allContracts.filter(
-      (contract: { fromLocation: { latitude: number; longitude: number } }) => { // Changed to contract.fromLocation
+      (contract: { fromLocation: { latitude: number; longitude: number } }) => { 
         if (!contract.fromLocation || typeof contract.fromLocation.latitude !== "number" || typeof contract.fromLocation.longitude !== "number") {
           console.error("Invalid contract fromLocation or coordinates", contract);
           return false;
@@ -212,7 +212,7 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
 
   const handleMapZoom = () => {
     if (mapInstance) {
-      filtercontractsByBounds(); // Re-filter contracts when zooming or panning
+      filtercontractsByBounds(); 
     }
   };
 
