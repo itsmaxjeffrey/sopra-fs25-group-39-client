@@ -14,10 +14,6 @@ import {
 import { FilterOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
-interface Location {
-  latitude: number;
-  longitude: number;
-}
 
 const HomePage = () => {
   const router = useRouter();
