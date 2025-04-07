@@ -87,7 +87,7 @@ const HomePage = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [applyFilter]);
+  }, []);
 
   /*
   //second load needed to fetch all contracts correctly the first time
@@ -142,8 +142,13 @@ const HomePage = () => {
       <Drawer
         title="Edit Filters"
         placement="right"
-        onClose={() => setVisible(false)}
         open={visible}
+        maskClosable={false} 
+        keyboard={false}     
+        onClose={() => {
+          applyFilter();
+          setVisible(false);
+        }}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <div
