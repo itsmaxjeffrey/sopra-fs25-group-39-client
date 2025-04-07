@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button, Drawer, Slider, InputNumber, Input, Checkbox, DatePicker, Tooltip } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { LoadScript, Autocomplete } from "@react-google-maps/api";
 
 interface Location {
   latitude: number;
@@ -14,6 +15,11 @@ interface Location {
 const HomePage = () => {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
+  const fromAutocompleteRef = React.useRef<google.maps.places.Autocomplete | null>(null);
+  const toAutocompleteRef = React.useRef<google.maps.places.Autocomplete | null>(null);
+  const fromInputRef = React.useRef<HTMLInputElement | null>(null);
+  const toInputRef = React.useRef<HTMLInputElement | null>(null);
+
   const [filters, setFilters] = useState({
     lat: 47.3769, // Default to Zurich coordinates
     lng: 8.5417,
@@ -29,7 +35,6 @@ const HomePage = () => {
     toAddress: null as Location | null,
     moveDateTime: null as dayjs.Dayjs | null,
   });
-  const [filteredProposals, setFilteredProposals] = useState([]);
 
   const updateFilter = (key: keyof typeof filters, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -87,8 +92,7 @@ const HomePage = () => {
   useEffect(() => {
     applyFilter(); 
   }, [])
-
-
+  //second load needed to fetch all contracts correctly the first time
   useEffect(() => {
     applyFilter(); 
   }, [])
@@ -164,17 +168,46 @@ const HomePage = () => {
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label>Start Position</label>
-            <Input value={filters.fromAddress ? `${filters.fromAddress.latitude},${filters.fromAddress.longitude}` : ''} onChange={(e) => {
-              const [lat, lng] = e.target.value.split(",");
-              updateFilter("fromAddress", { latitude: parseFloat(lat), longitude: parseFloat(lng) });
-            }} style={{ flex: 1, marginLeft: "10px" }} />
+            <Autocomplete
+              onPlaceChanged={() => {
+                const place = fromAutocompleteRef.current?.getPlace();
+                if (place?.geometry?.location) {
+                  const location = {
+                    latitude: place.geometry.location.lat(),
+                    longitude: place.geometry.location.lng(),
+                  };
+                  updateFilter("fromAddress", location);
+                }
+              }}
+            >
+              <Input
+                placeholder="Search location..."
+                style={{ flex: 1, marginLeft: "10px" }}
+                ref={(ref) => { fromInputRef.current = ref?.input || null; }}
+              />
+            </Autocomplete>
           </div>
+
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label>End Position</label>
-            <Input value={filters.toAddress ? `${filters.toAddress.latitude},${filters.toAddress.longitude}` : ''} onChange={(e) => {
-              const [lat, lng] = e.target.value.split(",");
-              updateFilter("toAddress", { latitude: parseFloat(lat), longitude: parseFloat(lng) });
-            }} style={{ flex: 1, marginLeft: "10px" }} />
+            <Autocomplete
+              onPlaceChanged={() => {
+                const place = toAutocompleteRef.current?.getPlace();
+                if (place?.geometry?.location) {
+                  const location = {
+                    latitude: place.geometry.location.lat(),
+                    longitude: place.geometry.location.lng(),
+                  };
+                  updateFilter("toAddress", location);
+                }
+              }}
+            >
+              <Input
+                placeholder="Search location..."
+                style={{ flex: 1, marginLeft: "10px" }}
+                ref={(ref) => { toInputRef.current = ref?.input || null; }}
+              />
+            </Autocomplete>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label>Date</label>
