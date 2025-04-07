@@ -30,7 +30,7 @@ reason).
 
 ---
 
-## Contributions Week 1 - [Begin Date] to [End Date]
+## Contributions Week 1 - 25.03.2025 to 31.03.2025
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
@@ -56,14 +56,15 @@ reason).
 
 ---
 
-## Contributions Week 2 - [Begin Date] to [End Date]
+## Contributions Week 2 - 01.04.2025 to 07.04.2025
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **[@ojg9]** | 06.04.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/f6395954b27ddafef9f0d8f06a50fa02242adf52 | Implemented Filters (Except Location Picker) for Contracts on Driver Home Screen | Second Acceptance Criterium of User Story S11 |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/930c0e1e765c535f7d8c35bdd5d92b8d7efecd82) | Added various API methods for contracts | The contract lifecycle is a core functionality for our app – frontend needs to interact |
+| **@xdecentralix** | 05.04.2025   | [Link to Commit 2](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/0d760c88107f2d5dcdddc756c597138381ec9968) | Updated and added more API methods for contracts (incl. scheduling) | The contract lifecycle is a core functionality for our app – frontend needs to interact |
+| **@xdecentralix** | 05.04.2025   | [Link to Commit 3](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/d06aeb2b0b37ac5ccd678b7e356b289e74f1e854) | Created Offers logic and endpoints | The offers lifecycle is also a  core functionality for our app – frontend needs to interact and backend needs to process offers |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 |**[@dariohug]**    | [01.04.2025] |[[cbc5792](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/cbc5792311584e5f948d0baa11e15b67891de92e)] | [Started with Polling -> Looking at java future logic] | [Keed Drivers updated about new contracts of interest in (almost) realtime (<1s)] |
