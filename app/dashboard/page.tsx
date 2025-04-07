@@ -1,7 +1,6 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import DriverMap from "./components/DriverMap";
-import { useRouter } from "next/navigation";
 import {
   Button,
   Checkbox,
@@ -15,7 +14,6 @@ import { FilterOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 const HomePage = () => {
-  const router = useRouter();
   const [visible, setVisible] = useState(false);
 
   const [filters, setFilters] = useState({
@@ -66,7 +64,7 @@ const HomePage = () => {
     }
 
     setVisible(false);
-  }, [filters, router]);
+  }, [filters]);
 
   const undoFilter = async () => {
     setFilters((prevFilters) => ({
@@ -87,12 +85,6 @@ const HomePage = () => {
   useEffect(() => {
     applyFilter();
   }, []);
-
-  /*
-  //second load needed to fetch all contracts correctly the first time
-  useEffect(() => {
-    applyFilter();
-  }, [applyFilter]);*/
 
   const mapContainerStyle = {
     width: "100%",

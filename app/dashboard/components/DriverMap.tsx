@@ -46,8 +46,8 @@ const DriverMap: React.FC<DriverMapProps> = (
       try {
         const query: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-        if (filters.lat !== null) query.lat = filters.lat;
-        if (filters.lng !== null) query.lng = filters.lng;
+        if (filters.lat !== null) query.lat = selectedLocation.lat;
+        if (filters.lng !== null) query.lng = selectedLocation.lng;
 
         const filterParams: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -78,7 +78,7 @@ const DriverMap: React.FC<DriverMapProps> = (
         console.log("Filters passed to the API call:", query);
 
         const response = await fetch(
-          `${BASE_URL}/api/v1/map/contracts?lat=${location.lat}&lng=${location.lng}&filters=${
+          `${BASE_URL}/api/v1/map/contracts?lat=${selectedLocation.lat}&lng=${selectedLocation.lng}&filters=${
             encodeURIComponent(query.filters)
           }`,
         );
@@ -111,7 +111,7 @@ const DriverMap: React.FC<DriverMapProps> = (
         isLoadingRef.current = false;
       }
     },
-    [filters, mapInstance, BASE_URL],
+    [selectedLocation, filters, mapInstance, BASE_URL],
   );
 
   const filtercontractsByBounds = useCallback(() => {
@@ -209,8 +209,27 @@ const DriverMap: React.FC<DriverMapProps> = (
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
         };
-        setSelectedLocation(newLocation);
+        
 
+        // Update map center
+        setSelectedLocation(newLocation);
+        if (mapInstance) {
+          mapInstance.setCenter(new google.maps.LatLng(newLocation.lat, newLocation.lng));
+        }
+
+        // Notify parent component of center change (if applicable)
+        if (onCenterChanged) {
+          onCenterChanged(newLocation.lat, newLocation.lng);
+        }
+
+        // Update filters with the new coordinates
+        filters.lat = newLocation.lat;
+        filters.lng = newLocation.lng;
+
+        // Notify parent component of center change (if applicable)
+        if (onCenterChanged) {
+          onCenterChanged(newLocation.lat, newLocation.lng);
+        }
         fetchContracts(newLocation);
       } else {
         console.error("No location data available for this place.");
