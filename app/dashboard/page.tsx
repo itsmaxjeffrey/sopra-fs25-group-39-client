@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import DriverMap from "./components/DriverMap";
 import { useRouter } from "next/navigation";
-import { Button, Drawer, Slider, InputNumber, Input, Checkbox, DatePicker, Tooltip } from "antd";
+import { Button, Drawer, Slider, InputNumber, Checkbox, DatePicker, Tooltip } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { LoadScript, Autocomplete } from "@react-google-maps/api";
@@ -15,10 +15,6 @@ interface Location {
 const HomePage = () => {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
-  const fromAutocompleteRef = React.useRef<google.maps.places.Autocomplete | null>(null);
-  const toAutocompleteRef = React.useRef<google.maps.places.Autocomplete | null>(null);
-  const fromInputRef = React.useRef<HTMLInputElement | null>(null);
-  const toInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const [filters, setFilters] = useState({
     lat: 47.3769, // Default to Zurich coordinates
@@ -31,8 +27,6 @@ const HomePage = () => {
     fragile: null,
     coolingRequired: null,
     rideAlong: null,
-    fromAddress: null as Location | null,
-    toAddress: null as Location | null,
     moveDateTime: null as dayjs.Dayjs | null,
   });
 
@@ -57,12 +51,6 @@ const HomePage = () => {
     if (filters.fragile !== null) filterParams.fragile = filters.fragile;
     if (filters.coolingRequired !== null) filterParams.coolingRequired = filters.coolingRequired;
     if (filters.rideAlong !== null) filterParams.rideAlong = filters.rideAlong;
-    if (filters.fromAddress !== null) {
-      filterParams.fromAddress = `${filters.fromAddress.latitude},${filters.fromAddress.longitude}`;
-    }
-    if (filters.toAddress !== null) {
-      filterParams.toAddress = `${filters.toAddress.latitude},${filters.toAddress.longitude}`;
-    }
     if (filters.moveDateTime !== null) {
       filterParams.moveDateTime = filters.moveDateTime.format('YYYY-MM-DDTHH:mm:ss');
     }
@@ -82,8 +70,6 @@ const HomePage = () => {
       fragile: null,
       coolingRequired: null,
       rideAlong: null,
-      fromAddress: null,
-      toAddress: null,
       moveDateTime: null,
     }));
     setVisible(false);
@@ -165,49 +151,6 @@ const HomePage = () => {
             <Checkbox checked={!!filters.fragile} onChange={(e) => updateFilter("fragile", e.target.checked)}>Fragile</Checkbox>
             <Checkbox checked={!!filters.coolingRequired} onChange={(e) => updateFilter("coolingRequired", e.target.checked)}>Cooling Required</Checkbox>
             <Checkbox checked={!!filters.rideAlong} onChange={(e) => updateFilter("rideAlong", e.target.checked)}>Ride Along</Checkbox>
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <label>Start Position</label>
-            <Autocomplete
-              onPlaceChanged={() => {
-                const place = fromAutocompleteRef.current?.getPlace();
-                if (place?.geometry?.location) {
-                  const location = {
-                    latitude: place.geometry.location.lat(),
-                    longitude: place.geometry.location.lng(),
-                  };
-                  updateFilter("fromAddress", location);
-                }
-              }}
-            >
-              <Input
-                placeholder="Search location..."
-                style={{ flex: 1, marginLeft: "10px" }}
-                ref={(ref) => { fromInputRef.current = ref?.input || null; }}
-              />
-            </Autocomplete>
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <label>End Position</label>
-            <Autocomplete
-              onPlaceChanged={() => {
-                const place = toAutocompleteRef.current?.getPlace();
-                if (place?.geometry?.location) {
-                  const location = {
-                    latitude: place.geometry.location.lat(),
-                    longitude: place.geometry.location.lng(),
-                  };
-                  updateFilter("toAddress", location);
-                }
-              }}
-            >
-              <Input
-                placeholder="Search location..."
-                style={{ flex: 1, marginLeft: "10px" }}
-                ref={(ref) => { toInputRef.current = ref?.input || null; }}
-              />
-            </Autocomplete>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label>Date</label>

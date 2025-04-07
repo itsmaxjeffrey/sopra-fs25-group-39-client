@@ -103,12 +103,6 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
       if (filters.fragile !== null) filterParams.fragile = filters.fragile;
       if (filters.coolingRequired !== null) filterParams.coolingRequired = filters.coolingRequired;
       if (filters.rideAlong !== null) filterParams.rideAlong = filters.rideAlong;
-      if (filters.fromAddress !== null) {
-        filterParams.fromAddress = `${filters.fromAddress.latitude},${filters.fromAddress.longitude}`;
-      }
-      if (filters.toAddress !== null) {
-        filterParams.toAddress = `${filters.toAddress.latitude},${filters.toAddress.longitude}`;
-      }
       if (filters.moveDateTime !== null) {
         filterParams.moveDateTime = filters.moveDateTime.format('YYYY-MM-DDTHH:mm:ss');
       }
