@@ -40,7 +40,7 @@ const DriverMap: React.FC<DriverMapProps> = (
     : "http://localhost:5001"; // Development API URL, change to 3000 as soon as the backend has implemented the get contracts endpoint (Mock Backend URL = localhost 5001)
 
   const fetchContracts = useCallback(
-    async (location: { lat: number; lng: number }) => {
+    async () => {
       if (isLoadingRef.current) return; // Prevent fetch if already loading
       isLoadingRef.current = true;
       try {
@@ -209,12 +209,13 @@ const DriverMap: React.FC<DriverMapProps> = (
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
         };
-        
 
         // Update map center
         setSelectedLocation(newLocation);
         if (mapInstance) {
-          mapInstance.setCenter(new google.maps.LatLng(newLocation.lat, newLocation.lng));
+          mapInstance.setCenter(
+            new google.maps.LatLng(newLocation.lat, newLocation.lng),
+          );
         }
 
         // Notify parent component of center change (if applicable)

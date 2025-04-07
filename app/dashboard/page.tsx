@@ -84,6 +84,7 @@ const HomePage = () => {
 
   useEffect(() => {
     applyFilter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const mapContainerStyle = {
@@ -134,8 +135,8 @@ const HomePage = () => {
         title="Edit Filters"
         placement="right"
         open={visible}
-        maskClosable={false} 
-        keyboard={false}     
+        maskClosable={false}
+        keyboard={false}
         onClose={() => {
           applyFilter();
           setVisible(false);
