@@ -65,7 +65,6 @@ const HomePage = () => {
       );
     }
 
-    router.push("/dashboard");
     setVisible(false);
   }, [filters, router]);
 
