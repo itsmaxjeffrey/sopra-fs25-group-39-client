@@ -1,5 +1,5 @@
 // component responsible for rendering the Google Map
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Autocomplete,
   GoogleMap,
@@ -20,7 +20,7 @@ const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 interface DriverMapProps {
   containerStyle: React.CSSProperties;
-  filters: any;
+  filters: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   onCenterChanged?: (lat: number, lng: number) => void;
 }
 
@@ -39,140 +39,82 @@ const DriverMap: React.FC<DriverMapProps> = (
     ? "https://sopra-fs25-group-39-client.vercel.app/" // Production API URL
     : "http://localhost:5001"; // Development API URL, change to 3000 as soon as the backend has implemented the get contracts endpoint (Mock Backend URL = localhost 5001)
 
-  useEffect(() => {
-    if (!GOOGLE_MAPS_API_KEY) {
-      setMapError("Google Maps API key is missing.");
-    }
-    fetchContracts(filters);
-    if (onCenterChanged) {
-      onCenterChanged(center.lat, center.lng);
-    }
-  }, []);
+  const fetchContracts = useCallback(
+    async (location: { lat: number; lng: number }) => {
+      if (isLoadingRef.current) return; // Prevent fetch if already loading
+      isLoadingRef.current = true;
+      try {
+        const query: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  useEffect(() => {
-    if (mapInstance) {
-      const center = mapInstance.getCenter();
-      if (center) {
-        fetchContracts({ lat: center.lat(), lng: center.lng() });
-      }
-    }
-  }, [mapInstance, filters]);
+        if (filters.lat !== null) query.lat = filters.lat;
+        if (filters.lng !== null) query.lng = filters.lng;
 
-  useEffect(() => {
-    if (mapInstance && allContracts.length > 0) {
-      filtercontractsByBounds();
-    }
-  }, [mapInstance, allContracts]);
+        const filterParams: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  // Handle successful map load
-  const handleMapLoad = (map: google.maps.Map) => {
-    if (!map || typeof map.getBounds !== "function") {
-      console.error("Google Map failed to load properly.");
-      setMapError("Map failed to initialize.");
-      return;
-    }
-    setMapInstance(map);
-
-    console.log("Google Map Loaded Successfully");
-    setMapError(null); // Reset any error if map is loaded successfully
-  };
-
-  // Handle error in loading map
-  const handleMapError = (e: unknown) => {
-    console.error("Error loading Google Map:", e);
-    setMapError("Failed to load Google Map. Please try again later.");
-  };
-
-  const fetchContracts = async (location: { lat: number; lng: number }) => {
-    if (isLoadingRef.current) return; // Prevent fetch if already loading
-    isLoadingRef.current = true;
-    try {
-      const query: any = {};
-
-      if (filters.lat !== null) query.lat = filters.lat;
-      if (filters.lng !== null) query.lng = filters.lng;
-
-      const filterParams: any = {};
-
-      if (filters.radius !== null) filterParams.radius = filters.radius;
-      if (filters.price !== null) filterParams.price = filters.price;
-      if (filters.weight !== null) filterParams.weight = filters.weight;
-      if (filters.volume !== null) filterParams.volume = filters.volume;
-      if (filters.requiredPeople !== null) {
-        filterParams.requiredPeople = filters.requiredPeople;
-      }
-      if (filters.fragile !== null) filterParams.fragile = filters.fragile;
-      if (filters.coolingRequired !== null) {
-        filterParams.coolingRequired = filters.coolingRequired;
-      }
-      if (filters.rideAlong !== null) {
-        filterParams.rideAlong = filters.rideAlong;
-      }
-      if (filters.moveDateTime !== null) {
-        filterParams.moveDateTime = filters.moveDateTime.format(
-          "YYYY-MM-DDTHH:mm:ss",
-        );
-      }
-
-      if (Object.keys(filterParams).length > 0) {
-        query.filters = JSON.stringify(filterParams);
-      }
-
-      console.log("Filters passed to the API call:", query);
-
-      const response = await fetch(
-        `${BASE_URL}/api/v1/map/contracts?lat=${location.lat}&lng=${location.lng}&filters=${
-          encodeURIComponent(query.filters)
-        }`,
-      );
-      const data = await response.json();
-      setallContracts(Array.isArray(data.contracts) ? data.contracts : []);
-
-      // Filter contracts immediately after fetching
-      if (mapInstance) {
-        const bounds = mapInstance.getBounds();
-        if (bounds) {
-          const filtered = data.contracts.filter(
-            (
-              contract: {
-                fromLocation: { latitude: number; longitude: number };
-              },
-            ) => {
-              const contractLat = contract.fromLocation.latitude;
-              const contractLng = contract.fromLocation.longitude;
-              return bounds.contains(
-                new google.maps.LatLng(contractLat, contractLng),
-              );
-            },
-          );
-          setfilteredContracts(filtered);
+        if (filters.radius !== null) filterParams.radius = filters.radius;
+        if (filters.price !== null) filterParams.price = filters.price;
+        if (filters.weight !== null) filterParams.weight = filters.weight;
+        if (filters.volume !== null) filterParams.volume = filters.volume;
+        if (filters.requiredPeople !== null) {
+          filterParams.requiredPeople = filters.requiredPeople;
         }
+        if (filters.fragile !== null) filterParams.fragile = filters.fragile;
+        if (filters.coolingRequired !== null) {
+          filterParams.coolingRequired = filters.coolingRequired;
+        }
+        if (filters.rideAlong !== null) {
+          filterParams.rideAlong = filters.rideAlong;
+        }
+        if (filters.moveDateTime !== null) {
+          filterParams.moveDateTime = filters.moveDateTime.format(
+            "YYYY-MM-DDTHH:mm:ss",
+          );
+        }
+
+        if (Object.keys(filterParams).length > 0) {
+          query.filters = JSON.stringify(filterParams);
+        }
+
+        console.log("Filters passed to the API call:", query);
+
+        const response = await fetch(
+          `${BASE_URL}/api/v1/map/contracts?lat=${location.lat}&lng=${location.lng}&filters=${
+            encodeURIComponent(query.filters)
+          }`,
+        );
+        const data = await response.json();
+        setallContracts(Array.isArray(data.contracts) ? data.contracts : []);
+
+        // Filter contracts immediately after fetching
+        if (mapInstance) {
+          const bounds = mapInstance.getBounds();
+          if (bounds) {
+            const filtered = data.contracts.filter(
+              (
+                contract: {
+                  fromLocation: { latitude: number; longitude: number };
+                },
+              ) => {
+                const contractLat = contract.fromLocation.latitude;
+                const contractLng = contract.fromLocation.longitude;
+                return bounds.contains(
+                  new google.maps.LatLng(contractLat, contractLng),
+                );
+              },
+            );
+            setfilteredContracts(filtered);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching contracts:", error);
+      } finally {
+        isLoadingRef.current = false;
       }
-    } catch (error) {
-      console.error("Error fetching contracts:", error);
-    } finally {
-      isLoadingRef.current = false;
-    }
-  };
+    },
+    [filters, mapInstance, BASE_URL],
+  );
 
-  const handlePlaceChanged = () => {
-    if (autocompleteRef.current) {
-      const place = autocompleteRef.current.getPlace();
-      if (place?.geometry?.location) {
-        const newLocation = {
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-        };
-        setSelectedLocation(newLocation);
-
-        fetchContracts(newLocation);
-      } else {
-        console.error("No location data available for this place.");
-      }
-    }
-  };
-
-  const filtercontractsByBounds = () => {
+  const filtercontractsByBounds = useCallback(() => {
     if (!mapInstance) {
       console.error("mapInstance is null or undefined");
       return;
@@ -213,6 +155,67 @@ const DriverMap: React.FC<DriverMapProps> = (
     );
 
     setfilteredContracts(filtered);
+  }, [allContracts, mapInstance]);
+
+  useEffect(() => {
+    if (!GOOGLE_MAPS_API_KEY) {
+      setMapError("Google Maps API key is missing.");
+    }
+    fetchContracts(filters);
+    if (onCenterChanged) {
+      onCenterChanged(center.lat, center.lng);
+    }
+  }, [fetchContracts, filters, onCenterChanged]);
+
+  useEffect(() => {
+    if (mapInstance) {
+      const center = mapInstance.getCenter();
+      if (center) {
+        fetchContracts({ lat: center.lat(), lng: center.lng() });
+      }
+    }
+  }, [fetchContracts, mapInstance, filters]);
+
+  useEffect(() => {
+    if (mapInstance && allContracts.length > 0) {
+      filtercontractsByBounds();
+    }
+  }, [filtercontractsByBounds, mapInstance, allContracts]);
+
+  // Handle successful map load
+  const handleMapLoad = (map: google.maps.Map) => {
+    if (!map || typeof map.getBounds !== "function") {
+      console.error("Google Map failed to load properly.");
+      setMapError("Map failed to initialize.");
+      return;
+    }
+    setMapInstance(map);
+
+    console.log("Google Map Loaded Successfully");
+    setMapError(null); // Reset any error if map is loaded successfully
+  };
+
+  // Handle error in loading map
+  const handleMapError = (e: unknown) => {
+    console.error("Error loading Google Map:", e);
+    setMapError("Failed to load Google Map. Please try again later.");
+  };
+
+  const handlePlaceChanged = () => {
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace();
+      if (place?.geometry?.location) {
+        const newLocation = {
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng(),
+        };
+        setSelectedLocation(newLocation);
+
+        fetchContracts(newLocation);
+      } else {
+        console.error("No location data available for this place.");
+      }
+    }
   };
 
   const handleMapDragEnd = () => {

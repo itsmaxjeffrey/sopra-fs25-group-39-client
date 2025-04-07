@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Typography, Modal, Form, Input } from "antd";
+import { Button, Form, Input, Modal, Typography } from "antd";
 import styles from "../Account.module.css";
 
 const { Title } = Typography;
@@ -30,7 +30,7 @@ const ActionsTab = () => {
       .validateFields()
       .then((values) => {
         console.log("Confirmed account deletion for:", values.email);
-        
+
         setDeleteModalOpen(false);
         deleteForm.resetFields();
       })
@@ -73,7 +73,10 @@ const ActionsTab = () => {
           <Form.Item
             label="Current Password"
             name="currentPassword"
-            rules={[{ required: true, message: "Please enter your current password" }]}
+            rules={[{
+              required: true,
+              message: "Please enter your current password",
+            }]}
           >
             <Input.Password />
           </Form.Item>
@@ -129,7 +132,10 @@ const ActionsTab = () => {
         cancelText="Cancel"
         centered
       >
-        <p>To confirm, please enter your email address associated with this account:</p>
+        <p>
+          To confirm, please enter your email address associated with this
+          account:
+        </p>
         <Form form={deleteForm} layout="vertical">
           <Form.Item
             label="Email"

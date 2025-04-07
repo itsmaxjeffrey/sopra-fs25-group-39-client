@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import DriverMap from "./components/DriverMap";
 import { useRouter } from "next/navigation";
 import {
@@ -13,7 +13,6 @@ import {
 } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-
 
 const HomePage = () => {
   const router = useRouter();
@@ -33,17 +32,20 @@ const HomePage = () => {
     moveDateTime: null as dayjs.Dayjs | null,
   });
 
-  const updateFilter = (key: keyof typeof filters, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+  const updateFilter = (key: keyof typeof filters, value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    setFilters((prev) => {
+      if (prev[key] === value) return prev;
+      return { ...prev, [key]: value };
+    });
   };
 
-  const applyFilter = async () => {
-    const query: any = {};
+  const applyFilter = useCallback(async () => {
+    const query: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     if (filters.lat !== null) query.lat = filters.lat;
     if (filters.lng !== null) query.lng = filters.lng;
 
-    const filterParams: any = {};
+    const filterParams: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     if (filters.radius !== null) filterParams.radius = filters.radius;
     if (filters.price !== null) filterParams.price = filters.price;
@@ -65,7 +67,7 @@ const HomePage = () => {
 
     router.push("/dashboard");
     setVisible(false);
-  };
+  }, [filters, router]);
 
   const undoFilter = async () => {
     setFilters((prevFilters) => ({
@@ -85,11 +87,13 @@ const HomePage = () => {
 
   useEffect(() => {
     applyFilter();
-  }, []);
+  }, [applyFilter]);
+
+  /*
   //second load needed to fetch all contracts correctly the first time
   useEffect(() => {
     applyFilter();
-  }, []);
+  }, [applyFilter]);*/
 
   const mapContainerStyle = {
     width: "100%",
@@ -106,7 +110,6 @@ const HomePage = () => {
           onCenterChanged={(lat, lng) => {
             updateFilter("lat", lat);
             updateFilter("lng", lng);
-            applyFilter();
           }}
         />
       </div>

@@ -23,7 +23,7 @@ import styles from "../login.module.css";
 const { Title } = Typography;
 
 const Customer = () => {
-  const [ setFormData] = useState<any>({}); // later add "formData" to use it
+  const [setFormData] = useState<any>({}); // later add "formData" to use it
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(

@@ -34,7 +34,7 @@ const AuthPage = () => {
       .catch(() => {
         localStorage.removeItem("token");
       });
-  }, []);
+  }, [router]);
 
   const [mode, setMode] = useState<"login" | "register">("login");
   const [selectedRole, setSelectedRole] = useState<
