@@ -24,7 +24,9 @@ interface DriverMapProps {
   onCenterChanged?: (lat: number, lng: number) => void;
 }
 
-const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenterChanged }) => {
+const DriverMap: React.FC<DriverMapProps> = (
+  { containerStyle, filters, onCenterChanged },
+) => {
   const [selectedLocation, setSelectedLocation] = useState(center);
   const [allContracts, setallContracts] = useState([]);
   const [filteredContracts, setfilteredContracts] = useState([]);
@@ -45,14 +47,13 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
     if (onCenterChanged) {
       onCenterChanged(center.lat, center.lng);
     }
-    
   }, []);
 
   useEffect(() => {
     if (mapInstance) {
       const center = mapInstance.getCenter();
       if (center) {
-        fetchContracts({ lat: center.lat(), lng: center.lng() }); 
+        fetchContracts({ lat: center.lat(), lng: center.lng() });
       }
     }
   }, [mapInstance, filters]);
@@ -74,7 +75,6 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
 
     console.log("Google Map Loaded Successfully");
     setMapError(null); // Reset any error if map is loaded successfully
-
   };
 
   // Handle error in loading map
@@ -87,7 +87,6 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
     if (isLoadingRef.current) return; // Prevent fetch if already loading
     isLoadingRef.current = true;
     try {
-
       const query: any = {};
 
       if (filters.lat !== null) query.lat = filters.lat;
@@ -99,22 +98,32 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
       if (filters.price !== null) filterParams.price = filters.price;
       if (filters.weight !== null) filterParams.weight = filters.weight;
       if (filters.volume !== null) filterParams.volume = filters.volume;
-      if (filters.requiredPeople !== null) filterParams.requiredPeople = filters.requiredPeople;
+      if (filters.requiredPeople !== null) {
+        filterParams.requiredPeople = filters.requiredPeople;
+      }
       if (filters.fragile !== null) filterParams.fragile = filters.fragile;
-      if (filters.coolingRequired !== null) filterParams.coolingRequired = filters.coolingRequired;
-      if (filters.rideAlong !== null) filterParams.rideAlong = filters.rideAlong;
+      if (filters.coolingRequired !== null) {
+        filterParams.coolingRequired = filters.coolingRequired;
+      }
+      if (filters.rideAlong !== null) {
+        filterParams.rideAlong = filters.rideAlong;
+      }
       if (filters.moveDateTime !== null) {
-        filterParams.moveDateTime = filters.moveDateTime.format('YYYY-MM-DDTHH:mm:ss');
+        filterParams.moveDateTime = filters.moveDateTime.format(
+          "YYYY-MM-DDTHH:mm:ss",
+        );
       }
 
       if (Object.keys(filterParams).length > 0) {
         query.filters = JSON.stringify(filterParams);
       }
-  
-      console.log("Filters passed to the API call:", query)
-      
+
+      console.log("Filters passed to the API call:", query);
+
       const response = await fetch(
-        `${BASE_URL}/api/v1/map/contracts?lat=${location.lat}&lng=${location.lng}&filters=${encodeURIComponent(query.filters)}`,
+        `${BASE_URL}/api/v1/map/contracts?lat=${location.lat}&lng=${location.lng}&filters=${
+          encodeURIComponent(query.filters)
+        }`,
       );
       const data = await response.json();
       setallContracts(Array.isArray(data.contracts) ? data.contracts : []);
@@ -124,7 +133,11 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
         const bounds = mapInstance.getBounds();
         if (bounds) {
           const filtered = data.contracts.filter(
-            (contract: { fromLocation: { latitude: number; longitude: number } }) => {
+            (
+              contract: {
+                fromLocation: { latitude: number; longitude: number };
+              },
+            ) => {
               const contractLat = contract.fromLocation.latitude;
               const contractLng = contract.fromLocation.longitude;
               return bounds.contains(
@@ -141,7 +154,6 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
       isLoadingRef.current = false;
     }
   };
-
 
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {
@@ -165,32 +177,41 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
       console.error("mapInstance is null or undefined");
       return;
     }
-  
+
     if (!Array.isArray(allContracts) || allContracts.length === 0) {
       console.error("allContracts is not a valid array or is empty");
       return;
     }
-  
+
     const bounds = mapInstance.getBounds();
     if (!bounds) {
       console.error("mapInstance.getBounds() returned null or undefined");
       return;
     }
-  
+
     const filtered = allContracts.filter(
-      (contract: { fromLocation: { latitude: number; longitude: number } }) => { 
-        if (!contract.fromLocation || typeof contract.fromLocation.latitude !== "number" || typeof contract.fromLocation.longitude !== "number") {
-          console.error("Invalid contract fromLocation or coordinates", contract);
+      (contract: { fromLocation: { latitude: number; longitude: number } }) => {
+        if (
+          !contract.fromLocation ||
+          typeof contract.fromLocation.latitude !== "number" ||
+          typeof contract.fromLocation.longitude !== "number"
+        ) {
+          console.error(
+            "Invalid contract fromLocation or coordinates",
+            contract,
+          );
           return false;
         }
-  
+
         const contractLat = contract.fromLocation.latitude;
         const contractLng = contract.fromLocation.longitude;
-  
-        return bounds.contains(new google.maps.LatLng(contractLat, contractLng));
+
+        return bounds.contains(
+          new google.maps.LatLng(contractLat, contractLng),
+        );
       },
     );
-  
+
     setfilteredContracts(filtered);
   };
 
@@ -206,7 +227,7 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
 
   const handleMapZoom = () => {
     if (mapInstance) {
-      filtercontractsByBounds(); 
+      filtercontractsByBounds();
     }
   };
 
@@ -256,7 +277,10 @@ const DriverMap: React.FC<DriverMapProps> = ({ containerStyle, filters, onCenter
         </div>
 
         {filteredContracts.map((
-          contract: {contractId: string; fromLocation: { latitude: number; longitude: number } },
+          contract: {
+            contractId: string;
+            fromLocation: { latitude: number; longitude: number };
+          },
         ) => (
           <Marker
             key={contract.contractId}
