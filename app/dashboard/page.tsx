@@ -1,11 +1,17 @@
 "use client";
 import React from "react";
 import DriverMap from "./components/DriverMap";
+import ProposalsOverview from "./components/Proposals/ProposalsOverview";
+import { useContext } from "react";
+import { AccountTypeContext } from "./layout";
 
 const HomePage = () => {
+  const accountType = useContext(AccountTypeContext);
+
   return (
     <div>
-      <DriverMap /> {/* Use the map component here */}
+      {accountType === "driver" && <DriverMap />}
+      {accountType === "customer" && <ProposalsOverview />}
     </div>
   );
 };

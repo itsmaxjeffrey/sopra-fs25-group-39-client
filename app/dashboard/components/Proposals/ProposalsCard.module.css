@@ -1,0 +1,32 @@
+.card {
+  border: 2px solid #000;
+  border-radius: 12px;
+  max-width: 360px;
+  width: 300px;
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+}
+
+.header {
+  font-weight: bold;
+  padding: 12px;
+  font-size: 20px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #000;
+  padding-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.body p {
+  padding: 2px 12px;
+  margin: 8px 0;
+  white-space: nowrap;
+}
+
+.link {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+}
