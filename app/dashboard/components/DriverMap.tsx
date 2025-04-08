@@ -34,7 +34,7 @@ const DriverMap = () => {
 
   const BASE_URL = process.env.NODE_ENV === "production"
     ? "https://sopra-fs25-group-39-client.vercel.app/" // Production API URL
-    : "http://localhost:5001"; // Development API URL, change to 3000 as soon as the backend has implemented the get contracts endpoint
+    : "http://localhost:8080"; // Development API URL, change to 3000 as soon as the backend has implemented the get contracts endpoint
 
   useEffect(() => {
     if (!GOOGLE_MAPS_API_KEY) {

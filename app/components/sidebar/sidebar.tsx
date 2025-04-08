@@ -21,7 +21,7 @@ const Sidebar = () => {
 
     if (userId && token) {
       axios
-        .get(`http://localhost:5001/api/v1/users/${userId}`, {
+        .get(`http://localhost:8080/api/v1/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -59,9 +59,8 @@ const Sidebar = () => {
       <nav>
         <ul className={styles.navList}>
           <li
-            className={`${styles.navItem} ${
-              pathname === "/dashboard" ? styles.active : ""
-            }`}
+            className={`${styles.navItem} ${pathname === "/dashboard" ? styles.active : ""
+              }`}
           >
             <Link href="/dashboard">Home</Link>
           </li>
@@ -69,18 +68,16 @@ const Sidebar = () => {
           {accountType === "driver" && (
             <>
               <li
-                className={`${styles.navItem} ${
-                  pathname === "/dashboard/filter" ? styles.active : ""
-                }`}
+                className={`${styles.navItem} ${pathname === "/dashboard/filter" ? styles.active : ""
+                  }`}
               >
                 <Link href="/dashboard/filter">Filter Settings</Link>
               </li>
               <li
-                className={`${styles.navItem} ${
-                  pathname === "/dashboard/contract-overview"
+                className={`${styles.navItem} ${pathname === "/dashboard/contract-overview"
                     ? styles.active
                     : ""
-                }`}
+                  }`}
               >
                 <Link href="/dashboard/contract-overview">
                   Contract Overview
@@ -91,18 +88,16 @@ const Sidebar = () => {
 
           {accountType === "customer" && (
             <li
-              className={`${styles.navItem} ${
-                pathname === "/dashboard/pastcontracts" ? styles.active : ""
-              }`}
+              className={`${styles.navItem} ${pathname === "/dashboard/pastcontracts" ? styles.active : ""
+                }`}
             >
               <Link href="/dashboard/pastcontracts">Past Contracts</Link>
             </li>
           )}
 
           <li
-            className={`${styles.navItem} ${
-              pathname === "/dashboard/account" ? styles.active : ""
-            }`}
+            className={`${styles.navItem} ${pathname === "/dashboard/account" ? styles.active : ""
+              }`}
           >
             <Link href="/dashboard/account">Profile Settings</Link>
           </li>

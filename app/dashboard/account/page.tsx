@@ -30,7 +30,7 @@ const AccountPage = () => {
     }
 
     axios
-      .get(`http://localhost:5001/api/v1/users/${id}`, {
+      .get(`http://localhost:8080/api/v1/users/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -84,20 +84,20 @@ const AccountPage = () => {
           },
           ...(userData.accountType === "driver"
             ? [
-                {
-                  key: "2",
-                  label: "Vehicle Info",
-                  children: (
-                    <VehicleDataTab
-                      editedData={editedData}
-                      userData={userData}
-                      setEditedData={setEditedData}
-                      changed={changed}
-                      setChanged={setChanged}
-                    />
-                  ),
-                },
-              ]
+              {
+                key: "2",
+                label: "Vehicle Info",
+                children: (
+                  <VehicleDataTab
+                    editedData={editedData}
+                    userData={userData}
+                    setEditedData={setEditedData}
+                    changed={changed}
+                    setChanged={setChanged}
+                  />
+                ),
+              },
+            ]
             : []),
           {
             key: "3",

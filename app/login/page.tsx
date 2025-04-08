@@ -17,7 +17,7 @@ const AuthPage = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    fetch("http://localhost:5001/api/v1/auth/refresh", {
+    fetch("http://localhost:8080/api/v1/auth/refresh", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

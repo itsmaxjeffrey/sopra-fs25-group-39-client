@@ -56,7 +56,7 @@ const Driver = () => {
           setModalVisible(true);
           setModalState("loading");
 
-          fetch("http://localhost:5001/api/v1/auth/register", {
+          fetch("http://localhost:8080/api/v1/auth/register", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

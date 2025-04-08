@@ -23,7 +23,7 @@ import styles from "../login.module.css";
 const { Title } = Typography;
 
 const Customer = () => {
-  const [ setFormData] = useState<any>({}); // later add "formData" to use it
+  const [fromData, setFormData] = useState<any>({}); // later add "formData" to use it
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
@@ -50,7 +50,7 @@ const Customer = () => {
           setModalVisible(true);
           setModalState("loading");
 
-          fetch("http://localhost:5001/api/v1/auth/register", {
+          fetch("http://localhost:8080/api/v1/auth/register", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
