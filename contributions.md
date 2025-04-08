@@ -65,10 +65,13 @@ reason).
 | **@xdecentralix** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/930c0e1e765c535f7d8c35bdd5d92b8d7efecd82) | Added various API methods for contracts | The contract lifecycle is a core functionality for our app – frontend needs to interact |
 | **@xdecentralix** | 05.04.2025   | [Link to Commit 2](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/0d760c88107f2d5dcdddc756c597138381ec9968) | Updated and added more API methods for contracts (incl. scheduling) | The contract lifecycle is a core functionality for our app – frontend needs to interact |
 | **@xdecentralix** | 05.04.2025   | [Link to Commit 3](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/d06aeb2b0b37ac5ccd678b7e356b289e74f1e854) | Created Offers logic and endpoints | The offers lifecycle is also a  core functionality for our app – frontend needs to interact and backend needs to process offers |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 |**[@dariohug]**    | [01.04.2025] |[[cbc5792](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/cbc5792311584e5f948d0baa11e15b67891de92e)] | [Started with Polling -> Looking at java future logic] | [Keed Drivers updated about new contracts of interest in (almost) realtime (<1s)] |
 |**[@dariohug]**    | [05.04.2025] |[[eef2cce](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/eef2cce865b0590f7306b6c6a6bcf9f64ab1dc1f)] | [Implementing Backend LongPolling -> 5 Testcases] | [Keed Drivers updated about new contracts of interest in (almost) realtime (<1s)] |
+| **[@itsmaxjeffrey]** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/922a7a37a60b5c68bef8ea6a7580c337c7c67fbe) | refactored the authentication login into its own folder and abstracted the login from register | easier to use  |
+| **[@itsmaxjeffrey]** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/c9c9801782fc2e1b1347b4fb0c44a1b6cffaabb0) | abstracted the user dto dtype for login/register| dtos are needed to be sent back to the client after successful authentication  |
+| **[@itsmaxjeffrey]** | 05.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/f9df4fb1eec5742333fdfc61fd463a582c36cc0c) | created DTO Mappers and DTOs for almost all the classes and abstracted the already existing ones into their own mapper. | more abstraction helps with reusability of code  |
+| **[@itsmaxjeffrey]** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/pull/158) | added header auth support in frontend for apiService.ts | token will be sent along the userId inside the header |
+
 
 ---
 
