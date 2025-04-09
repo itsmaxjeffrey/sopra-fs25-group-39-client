@@ -161,7 +161,7 @@ const DriverMap: React.FC<DriverMapProps> = (
     if (!GOOGLE_MAPS_API_KEY) {
       setMapError("Google Maps API key is missing.");
     }
-    fetchContracts(filters);
+    fetchContracts();
     if (onCenterChanged) {
       onCenterChanged(center.lat, center.lng);
     }
@@ -171,7 +171,7 @@ const DriverMap: React.FC<DriverMapProps> = (
     if (mapInstance) {
       const center = mapInstance.getCenter();
       if (center) {
-        fetchContracts({ lat: center.lat(), lng: center.lng() });
+        fetchContracts();
       }
     }
   }, [fetchContracts, mapInstance, filters]);
@@ -231,7 +231,7 @@ const DriverMap: React.FC<DriverMapProps> = (
         if (onCenterChanged) {
           onCenterChanged(newLocation.lat, newLocation.lng);
         }
-        fetchContracts(newLocation);
+        fetchContracts();
       } else {
         console.error("No location data available for this place.");
       }
