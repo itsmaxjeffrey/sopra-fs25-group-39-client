@@ -80,7 +80,7 @@ reason).
 
 | **Student**        | **Date** | **Link to Commit**| **Description**                  | **Relevance**                       |
 | -------------------| -------- | ----------------- | -------------------------------- | ----------------------------------- |
-| **@ojg9**          | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
+| **@ojg9**          | 09.04.2025   | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/edcd8fc2c771ea5ebda6f5ca10d07f9ba0d6951f]| Fixed errors in Filter on Driver Home Screen  | [Finished second part of Userstory S11] |
 | **@ojg9**          | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
 | **@xdecentralix**  | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
 | **@xdecentralix**  | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
