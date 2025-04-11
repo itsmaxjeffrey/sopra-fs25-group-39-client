@@ -7,6 +7,7 @@ import {
   LoadScript,
   Marker,
 } from "@react-google-maps/api";
+import{useNavigate}from "react-router-dom";
 
 // Define MAP_LIBRARIES outside the component to avoid redefinition on every render
 const MAP_LIBRARIES: Libraries = ["places"];
@@ -310,6 +311,10 @@ const DriverMap: React.FC<DriverMapProps> = (
             position={{
               lat: contract.fromLocation.latitude,
               lng: contract.fromLocation.longitude,
+            }}
+            onClick={() => {
+              const navigate = useNavigate();
+              navigate(`/offers/${contract.contractId}`);
             }}
           />
         ))}
