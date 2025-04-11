@@ -7,7 +7,6 @@ import {
   LoadScript,
   Marker,
 } from "@react-google-maps/api";
-import { useNavigate } from "react-router-dom";
 
 // Define MAP_LIBRARIES outside the component to avoid redefinition on every render
 const MAP_LIBRARIES: Libraries = ["places"];
@@ -35,7 +34,6 @@ const DriverMap: React.FC<DriverMapProps> = (
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const isLoadingRef = useRef(false);
-  const navigate = useNavigate();
 
   const BASE_URL = process.env.NODE_ENV === "production"
     ? "https://sopra-fs25-group-39-client.vercel.app/" // Production API URL
@@ -314,7 +312,7 @@ const DriverMap: React.FC<DriverMapProps> = (
               lng: contract.fromLocation.longitude,
             }}
             onClick={() => {
-              navigate(`/offers/${contract.contractId}`);
+              window.location.href = `/offers/${contract.contractId}`;
             }}
           />
         ))}
