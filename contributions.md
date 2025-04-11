@@ -78,68 +78,68 @@ reason).
 
 ## Contributions Week 3 - 08.04.2025 to 14.04.2025
 
-| **Student**        | **Date** | **Link to Commit**| **Description**                  | **Relevance**                       |
-| -------------------| -------- | ----------------- | -------------------------------- | ----------------------------------- |
-| **@ojg9**          | 09.04.2025   | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/edcd8fc2c771ea5ebda6f5ca10d07f9ba0d6951f]| Fixed errors in Filter on Driver Home Screen  | [Finished second part of Userstory S11] |
-| **@ojg9**          | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@xdecentralix**  | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@xdecentralix**  | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@dariohug**      | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@dariohug**      | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
+| **Student**        | **Date**   | **Link to Commit**                                                                                            | **Description**                              | **Relevance**                           |
+| ------------------ | ---------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------------- |
+| **@ojg9**          | 09.04.2025 | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/edcd8fc2c771ea5ebda6f5ca10d07f9ba0d6951f] | Fixed errors in Filter on Driver Home Screen | [Finished second part of Userstory S11] |
+| **@ojg9**          | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@xdecentralix**  | [date]     | [Link to Commit 1]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@xdecentralix**  | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@dariohug**      | [date]     | [Link to Commit 1]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@dariohug**      | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@fksm2003**      | [date]     | [Link to Commit 1]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@fksm2003**      | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@itsmaxjeffrey** | [date]     | [Link to Commit 1]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@itsmaxjeffrey** | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
 
 ---
 _Easter Break_
---- 
+---
 
 ## Contributions Week 4 - 22.04.2025 to 28.04.2025
 
-| **Student**        | **Date** | **Link to Commit**| **Description**                  | **Relevance**                       |
-| -------------------| -------- | ----------------- | -------------------------------- | ----------------------------------- |
-| **@ojg9**          | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@ojg9**          | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@xdecentralix**  | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@xdecentralix**  | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@dariohug**      | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@dariohug**      | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **@ojg9**          | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@ojg9**          | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
 
 ## Contributions Week 5 - 29.04.2025 to 05.05.2025
 
-| **Student**        | **Date**   | **Link to Commit**| **Description**                  | **Relevance**                       |
-| -------------------| -----------| ----------------- | -------------------------------- | ----------------------------------- |
-| **@ojg9**          | [date]     | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@ojg9**          | [date]     | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@xdecentralix**  | 06.05.2025 | n/a               | Weekly Meeting Attendance Joker  | xdecentralix took both jokers       |
-| **@xdecentralix**  | Week 5     | n/a               | Weekly Contribution Joker        | xdecentralix took both jokers       |
-| **@dariohug**      | [date]     | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@dariohug**      | [date]     | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]     | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]     | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]     | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]     | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
+| **Student**        | **Date**   | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | ---------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **@ojg9**          | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@ojg9**          | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | 06.05.2025 | n/a                | Weekly Meeting Attendance Joker | xdecentralix took both jokers       |
+| **@xdecentralix**  | Week 5     | n/a                | Weekly Contribution Joker       | xdecentralix took both jokers       |
+| **@dariohug**      | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
 
 ## Contributions Week 6 - 06.05.2025 to 12.05.2025
 
-| **Student**        | **Date** | **Link to Commit**| **Description**                  | **Relevance**                       |
-| -------------------| -------- | ----------------- | -------------------------------- | ----------------------------------- |
-| **@ojg9**          | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@ojg9**          | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@xdecentralix**  | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@xdecentralix**  | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@dariohug**      | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@dariohug**      | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 1]| [Brief description of the task]  | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 2]| [Brief description of the task]  | [Why this contribution is relevant] |
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **@ojg9**          | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@ojg9**          | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
