@@ -1,15 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import ProposalsCard from './ProposalsCard';
-import styles from './ProposalsOverview.module.css';
-import axios from 'axios';
-import { Spin } from 'antd';
+import React, { useEffect, useState } from "react";
+import styles from "./ProposalsOverview.module.css";
+import axios from "axios";
+import { Spin } from "antd";
+import Link from "next/link";
+import {
+  FileTextOutlined,
+  ClockCircleOutlined,
+  LockOutlined,
+  EnvironmentOutlined,
+  CalendarOutlined,
+} from "@ant-design/icons";
 
 interface Proposal {
   contractId: number;
   title: string;
   moveDateTime: string;
   creationDateTime: string;
-  contractStatus: 'REQUESTED' | 'OFFERED' | 'ACCEPTED';
+  contractStatus: "REQUESTED" | "OFFERED" | "ACCEPTED";
+  fromLocation: { address: string };
+  toLocation: { address: string };
+  price: number; 
+  fragile?: boolean; 
+  coolingRequired?: boolean; 
+  rideAlong?: boolean; 
 }
 
 const ProposalsOverview = () => {
@@ -17,8 +30,8 @@ const ProposalsOverview = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const id = localStorage.getItem('id');
-    const token = localStorage.getItem('token');
+    const id = localStorage.getItem("id");
+    const token = localStorage.getItem("token");
 
     if (!id || !token) return;
 
@@ -40,36 +53,18 @@ const ProposalsOverview = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const renderSection = (
-    title: string,
-    bg: string,
-    status: Proposal['contractStatus']
-  ) => {
-    const filtered = contracts.filter((c) => c.contractStatus === status);
+  useEffect(() => {
+    console.log(contracts);
+  }, [contracts]);
 
-    return (
-      <div className={styles.section} style={{ backgroundColor: bg }}>
-        <h2 className={styles.title}>{title}</h2>
-        {filtered.length === 0 ? (
-          <p className={styles.empty}>No contracts in this category</p>
-        ) : (
-          <div className={styles.scrollContainer}>
-            {filtered.map((c) => (
-              <ProposalsCard
-                key={c.contractId}
-                contractId={c.contractId}
-                title={c.title}
-                pickupDate={new Date(c.moveDateTime).toLocaleString('en-US')}
-                dropoffDate={
-                  new Date(c.moveDateTime).toLocaleString('en-US')
-                }
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    );
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
   };
+
+  const username = localStorage.getItem("username");
 
   if (loading) {
     return (
@@ -80,10 +75,100 @@ const ProposalsOverview = () => {
   }
 
   return (
-    <div>
-      {renderSection('Open Proposals', '#f54545', 'REQUESTED')}
-      {renderSection('Pending Confirmation by You', '#fad439', 'OFFERED')}
-      {renderSection('Locked-In Contracts', '#ffffff', 'ACCEPTED')}
+    <div className={styles.page}>
+      <div className={styles.greeting}>
+        <h1>
+          {getGreeting()}, {username} 👋
+        </h1>
+        <p>Here’s a quick overview of your move requests</p>
+      </div>
+
+      <div className={styles.section}>
+        <h2><FileTextOutlined /> Open Proposals</h2>
+        <div className={styles.cardRow}>
+          {contracts.filter((c) => c.contractStatus === "REQUESTED").length ===
+          0 ? (
+            <p className={styles.emptySection}>No open proposals</p>
+          ) : (
+            contracts
+              .filter((c) => c.contractStatus === "REQUESTED")
+              .map((c) => (
+                <Link
+                  key={c.contractId}
+                  href={`/dashboard/proposal/${c.contractId}`}
+                  className={styles.link}
+                >
+                  <div className={styles.card}>
+                    <div className={styles.icon}><FileTextOutlined /></div>
+                    <h3>{c.title}</h3>
+                    <p><CalendarOutlined /> {new Date(c.moveDateTime).toLocaleString()}</p>
+                    <p>
+                      <EnvironmentOutlined /> {c.fromLocation.address} ➝ {c.toLocation.address}
+                    </p>
+                  </div>
+                </Link>
+              ))
+          )}
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <h2><ClockCircleOutlined /> Pending Confirmation</h2>
+        <div className={styles.cardRow}>
+          {contracts.filter((c) => c.contractStatus === "OFFERED").length ===
+          0 ? (
+            <p className={styles.emptySection}>Nothing pending</p>
+          ) : (
+            contracts
+              .filter((c) => c.contractStatus === "OFFERED")
+              .map((c) => (
+                <Link
+                  key={c.contractId}
+                  href={`/dashboard/proposal/${c.contractId}`}
+                  className={styles.link}
+                >
+                  <div className={styles.card}>
+                    <div className={styles.icon}><ClockCircleOutlined /></div>
+                    <h3>{c.title}</h3>
+                    <p><CalendarOutlined /> {new Date(c.moveDateTime).toLocaleString()}</p>
+                    <p>
+                      <EnvironmentOutlined /> {c.fromLocation.address} ➝ {c.toLocation.address}
+                    </p>
+                  </div>
+                </Link>
+              ))
+          )}
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <h2><LockOutlined /> Locked-In Contracts</h2>
+        <div className={styles.cardRow}>
+          {contracts.filter((c) => c.contractStatus === "ACCEPTED").length ===
+          0 ? (
+            <p className={styles.emptySection}>No confirmed moves</p>
+          ) : (
+            contracts
+              .filter((c) => c.contractStatus === "ACCEPTED")
+              .map((c) => (
+                <Link
+                  key={c.contractId}
+                  href={`/dashboard/proposal/${c.contractId}`}
+                  className={styles.link}
+                >
+                  <div className={styles.card}>
+                    <div className={styles.icon}><LockOutlined /></div>
+                    <h3>{c.title}</h3>
+                    <p><CalendarOutlined /> {new Date(c.moveDateTime).toLocaleString()}</p>
+                    <p>
+                      <EnvironmentOutlined /> {c.fromLocation.address} ➝ {c.toLocation.address}
+                    </p>
+                  </div>
+                </Link>
+              ))
+          )}
+        </div>
+      </div>
     </div>
   );
 };

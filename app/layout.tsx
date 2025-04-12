@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Group 39",
-  description: "sopra-fs25-template-client",
+  title: "Züglig",
+  description: "Watch this Uber!",
 };
 
 export default function RootLayout({

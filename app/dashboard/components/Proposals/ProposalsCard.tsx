@@ -16,7 +16,7 @@ const ProposalsCard: React.FC<ProposalsCardProps> = ({
   dropoffDate,
 }) => {
   return (
-    <Link href={""} className={styles.link}>
+    <Link href={`/dashboard/proposal/${contractId}`} className={styles.link}>
       <div className={styles.card}>
         <div className={styles.header}>{title}</div>
         <div className={styles.body}>

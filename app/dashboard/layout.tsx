@@ -6,8 +6,10 @@ import { Spin } from "antd";
 import Sidebar from "@/components/sidebar/sidebar";
 import LayoutWrapper from "./layout-wrapper";
 import { createContext } from "react";
+import { Libraries, LoadScript } from "@react-google-maps/api";
 
 export const AccountTypeContext = createContext<string | null>(null);
+const MAP_LIBRARIES: Libraries = ["places"];
 
 export default function DashboardLayout({
   children,
@@ -47,13 +49,32 @@ export default function DashboardLayout({
   }
 
   return (
-    <AccountTypeContext.Provider value={accountType}>
-      <LayoutWrapper>
-        <div style={{ display: "flex" }}>
-          <Sidebar accountType={accountType} />
-          <main style={{ flex: 1, overflowX: "hidden" }}>{children}</main>
-        </div>
-      </LayoutWrapper>
-    </AccountTypeContext.Provider>
+    <LoadScript
+      googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
+      libraries={MAP_LIBRARIES}
+    >
+      <AccountTypeContext.Provider value={accountType}>
+        <LayoutWrapper>
+          <div
+            style={{
+              display: "flex",
+              height: "100vh",
+              overflow: "hidden",
+            }}
+          >
+            <Sidebar accountType={accountType} />
+            <main
+              style={{
+                flex: 1,
+                overflowY: "auto",
+                overflowX: "hidden",
+              }}
+            >
+              {children}
+            </main>
+          </div>
+        </LayoutWrapper>
+      </AccountTypeContext.Provider>
+    </LoadScript>
   );
 }
