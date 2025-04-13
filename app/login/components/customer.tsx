@@ -40,11 +40,11 @@ const Customer = () => {
           const {
             firstName,
             lastName,
-            birthdate,
+            birthDate,
             email,
-            phone,
+            phoneNumber,
             username,
-            password,
+            password
           } = values;
 
           setModalVisible(true);
@@ -58,12 +58,14 @@ const Customer = () => {
             body: JSON.stringify({
               firstName,
               lastName,
-              birthdate,
+              birthDate,
               email,
-              phone,
+              phoneNumber,
               username,
               password,
-              accountType: "customer",
+              userAccountType: "REQUESTER",
+              userBio: "juhu",
+              profilePicturePath: "juhu"
             }),
           })
             .then((res) => {
@@ -123,7 +125,7 @@ const Customer = () => {
               <Col span={12}>
                 <Form.Item
                   label="Birthdate"
-                  name="birthdate"
+                  name="birthDate"
                   rules={[
                     { required: true, message: "Please select your birthdate" },
                   ]}
@@ -152,7 +154,7 @@ const Customer = () => {
               <Col span={12}>
                 <Form.Item
                   label="Phone Number"
-                  name="phone"
+                  name="phoneNumber"
                   rules={[
                     {
                       required: true,
