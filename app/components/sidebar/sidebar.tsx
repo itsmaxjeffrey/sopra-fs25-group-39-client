@@ -26,7 +26,7 @@ const Sidebar = () => {
           },
         })
         .then((res) => {
-          setAccountType(res.data.user.accountType);
+          setAccountType(res.userAccountType);
         })
         .catch((err) => {
           console.error("Failed to fetch user:", err);

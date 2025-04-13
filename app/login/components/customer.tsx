@@ -36,7 +36,6 @@ const Customer = () => {
       <Form
         layout="vertical"
         onFinish={(values) => {
-          setFormData(values);
           const {
             firstName,
             lastName,
@@ -56,16 +55,18 @@ const Customer = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              firstName,
-              lastName,
-              birthDate,
-              email,
-              phoneNumber,
-              username,
-              password,
-              userAccountType: "REQUESTER",
-              userBio: "juhu",
-              profilePicturePath: "juhu"
+              user: {
+                firstName,
+                lastName,
+                birthDate: birthDate ? birthDate.format("YYYY-MM-DD") : null, // Format birthDate
+                email,
+                phoneNumber,
+                username,
+                password,
+                userAccountType: "REQUESTER"
+              }, 
+              car: null,
+              location: null
             }),
           })
             .then((res) => {

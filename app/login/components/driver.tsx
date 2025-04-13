@@ -25,72 +25,105 @@ const { Title } = Typography;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const Driver = () => {
-  const [setFormData] = useState<any>({}); // later add "formData" to use it
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
     "loading",
   );
   const [errorMessage, setErrorMessage] = useState("");
+  const [licenseFilePath, setLicenseFilePath] = useState<string | null>(null);
+  const [insuranceFilePath, setInsuranceFilePath] = useState<string | null>(null);
+
+  const handleFileUpload = async (file: File, fileType: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", fileType);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/files/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      interface UploadResponse {
+        filePath: string;
+      }
+      const data = response.data as UploadResponse;
+      return data.filePath; // Return the file path from the response
+    } catch (error) {
+      throw new Error("File upload failed");
+    }
+  };
 
   return (
     <div className={styles.driverContainer}>
-      <Form
-        layout="vertical"
-        onFinish={(values) => {
-          setFormData(values);
-          const {
-            firstName,
-            lastName,
-            birthdate,
-            email,
-            phone,
-            username,
-            password,
-            vehicleModel,
-            licensePlate,
-            weightCapacity,
-            volumeCapacity,
-          } = values;
+    <Form
+      layout="vertical"
+      onFinish={(values) => {
+        const {
+          firstName,
+          lastName,
+          birthDate,
+          email,
+          phoneNumber,
+          username,
+          password,
+          vehicleModel,
+          licensePlate,
+          weightCapacity,
+          volumeCapacity,
+        } = values;
 
-          setModalVisible(true);
-          setModalState("loading");
+        setModalVisible(true);
+        setModalState("loading");
 
-          fetch("http://localhost:8080/api/v1/auth/register", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+        fetch("http://localhost:8080/api/v1/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: {
+              userAccountType: "DRIVER",
+              birthDate: birthDate ? birthDate.format("YYYY-MM-DD") : null, // Format birthDate
+              email,
               firstName,
               lastName,
-              birthdate,
-              email,
-              phone,
-              username,
               password,
-              vehicleModel,
+              phoneNumber,
+              username,
+            },
+            car: {
+              carModel: vehicleModel,
+              space: volumeCapacity,
+              supportedWeight: weightCapacity,
               licensePlate,
-              weightCapacity,
-              volumeCapacity,
-              accountType: "driver",
-            }),
+            },             
+            files: {
+              driversLicense: licenseFilePath,
+              insuranceProof: insuranceFilePath,
+            },
+          }),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              return res.json().then((data) => {
+                throw new Error(data.message || "Registration failed");
+              });
+            }
+            return res.json();
           })
-            .then((res) => {
-              if (!res.ok) {
-                return res.json().then((data) => {
-                  throw new Error(data.message || "Registration failed");
-                });
-              }
-              return res.json();
-            })
-            .then(() => {
-              setModalState("success");
-            })
-            .catch((err) => {
-              setErrorMessage(err.message);
-              setModalState("error");
-            });
-        }}
+          .then(() => {
+            setModalState("success");
+          })
+          .catch((err) => {
+            setErrorMessage(err.message);
+            setModalState("error");
+          });
+      }}
       >
         <div className={styles.formSection}>
           <div>
@@ -161,7 +194,7 @@ const Driver = () => {
               <Col span={12}>
                 <Form.Item
                   label="Phone Number"
-                  name="phone"
+                  name="phoneNumber"
                   rules={[
                     {
                       required: true,
@@ -289,18 +322,46 @@ const Driver = () => {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item label="Driver’s License" name="driversLicense">
-                  <Upload>
-                    <Button icon={<UploadOutlined />}>Upload Picture</Button>
-                  </Upload>
-                </Form.Item>
+              <Form.Item label="Driver’s License" name="driversLicense">
+              <Upload
+                beforeUpload={() => false} // Prevent automatic upload
+                onChange={async (info) => {
+                  const file = info.file.originFileObj; // Get the selected file
+                  if (file) {
+                    try {
+                      const filePath = await handleFileUpload(file, "license");
+                      setLicenseFilePath(filePath); // Store the file path
+                    } catch (error) {
+                      setErrorMessage("Failed to upload driver’s license");
+                    }
+                  }
+                }}
+                maxCount={1}
+              >
+                <Button icon={<UploadOutlined />}>Upload License</Button>
+              </Upload>
+              </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item label="Proof of Insurance" name="insuranceProof">
-                  <Upload>
-                    <Button icon={<UploadOutlined />}>Upload Picture</Button>
-                  </Upload>
-                </Form.Item>
+              <Form.Item label="Proof of Insurance" name="insuranceProof">
+              <Upload
+                beforeUpload={() => false} // Prevent automatic upload
+                onChange={async (info) => {
+                  const file = info.file.originFileObj; // Get the selected file
+                  if (file) {
+                    try {
+                      const filePath = await handleFileUpload(file, "insurance");
+                      setInsuranceFilePath(filePath); // Store the file path
+                    } catch (error) {
+                      setErrorMessage("Failed to upload insurance proof");
+                    }
+                  }
+                }}
+                maxCount={1}
+              >
+                <Button icon={<UploadOutlined />}>Upload Insurance</Button>
+              </Upload>
+              </Form.Item>
               </Col>
             </Row>
           </div>
