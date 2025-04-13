@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Button,
   Col,
@@ -18,7 +18,9 @@ import {
   LoadingOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
+import { LoadScript, Autocomplete } from "@react-google-maps/api";
 import styles from "../login.module.css";
+import axios from "axios";
 
 const { Title } = Typography;
 
@@ -29,74 +31,155 @@ const Driver = () => {
   const [step, setStep] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
-    "loading",
+    "loading"
   );
   const [errorMessage, setErrorMessage] = useState("");
+  const [preferredRange, setPreferredRange] = useState("");
+  const [location, setLocation] = useState({
+    latitude: null,
+    longitude: null,
+    formattedAddress: "",
+  });
+  const autoRef = useRef<any>(null);
+  const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
+    null
+  );
+  const [driverLicenseFile, setDriverLicenseFile] = useState<File | null>(null);
+
+  const [insuranceProofFile, setInsuranceProofFile] = useState<File | null>(
+    null
+  );
 
   const handleStepOneFinish = (values: any) => {
     setFormStepOneData(values);
     setStep(2);
   };
 
-  const handleStepTwoFinish = (values: any) => {
-    const {
-      vehicleModel,
-      licensePlate,
-      weightCapacity,
-      volumeCapacity,
-      driversLicense,
-      insuranceProof,
-    } = values;
+  const handleStepTwoFinish = async (values: any) => {
+    const { vehicleModel, licensePlate, weightCapacity, volumeCapacity } =
+      values;
 
     setModalVisible(true);
     setModalState("loading");
 
-    fetch("http://localhost:5001/api/v1/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user: {
-          userAccountType: "DRIVER",
-          username: formStepOneData.username,
-          password: formStepOneData.password,
-          email: formStepOneData.email,
-          firstName: formStepOneData.firstName,
-          lastName: formStepOneData.lastName,
-          phoneNumber: formStepOneData.phone,
-          birthDate: formStepOneData.birthdate,
-          driverLicensePath: driversLicense?.file || null,
-          driverInsurancePath: insuranceProof?.file || null,
-          profilePicturePath: null, // Placeholder for profile picture
-        },
-        car: {
-          carModel: vehicleModel,
-          licensePlate: licensePlate,
-          supportedWeight: weightCapacity,
-          space: volumeCapacity,
-          electric: null, // Placeholder for electric
-        },
-        location: {
-          latitude: null, // Placeholder for latitude
-          longitude: null, // Placeholder for longitude
-          formattedAddress: null, // Placeholder for formatted address
-        },
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          return res.json().then((data) => {
-            throw new Error(data.message || "Registration failed");
-          });
+    let profilePicturePath = null;
+    let insurancePicturePath = null;
+    let licensePicturePath = null;
+
+    try {
+      if (profilePictureFile) {
+        const formData = new FormData();
+        formData.append("file", profilePictureFile);
+        formData.append("type", "profileimage");
+
+        const response = await axios.post(
+          `${
+            process.env.NODE_ENV === "production"
+              ? "https://sopra-fs25-group-39-client.vercel.app"
+              : "http://localhost:5001"
+          }/api/v1/files/upload/profileimage`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        profilePicturePath = response.data.filePath;
+      }
+
+      if (driverLicenseFile) {
+        const formData = new FormData();
+        formData.append("file", driverLicenseFile);
+        formData.append("type", "license");
+
+        const response = await axios.post(
+          `${
+            process.env.NODE_ENV === "production"
+              ? "https://sopra-fs25-group-39-client.vercel.app"
+              : "http://localhost:5001"
+          }/api/v1/files/upload/license`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        licensePicturePath = response.data.filePath;
+      }
+
+      if (insuranceProofFile) {
+        const formData = new FormData();
+        formData.append("file", insuranceProofFile);
+        formData.append("type", "insurance");
+
+        const response = await axios.post(
+          `${
+            process.env.NODE_ENV === "production"
+              ? "https://sopra-fs25-group-39-client.vercel.app"
+              : "http://localhost:5001"
+          }/api/v1/files/upload/insurance`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        insurancePicturePath = response.data.filePath;
+      }
+    } catch (uploadError) {
+      console.error(uploadError);
+      setErrorMessage("Image upload failed");
+      setModalState("error");
+      return;
+    }
+
+    axios
+      .post(
+        `${
+          process.env.NODE_ENV === "production"
+            ? "https://sopra-fs25-group-39-client.vercel.app"
+            : "http://localhost:5001"
+        }/api/v1/auth/register/driver`,
+        {
+          user: {
+            userAccountType: "DRIVER",
+            username: formStepOneData.username,
+            password: formStepOneData.password,
+            email: formStepOneData.email,
+            firstName: formStepOneData.firstName,
+            lastName: formStepOneData.lastName,
+            phoneNumber: formStepOneData.phone,
+            birthDate: formStepOneData.birthdate,
+            driverLicensePath: licensePicturePath,
+            driverInsurancePath: insurancePicturePath,
+            profilePicturePath: profilePicturePath,
+          },
+          car: {
+            carModel: vehicleModel,
+            licensePlate: licensePlate,
+            supportedWeight: weightCapacity,
+            space: volumeCapacity,
+            electric: null,
+          },
+          preferredRange: parseFloat(preferredRange),
+          location: {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            formattedAddress: location.formattedAddress,
+          },
         }
-        return res.json();
-      })
+      )
       .then(() => {
         setModalState("success");
       })
       .catch((err) => {
-        setErrorMessage(err.message);
+        setErrorMessage(err.response?.data?.message || err.message);
         setModalState("error");
       });
   };
@@ -114,7 +197,10 @@ const Driver = () => {
                     label="First Name"
                     name="firstName"
                     rules={[
-                      { required: true, message: "Please enter your first name" },
+                      {
+                        required: true,
+                        message: "Please enter your first name",
+                      },
                     ]}
                   >
                     <Input placeholder="Anna" />
@@ -125,7 +211,10 @@ const Driver = () => {
                     label="Last Name"
                     name="lastName"
                     rules={[
-                      { required: true, message: "Please enter your last name" },
+                      {
+                        required: true,
+                        message: "Please enter your last name",
+                      },
                     ]}
                   >
                     <Input placeholder="Miller" />
@@ -147,7 +236,10 @@ const Driver = () => {
                     label="Birthdate"
                     name="birthdate"
                     rules={[
-                      { required: true, message: "Please select your birthdate" },
+                      {
+                        required: true,
+                        message: "Please select your birthdate",
+                      },
                     ]}
                   >
                     <DatePicker style={{ width: "100%" }} />
@@ -228,13 +320,33 @@ const Driver = () => {
                             return Promise.resolve();
                           }
                           return Promise.reject(
-                            new Error("Passwords do not match"),
+                            new Error("Passwords do not match")
                           );
                         },
                       }),
                     ]}
                   >
                     <Input.Password />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item label="Profile Picture" name="profilePicture">
+                    <Upload
+                      listType="picture"
+                      maxCount={1}
+                      beforeUpload={() => false}
+                      onChange={({ fileList }) => {
+                        const file = fileList[0]?.originFileObj;
+                        if (file) {
+                          setProfilePictureFile(file);
+                        } else {
+                          setProfilePictureFile(null);
+                        }
+                      }}
+                      onRemove={() => setProfilePictureFile(null)}
+                    >
+                      <Button>Upload Profile Picture</Button>
+                    </Upload>
                   </Form.Item>
                 </Col>
               </Row>
@@ -312,16 +424,94 @@ const Driver = () => {
                   </Form.Item>
                 </Col>
                 <Col span={12}>
+                  <Form.Item
+                    label="Preferred Range (in km)"
+                    name="preferredRange"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter preferred range",
+                      },
+                    ]}
+                  >
+                    <Input
+                      type="number"
+                      placeholder="e.g. 50"
+                      onChange={(e) => setPreferredRange(e.target.value)}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item label="Location" name="address">
+                    <LoadScript
+                      googleMapsApiKey={
+                        process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!
+                      }
+                      libraries={["places"]}
+                    >
+                      <Autocomplete
+                        onLoad={(ref) => (autoRef.current = ref)}
+                        onPlaceChanged={() => {
+                          const place = autoRef.current?.getPlace();
+                          if (
+                            place &&
+                            place.geometry &&
+                            place.formatted_address
+                          ) {
+                            setLocation({
+                              latitude: place.geometry.location.lat(),
+                              longitude: place.geometry.location.lng(),
+                              formattedAddress: place.formatted_address,
+                            });
+                          }
+                        }}
+                      >
+                        <Input placeholder="Enter your address" />
+                      </Autocomplete>
+                    </LoadScript>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
                   <Form.Item label="Driver’s License" name="driversLicense">
-                    <Upload>
-                      <Button icon={<UploadOutlined />}>Upload Picture (optional)</Button>
+                    <Upload
+                      listType="picture"
+                      maxCount={1}
+                      beforeUpload={() => false}
+                      onChange={({ fileList }) => {
+                        const file = fileList[0]?.originFileObj;
+                        if (file) {
+                          setDriverLicenseFile(file);
+                        } else {
+                          setDriverLicenseFile(null);
+                        }
+                      }}
+                      onRemove={() => setDriverLicenseFile(null)}
+                    >
+                      <Button icon={<UploadOutlined />}>
+                        Upload Picture (optional)
+                      </Button>
                     </Upload>
                   </Form.Item>
                 </Col>
                 <Col span={12}>
                   <Form.Item label="Proof of Insurance" name="insuranceProof">
-                    <Upload>
-                      <Button icon={<UploadOutlined />}>Upload Picture (optional)</Button>
+                    <Upload
+                      listType="picture"
+                      maxCount={1}
+                      beforeUpload={() => false}
+                      onChange={({ fileList }) => {
+                        const file = fileList[0]?.originFileObj;
+                        if (file) {
+                          setInsuranceProofFile(file);
+                        } else {
+                          setInsuranceProofFile(null);
+                        }
+                      }}
+                      onRemove={() => setInsuranceProofFile(null)}
+                    >
+                      <Button icon={<UploadOutlined />}>
+                        Upload Picture (optional)
+                      </Button>
                     </Upload>
                   </Form.Item>
                 </Col>
