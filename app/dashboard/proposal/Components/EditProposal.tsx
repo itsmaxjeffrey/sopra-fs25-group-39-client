@@ -317,44 +317,6 @@ const EditProposalFormPage = ({ id }: Props) => {
           </Col>
         </Row>
 
-        {contractStatus === "OFFERED" && (
-          <>
-            <div className={styles.scrollContainer}>
-              <OfferCard
-                title={"Fridge and Piano"}
-                driverName={"Peter Baumgartner"}
-                price={205}
-                rating={3}
-              />
-              <OfferCard
-                title={"Fridge and Piano"}
-                driverName={"Peter Baumgartner"}
-                price={205}
-                rating={5}
-              />
-              <OfferCard
-                title={"Fridge and Piano"}
-                driverName={"Peter Baumgartner"}
-                price={205}
-                rating={1}
-              />
-              <OfferCard
-                title={"Fridge and Piano"}
-                driverName={"Peter Baumgartner"}
-                price={205}
-                rating={5}
-              />
-              <OfferCard
-                title={"Fridge and Piano"}
-                driverName={"Peter Baumgartner"}
-                price={205}
-                rating={4}
-              />
-            </div>
-            <br />
-          </>
-        )}
-
         <Form.Item>
           <Row justify="start" gutter={16}>
             <Col>

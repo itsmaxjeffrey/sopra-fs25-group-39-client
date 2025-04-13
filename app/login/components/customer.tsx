@@ -63,7 +63,7 @@ const Customer = () => {
               phone,
               username,
               password,
-              accountType: "customer",
+              accountType: "REQUESTER",
             }),
           })
             .then((res) => {

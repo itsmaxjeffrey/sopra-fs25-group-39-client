@@ -19,10 +19,10 @@ interface Proposal {
   contractStatus: "REQUESTED" | "OFFERED" | "ACCEPTED";
   fromLocation: { address: string };
   toLocation: { address: string };
-  price: number; 
-  fragile?: boolean; 
-  coolingRequired?: boolean; 
-  rideAlong?: boolean; 
+  price: number;
+  fragile?: boolean;
+  coolingRequired?: boolean;
+  rideAlong?: boolean;
 }
 
 const ProposalsOverview = () => {
@@ -84,7 +84,9 @@ const ProposalsOverview = () => {
       </div>
 
       <div className={styles.section}>
-        <h2><FileTextOutlined /> Open Proposals</h2>
+        <h2>
+          <FileTextOutlined /> Open Proposals
+        </h2>
         <div className={styles.cardRow}>
           {contracts.filter((c) => c.contractStatus === "REQUESTED").length ===
           0 ? (
@@ -95,15 +97,21 @@ const ProposalsOverview = () => {
               .map((c) => (
                 <Link
                   key={c.contractId}
-                  href={`/dashboard/proposal/${c.contractId}`}
+                  href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
                   className={styles.link}
                 >
                   <div className={styles.card}>
-                    <div className={styles.icon}><FileTextOutlined /></div>
+                    <div className={styles.icon}>
+                      <FileTextOutlined />
+                    </div>
                     <h3>{c.title}</h3>
-                    <p><CalendarOutlined /> {new Date(c.moveDateTime).toLocaleString()}</p>
                     <p>
-                      <EnvironmentOutlined /> {c.fromLocation.address} ➝ {c.toLocation.address}
+                      <CalendarOutlined />{" "}
+                      {new Date(c.moveDateTime).toLocaleString()}
+                    </p>
+                    <p>
+                      <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
+                      {c.toLocation.address}
                     </p>
                   </div>
                 </Link>
@@ -113,7 +121,9 @@ const ProposalsOverview = () => {
       </div>
 
       <div className={styles.section}>
-        <h2><ClockCircleOutlined /> Pending Confirmation</h2>
+        <h2>
+          <ClockCircleOutlined /> Pending Confirmation
+        </h2>
         <div className={styles.cardRow}>
           {contracts.filter((c) => c.contractStatus === "OFFERED").length ===
           0 ? (
@@ -124,15 +134,21 @@ const ProposalsOverview = () => {
               .map((c) => (
                 <Link
                   key={c.contractId}
-                  href={`/dashboard/proposal/${c.contractId}`}
+                  href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
                   className={styles.link}
                 >
                   <div className={styles.card}>
-                    <div className={styles.icon}><ClockCircleOutlined /></div>
+                    <div className={styles.icon}>
+                      <ClockCircleOutlined />
+                    </div>
                     <h3>{c.title}</h3>
-                    <p><CalendarOutlined /> {new Date(c.moveDateTime).toLocaleString()}</p>
                     <p>
-                      <EnvironmentOutlined /> {c.fromLocation.address} ➝ {c.toLocation.address}
+                      <CalendarOutlined />{" "}
+                      {new Date(c.moveDateTime).toLocaleString()}
+                    </p>
+                    <p>
+                      <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
+                      {c.toLocation.address}
                     </p>
                   </div>
                 </Link>
@@ -142,7 +158,9 @@ const ProposalsOverview = () => {
       </div>
 
       <div className={styles.section}>
-        <h2><LockOutlined /> Locked-In Contracts</h2>
+        <h2>
+          <LockOutlined /> Locked-In Contracts
+        </h2>
         <div className={styles.cardRow}>
           {contracts.filter((c) => c.contractStatus === "ACCEPTED").length ===
           0 ? (
@@ -153,15 +171,21 @@ const ProposalsOverview = () => {
               .map((c) => (
                 <Link
                   key={c.contractId}
-                  href={`/dashboard/proposal/${c.contractId}`}
+                  href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
                   className={styles.link}
                 >
                   <div className={styles.card}>
-                    <div className={styles.icon}><LockOutlined /></div>
+                    <div className={styles.icon}>
+                      <LockOutlined />
+                    </div>
                     <h3>{c.title}</h3>
-                    <p><CalendarOutlined /> {new Date(c.moveDateTime).toLocaleString()}</p>
                     <p>
-                      <EnvironmentOutlined /> {c.fromLocation.address} ➝ {c.toLocation.address}
+                      <CalendarOutlined />{" "}
+                      {new Date(c.moveDateTime).toLocaleString()}
+                    </p>
+                    <p>
+                      <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
+                      {c.toLocation.address}
                     </p>
                   </div>
                 </Link>
