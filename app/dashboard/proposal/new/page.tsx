@@ -18,7 +18,6 @@ import {
   CameraOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
-  UploadOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import { Autocomplete } from "@react-google-maps/api";
@@ -39,6 +38,7 @@ const NewProposalFormPage = () => {
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
+  const [imageFiles, setImageFiles] = useState<(File | null)[]>([null, null, null]);
 
   const handleFinish = async (values: any) => {
     console.log("Submitting values:", values);
@@ -46,6 +46,30 @@ const NewProposalFormPage = () => {
     setModalVisible(true);
 
     const userId = localStorage.getItem("id");
+
+    const length = Number(values.length);
+    const width = Number(values.width);
+    const height = Number(values.height);
+    const volume = length * width * height;
+
+    const uploadedPaths: (string | null)[] = [null, null, null];
+
+    for (let i = 0; i < imageFiles.length; i++) {
+      const file = imageFiles[i];
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("type", "proposal");
+
+        try {
+          const res = await axios.post("http://localhost:5001/api/v1/files/upload/proposal", formData);
+          uploadedPaths[i] = res.data.filePath;
+        } catch (err) {
+          console.error("Image upload failed for index", i, err);
+          uploadedPaths[i] = null;
+        }
+      }
+    }
 
     const payload = {
       title: values.title,
@@ -61,9 +85,11 @@ const NewProposalFormPage = () => {
         longitude: toCoords.lng,
         address: toCoords.address,
       },
+      volume,
       length: Number(values.length),
       width: Number(values.width),
       height: Number(values.height),
+      mass: Number(values.mass),
       fragile: values.fragile,
       coolingRequired: values.cooling,
       rideAlong: values.rideAlong,
@@ -71,6 +97,9 @@ const NewProposalFormPage = () => {
       price: parseFloat(values.price),
       contractStatus: "REQUESTED",
       requesterId: userId ? parseInt(userId) : null,
+      imagePath1: uploadedPaths[0],
+      imagePath2: uploadedPaths[1],
+      imagePath3: uploadedPaths[2],
     };
 
     setTimeout(async () => {
@@ -90,17 +119,40 @@ const NewProposalFormPage = () => {
     <div className={styles.wrapper}>
       <div className={styles.imageUpload}>
         <div className={styles.imageRow}>
-          {[1, 2, 3].map((_, idx) => (
+          {[0, 1, 2].map((idx) => (
             <div key={idx} className={styles.imageBox}>
-              <Upload showUploadList={false}>
-                <div className={styles.cameraIcon}>
-                  <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-                </div>
+              <Upload
+                listType="picture-card"
+                maxCount={1}
+                beforeUpload={() => false}
+                onChange={({ fileList }) => {
+                  const file = fileList[0]?.originFileObj || null;
+                  const newFiles = [...imageFiles];
+                  newFiles[idx] = file;
+                  setImageFiles(newFiles);
+                }}
+                onRemove={() => {
+                  const newFiles = [...imageFiles];
+                  newFiles[idx] = null;
+                  setImageFiles(newFiles);
+                }}
+                showUploadList={false}
+              >
+                {imageFiles[idx] ? (
+                  <img
+                    src={URL.createObjectURL(imageFiles[idx]!)}
+                    alt={`upload-${idx}`}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                ) : (
+                  <div className={styles.cameraIcon}>
+                    <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
+                  </div>
+                )}
               </Upload>
             </div>
           ))}
         </div>
-        <Button icon={<UploadOutlined />}>Upload Pictures</Button>
       </div>
 
       <Form
@@ -241,12 +293,12 @@ const NewProposalFormPage = () => {
           </Col>
           <Col span={6}>
             <Form.Item
-              label="Height (cm)"
-              name="height"
+              label="Mass (kg)"
+              name="mass"
               rules={[{ required: true, message: "Please enter height" }]}
             >
               <InputNumber
-                placeholder="100 cm"
+                placeholder="50 kg"
                 style={{ width: "100%" }}
                 min={0}
               />

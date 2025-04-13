@@ -9,21 +9,18 @@ import {
   Col,
   Button,
   Switch,
-  Upload,
   Modal,
   Spin,
 } from "antd";
 import {
   CameraOutlined,
   CloseCircleOutlined,
-  UploadOutlined,
 } from "@ant-design/icons";
 import styles from "./Edit.module.css";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import dayjs from "dayjs";
 import { Autocomplete } from "@react-google-maps/api";
-import OfferCard from "./OfferCard";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -43,7 +40,7 @@ const EditProposalFormPage = ({ id }: Props) => {
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const [contractStatus, setContractStatus] = useState("");
+  const [imagePaths, setImagePaths] = useState<string[]>([]);
 
   const fetchContract = async () => {
     try {
@@ -68,6 +65,7 @@ const EditProposalFormPage = ({ id }: Props) => {
         rideAlong: data.rideAlong,
         manPower: data.manPower,
         price: data.price,
+        mass: data.mass,
       });
       setFromCoords({
         address: data.fromLocation?.address,
@@ -79,7 +77,9 @@ const EditProposalFormPage = ({ id }: Props) => {
         lat: data.toLocation?.latitude,
         lng: data.toLocation?.longitude,
       });
-      setContractStatus(data.contractStatus);
+      setImagePaths(
+        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean)
+      );
       setError(false);
       setModalVisible(false);
       setChanged(false);
@@ -126,6 +126,8 @@ const EditProposalFormPage = ({ id }: Props) => {
       rideAlong: values.rideAlong,
       manPower: parseInt(values.manPower),
       price: parseFloat(values.price),
+      mass: Number(values.mass),
+      volume: Number(values.length) * Number(values.width) * Number(values.height),
     };
 
     try {
@@ -145,17 +147,26 @@ const EditProposalFormPage = ({ id }: Props) => {
       {/* Bild Upload */}
       <div className={styles.imageUpload}>
         <div className={styles.imageRow}>
-          {[1, 2, 3].map((_, idx) => (
+          {[0, 1, 2].map((idx) => (
             <div key={idx} className={styles.imageBox}>
-              <Upload showUploadList={false}>
+              {imagePaths[idx] ? (
+                <img
+                  src={
+                    process.env.NODE_ENV === "production"
+                      ? `https://sopra-fs25-group-39-client.vercel.app${imagePaths[idx]}`
+                      : `http://localhost:5001${imagePaths[idx]}`
+                  }
+                  alt={`upload-${idx}`}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              ) : (
                 <div className={styles.cameraIcon}>
                   <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
                 </div>
-              </Upload>
+              )}
             </div>
           ))}
         </div>
-        <Button icon={<UploadOutlined />}>Upload Pictures</Button>
       </div>
 
       {/* Formular */}
@@ -250,22 +261,29 @@ const EditProposalFormPage = ({ id }: Props) => {
         </Row>
 
         <Row gutter={16}>
-          <Col span={8}>
+          <Col span={6}>
             <Form.Item label="Dimensions (Length)" name="length">
               <InputNumber style={{ width: "100%" }} min={0} />
             </Form.Item>
           </Col>
-          <Col span={8}>
+          <Col span={6}>
             <Form.Item label="Dimensions (Width)" name="width">
               <InputNumber style={{ width: "100%" }} min={0} />
             </Form.Item>
           </Col>
-          <Col span={8}>
+          <Col span={6}>
             <Form.Item label="Dimensions (Height)" name="height">
               <InputNumber style={{ width: "100%" }} min={0} />
             </Form.Item>
           </Col>
+          <Col span={6}>
+            <Form.Item label="Weight (kg)" name="mass">
+              <InputNumber style={{ width: "100%" }} min={0} />
+            </Form.Item>
+          </Col>
         </Row>
+        
+ 
 
         <Row gutter={16}>
           <Col span={8}>

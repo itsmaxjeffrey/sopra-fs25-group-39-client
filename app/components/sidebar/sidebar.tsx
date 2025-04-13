@@ -32,7 +32,7 @@ const Sidebar = () => {
             <Link href="/dashboard">Home</Link>
           </li>
 
-          {accountType === "driver" && (
+          {accountType === "DRIVER" && (
             <>
               <li
                 className={`${styles.navItem} ${
@@ -55,14 +55,23 @@ const Sidebar = () => {
             </>
           )}
 
-          {accountType === "customer" && (
-            <li
-              className={`${styles.navItem} ${
-                pathname === "/dashboard/pastcontracts" ? styles.active : ""
-              }`}
-            >
-              <Link href="/dashboard/pastcontracts">Past Contracts</Link>
-            </li>
+          {accountType === "REQUESTER" && (
+            <>
+              <li
+                className={`${styles.navItem} ${
+                  pathname === "/dashboard/proposal/new" ? styles.active : ""
+                }`}
+              >
+                <Link href="/dashboard/proposal/new">New Proposal</Link>
+              </li>
+              <li
+                className={`${styles.navItem} ${
+                  pathname === "/dashboard/pastcontracts" ? styles.active : ""
+                }`}
+              >
+                <Link href="/dashboard/pastcontracts">Past Contracts</Link>
+              </li>
+            </>
           )}
 
           <li

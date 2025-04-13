@@ -5,10 +5,9 @@ import axios from "axios";
 import { Spin } from "antd";
 import Sidebar from "@/components/sidebar/sidebar";
 import LayoutWrapper from "./layout-wrapper";
-import { createContext } from "react";
+import AccountTypeContext from "./AccountTypeContext";
 import { Libraries, LoadScript } from "@react-google-maps/api";
 
-export const AccountTypeContext = createContext<string | null>(null);
 const MAP_LIBRARIES: Libraries = ["places"];
 
 export default function DashboardLayout({
@@ -32,7 +31,7 @@ export default function DashboardLayout({
         },
       })
       .then((res) => {
-        setAccountType(res.data.user.accountType);
+        setAccountType(res.data.user.userAccountType);
       })
       .catch((err) => {
         console.error("Failed to fetch user in layout:", err);

@@ -31,7 +31,7 @@ import styles from "../login.module.css";
 const { Title } = Typography;
 
 const Customer = () => {
-  const [formData, setFormData] = useState<any>({});
+  const [ setFormData] = useState<any>({});
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
     null
   );

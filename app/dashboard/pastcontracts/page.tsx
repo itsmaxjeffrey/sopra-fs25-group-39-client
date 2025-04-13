@@ -4,6 +4,8 @@ import { Table, Spin } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const PastContracts = () => {
 const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

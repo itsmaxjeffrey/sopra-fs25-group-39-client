@@ -6,6 +6,11 @@ import dayjs from "dayjs";
 import styles from "../Account.module.css";
 //import axios from "axios";
 
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://sopra-fs25-group-39-client.vercel.app"
+    : "http://localhost:5001";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const { Title } = Typography;
@@ -17,6 +22,8 @@ const UserDataTab = ({
   changed,
   setChanged,
 }: any) => {
+  const [imageKey, setImageKey] = React.useState(0);
+
   const handleSave = () => {
     const token = localStorage.getItem("token");
     const id = localStorage.getItem("id");
@@ -26,15 +33,43 @@ const UserDataTab = ({
     console.log("Would send data:", editedData);
   };
 
+  const handleUpload = (file: any) => {
+    const token = localStorage.getItem("token");
+    const id = localStorage.getItem("id");
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    if (!token || !id) return;
+
+    // Call your API to upload the image
+    fetch(`${BASE_URL}/api/v1/files/update/profile/${editedData.profilePicturePath.split('/').pop()}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      setImageKey(prev => prev + 1); // Trigger re-render of image
+    })
+    .catch(error => {
+      console.error('Error uploading file:', error);
+    });
+
+    return false; // Prevent default upload behavior
+  };
+
   return (
     <div className={styles.tabContent}>
       <Title level={5}>Personal Information</Title>
       <div className={styles.profilePicSection}>
-        {editedData?.profilePicture ? (
+        {editedData?.profilePicturePath ? (
           <Image
             width={100}
             height={100}
-            src={editedData.profilePicture}
+            src={`${BASE_URL}${editedData.profilePicturePath}?key=${imageKey}`}
             alt="Profile"
             style={{ borderRadius: "50%", objectFit: "cover" }}
             fallback="/placeholder-profile.png"
@@ -46,14 +81,10 @@ const UserDataTab = ({
         )}
         <Upload
           showUploadList={false}
-          beforeUpload={(file) => {
-            console.log("Would upload:", file);
-            // Placeholder upload handler
-            return false;
-          }}
+          beforeUpload={handleUpload}
         >
           <Button icon={<UploadOutlined />}>
-            {editedData?.profilePicture ? "Replace Picture" : "Upload Picture"}
+            {editedData?.profilePicturePath ? "Replace Picture" : "Upload Picture"}
           </Button>
         </Upload>
       </div>
@@ -102,13 +133,13 @@ const UserDataTab = ({
           <DatePicker
             style={{ width: "100%" }}
             value={
-              editedData?.birthdate ? dayjs(editedData.birthdate) : null
+              editedData?.birthDate ? dayjs(editedData.birthDate) : null
             }
             onChange={(date) => {
               setChanged(true);
               setEditedData({
                 ...editedData,
-                birthdate: date?.toISOString(),
+                birthDate: date?.toISOString(),
               });
             }}
           />
@@ -126,10 +157,10 @@ const UserDataTab = ({
         <div>
           <label>Phone</label>
           <Input
-            value={editedData?.phone}
+            value={editedData?.phoneNumber}
             onChange={(e) => {
               setChanged(true);
-              setEditedData({ ...editedData, phone: e.target.value });
+              setEditedData({ ...editedData, phoneNumber: e.target.value });
             }}
           />
         </div>

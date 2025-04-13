@@ -1,12 +1,20 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Input, Button, Typography, Upload, Image } from "antd";
 import { UploadOutlined, FileImageOutlined } from "@ant-design/icons";
 import styles from "../Account.module.css";
+import axios from "axios";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const { Title } = Typography;
+
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://sopra-fs25-group-39-client.vercel.app"
+    : "http://localhost:5001";
+
+const extractFilename = (path: string) => path?.split("/")?.pop();
 
 const VehicleDataTab = ({
   editedData,
@@ -15,6 +23,9 @@ const VehicleDataTab = ({
   changed,
   setChanged,
 }: any) => {
+  const [licenseKey, setLicenseKey] = useState(0);
+  const [insuranceKey, setInsuranceKey] = useState(0);
+  
   const handleSave = () => {
     const token = localStorage.getItem("token");
     const id = localStorage.getItem("id");
@@ -31,12 +42,15 @@ const VehicleDataTab = ({
         <div>
           <label>Vehicle Model</label>
           <Input
-            value={editedData?.vehicleModel}
+            value={editedData?.car?.carModel}
             onChange={(e) => {
               setChanged(true);
               setEditedData({
                 ...editedData,
-                vehicleModel: e.target.value,
+                car: {
+                  ...editedData.car,
+                  carModel: e.target.value,
+                },
               });
             }}
           />
@@ -44,12 +58,15 @@ const VehicleDataTab = ({
         <div>
           <label>License Plate</label>
           <Input
-            value={editedData?.licensePlate}
+            value={editedData?.car?.licensePlate}
             onChange={(e) => {
               setChanged(true);
               setEditedData({
                 ...editedData,
-                licensePlate: e.target.value,
+                car: {
+                  ...editedData.car,
+                  licensePlate: e.target.value,
+                },
               });
             }}
           />
@@ -57,12 +74,15 @@ const VehicleDataTab = ({
         <div>
           <label>Weight Capacity</label>
           <Input
-            value={editedData?.weightCapacity}
+            value={editedData?.car?.supportedWeight}
             onChange={(e) => {
               setChanged(true);
               setEditedData({
                 ...editedData,
-                weightCapacity: e.target.value,
+                car: {
+                  ...editedData.car,
+                  supportedWeight: e.target.value,
+                },
               });
             }}
           />
@@ -70,12 +90,29 @@ const VehicleDataTab = ({
         <div>
           <label>Volume Capacity</label>
           <Input
-            value={editedData?.volumeCapacity}
+            value={editedData?.car?.space}
             onChange={(e) => {
               setChanged(true);
               setEditedData({
                 ...editedData,
-                volumeCapacity: e.target.value,
+                car: {
+                  ...editedData.car,
+                  space: e.target.value,
+                },
+              });
+            }}
+          />
+        </div>
+        <div>
+          <label>Preferred Range (km)</label>
+          <Input
+            type="number"
+            value={editedData?.preferredRange}
+            onChange={(e) => {
+              setChanged(true);
+              setEditedData({
+                ...editedData,
+                preferredRange: e.target.value,
               });
             }}
           />
@@ -86,11 +123,12 @@ const VehicleDataTab = ({
         <div className={styles.uploadItem}>
           <label>Driver&apos;s License</label>
           <div className={styles.uploadWrapper}>
-            {editedData?.driversLicense ? (
+            {editedData?.driverLicensePath ? (
               <Image
+                key={licenseKey}
                 width={160}
                 height={100}
-                src={editedData.driversLicense}
+                src={`${BASE_URL}${editedData.driverLicensePath}?key=${licenseKey}`}
                 style={{ objectFit: "cover", borderRadius: 4 }}
               />
             ) : (
@@ -100,13 +138,16 @@ const VehicleDataTab = ({
             )}
             <Upload
               showUploadList={false}
-              beforeUpload={(file) => {
-                console.log("Upload driver's license:", file);
+              beforeUpload={async (file) => {
+                const formData = new FormData();
+                formData.append("file", file);
+                await axios.put(`${BASE_URL}/api/v1/files/update/license/${extractFilename(editedData.driverLicensePath)}`, formData);
+                setLicenseKey(prev => prev + 1);
                 return false;
               }}
             >
               <Button icon={<UploadOutlined />}>
-                {editedData?.driversLicense ? "Replace" : "Upload"}
+                {editedData?.driverLicensePath ? "Replace" : "Upload"}
               </Button>
             </Upload>
           </div>
@@ -115,11 +156,12 @@ const VehicleDataTab = ({
         <div className={styles.uploadItem}>
           <label>Insurance Proof</label>
           <div className={styles.uploadWrapper}>
-            {editedData?.insuranceProof ? (
+            {editedData?.driverInsurancePath ? (
               <Image
+                key={insuranceKey}
                 width={160}
                 height={100}
-                src={editedData.insuranceProof}
+                src={`${BASE_URL}${editedData.driverInsurancePath}?key=${insuranceKey}`}
                 style={{ objectFit: "cover", borderRadius: 4 }}
               />
             ) : (
@@ -129,13 +171,16 @@ const VehicleDataTab = ({
             )}
             <Upload
               showUploadList={false}
-              beforeUpload={(file) => {
-                console.log("Upload insurance proof:", file);
+              beforeUpload={async (file) => {
+                const formData = new FormData();
+                formData.append("file", file);
+                await axios.put(`${BASE_URL}/api/v1/files/update/insurance/${extractFilename(editedData.driverInsurancePath)}`, formData);
+                setInsuranceKey(prev => prev + 1);
                 return false;
               }}
             >
               <Button icon={<UploadOutlined />}>
-                {editedData?.insuranceProof ? "Replace" : "Upload"}
+                {editedData?.driverInsurancePath ? "Replace" : "Upload"}
               </Button>
             </Upload>
           </div>

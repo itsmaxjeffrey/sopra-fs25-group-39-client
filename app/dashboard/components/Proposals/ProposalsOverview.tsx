@@ -54,7 +54,6 @@ const ProposalsOverview = () => {
   }, []);
 
   useEffect(() => {
-    console.log(contracts);
   }, [contracts]);
 
   const getGreeting = () => {

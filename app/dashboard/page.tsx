@@ -3,15 +3,15 @@ import React from "react";
 import DriverMap from "./components/DriverMap";
 import ProposalsOverview from "./components/Proposals/ProposalsOverview";
 import { useContext } from "react";
-import { AccountTypeContext } from "./layout";
+import AccountTypeContext from "./AccountTypeContext";
 
 const HomePage = () => {
   const accountType = useContext(AccountTypeContext);
 
   return (
     <div>
-      {accountType === "driver" && <DriverMap />}
-      {accountType === "customer" && <ProposalsOverview />}
+      {accountType === "DRIVER" && <DriverMap />}
+      {accountType === "REQUESTER" && <ProposalsOverview />}
     </div>
   );
 };
