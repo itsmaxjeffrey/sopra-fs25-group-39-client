@@ -1,7 +1,6 @@
-
 "use client";
 import React, { useEffect, useState } from "react";
-import { Tabs, Spin, Typography } from "antd";
+import { Spin, Tabs, Typography } from "antd";
 import axios from "axios";
 import styles from "./Account.module.css";
 import UserDataTab from "./Tabs/UserData";
@@ -108,7 +107,6 @@ const AccountPage = () => {
       />
     </div>
   );
-
 };
 
 export default AccountPage;

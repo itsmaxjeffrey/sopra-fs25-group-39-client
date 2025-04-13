@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { Input, Button, Typography, Upload, Image } from "antd";
-import { UploadOutlined, FileImageOutlined } from "@ant-design/icons";
+import { Button, Image, Input, Typography, Upload } from "antd";
+import { FileImageOutlined, UploadOutlined } from "@ant-design/icons";
 import styles from "../Account.module.css";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -86,18 +86,21 @@ const VehicleDataTab = ({
         <div className={styles.uploadItem}>
           <label>Driver&apos;s License</label>
           <div className={styles.uploadWrapper}>
-            {editedData?.driversLicense ? (
-              <Image
-                width={160}
-                height={100}
-                src={editedData.driversLicense}
-                style={{ objectFit: "cover", borderRadius: 4 }}
-              />
-            ) : (
-              <div className={styles.uploadPlaceholder}>
-                <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
-              </div>
-            )}
+            {editedData?.driversLicense
+              ? (
+                <Image
+                  width={160}
+                  height={100}
+                  src={editedData.driversLicense}
+                  style={{ objectFit: "cover", borderRadius: 4 }}
+                  alt="Upload your Driver's License"
+                />
+              )
+              : (
+                <div className={styles.uploadPlaceholder}>
+                  <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
+                </div>
+              )}
             <Upload
               showUploadList={false}
               beforeUpload={(file) => {
@@ -115,18 +118,21 @@ const VehicleDataTab = ({
         <div className={styles.uploadItem}>
           <label>Insurance Proof</label>
           <div className={styles.uploadWrapper}>
-            {editedData?.insuranceProof ? (
-              <Image
-                width={160}
-                height={100}
-                src={editedData.insuranceProof}
-                style={{ objectFit: "cover", borderRadius: 4 }}
-              />
-            ) : (
-              <div className={styles.uploadPlaceholder}>
-                <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
-              </div>
-            )}
+            {editedData?.insuranceProof
+              ? (
+                <Image
+                  width={160}
+                  height={100}
+                  src={editedData.insuranceProof}
+                  style={{ objectFit: "cover", borderRadius: 4 }}
+                  alt="Upload your Proof of Insurance"
+                />
+              )
+              : (
+                <div className={styles.uploadPlaceholder}>
+                  <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
+                </div>
+              )}
             <Upload
               showUploadList={false}
               beforeUpload={(file) => {

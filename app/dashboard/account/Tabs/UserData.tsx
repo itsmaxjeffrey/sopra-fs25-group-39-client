@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { DatePicker, Input, Button, Typography, Upload, Image } from "antd";
-import { UploadOutlined, CameraOutlined } from "@ant-design/icons";
+import { Button, DatePicker, Image, Input, Typography, Upload } from "antd";
+import { CameraOutlined, UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import styles from "../Account.module.css";
 //import axios from "axios";
@@ -30,20 +30,22 @@ const UserDataTab = ({
     <div className={styles.tabContent}>
       <Title level={5}>Personal Information</Title>
       <div className={styles.profilePicSection}>
-        {editedData?.profilePicture ? (
-          <Image
-            width={100}
-            height={100}
-            src={editedData.profilePicture}
-            alt="Profile"
-            style={{ borderRadius: "50%", objectFit: "cover" }}
-            fallback="/placeholder-profile.png"
-          />
-        ) : (
-          <div className={styles.profilePicPlaceholder}>
-            <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-          </div>
-        )}
+        {editedData?.profilePicture
+          ? (
+            <Image
+              width={100}
+              height={100}
+              src={editedData.profilePicture}
+              alt="Profile"
+              style={{ borderRadius: "50%", objectFit: "cover" }}
+              fallback="/placeholder-profile.png"
+            />
+          )
+          : (
+            <div className={styles.profilePicPlaceholder}>
+              <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
+            </div>
+          )}
         <Upload
           showUploadList={false}
           beforeUpload={(file) => {
@@ -101,9 +103,7 @@ const UserDataTab = ({
           <label>Birthdate</label>
           <DatePicker
             style={{ width: "100%" }}
-            value={
-              editedData?.birthdate ? dayjs(editedData.birthdate) : null
-            }
+            value={editedData?.birthdate ? dayjs(editedData.birthdate) : null}
             onChange={(date) => {
               setChanged(true);
               setEditedData({

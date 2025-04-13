@@ -36,7 +36,7 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
     };
 
     checkAuth();
-  }, [pathname]);
+  }, [pathname, router]);
 
   return <>{children}</>;
 };
