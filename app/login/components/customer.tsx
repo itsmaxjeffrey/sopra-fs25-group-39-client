@@ -19,10 +19,9 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 
-const BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://sopra-fs25-group-39-client.vercel.app"
-    : "http://localhost:5001";
+const BASE_URL = process.env.NODE_ENV === "production"
+  ? "https://sopra-fs25-group-39-client.vercel.app"
+  : "http://localhost:5001";
 
 import styles from "../login.module.css";
 
@@ -31,14 +30,14 @@ import styles from "../login.module.css";
 const { Title } = Typography;
 
 const Customer = () => {
-  const [ setFormData] = useState<any>({});
+  const [setFormData] = useState<any>({});
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
-    null
+    null,
   );
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
-    "loading"
+    "loading",
   );
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -56,7 +55,7 @@ const Customer = () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
 
     return response.data.filePath;
@@ -88,7 +87,7 @@ const Customer = () => {
             if (profilePictureFile) {
               profilePicturePath = await uploadFile(
                 profilePictureFile,
-                "profile"
+                "profile",
               );
             }
 
@@ -236,7 +235,7 @@ const Customer = () => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("Passwords do not match")
+                          new Error("Passwords do not match"),
                         );
                       },
                     }),

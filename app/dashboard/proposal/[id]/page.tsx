@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useSearchParams, useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import EditProposal from "../Components/EditProposal";
 import OfferProposal from "../Components/OfferProposal";
 import AcceptedProposal from "../Components/AcceptedProposal";

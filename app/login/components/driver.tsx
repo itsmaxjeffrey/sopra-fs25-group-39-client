@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   Button,
   Col,
@@ -18,7 +18,7 @@ import {
   LoadingOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { LoadScript, Autocomplete } from "@react-google-maps/api";
+import { Autocomplete, LoadScript } from "@react-google-maps/api";
 import styles from "../login.module.css";
 import axios from "axios";
 
@@ -31,7 +31,7 @@ const Driver = () => {
   const [step, setStep] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
-    "loading"
+    "loading",
   );
   const [errorMessage, setErrorMessage] = useState("");
   const [preferredRange, setPreferredRange] = useState("");
@@ -42,12 +42,12 @@ const Driver = () => {
   });
   const autoRef = useRef<any>(null);
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
-    null
+    null,
   );
   const [driverLicenseFile, setDriverLicenseFile] = useState<File | null>(null);
 
   const [insuranceProofFile, setInsuranceProofFile] = useState<File | null>(
-    null
+    null,
   );
 
   const handleStepOneFinish = (values: any) => {
@@ -83,7 +83,7 @@ const Driver = () => {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-          }
+          },
         );
 
         profilePicturePath = response.data.filePath;
@@ -105,7 +105,7 @@ const Driver = () => {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-          }
+          },
         );
 
         licensePicturePath = response.data.filePath;
@@ -127,7 +127,7 @@ const Driver = () => {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-          }
+          },
         );
 
         insurancePicturePath = response.data.filePath;
@@ -173,7 +173,7 @@ const Driver = () => {
             longitude: location.longitude,
             formattedAddress: location.formattedAddress,
           },
-        }
+        },
       )
       .then(() => {
         setModalState("success");
@@ -320,7 +320,7 @@ const Driver = () => {
                             return Promise.resolve();
                           }
                           return Promise.reject(
-                            new Error("Passwords do not match")
+                            new Error("Passwords do not match"),
                           );
                         },
                       }),
@@ -444,9 +444,8 @@ const Driver = () => {
                 <Col span={24}>
                   <Form.Item label="Location" name="address">
                     <LoadScript
-                      googleMapsApiKey={
-                        process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!
-                      }
+                      googleMapsApiKey={process.env
+                        .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
                       libraries={["places"]}
                     >
                       <Autocomplete

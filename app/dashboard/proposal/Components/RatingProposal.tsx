@@ -1,21 +1,18 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Button,
+  Col,
+  DatePicker,
+  Divider,
   Form,
   Input,
-  DatePicker,
-  Row,
-  Col,
-  Button,
-  Switch,
   Modal,
+  Row,
   Spin,
-  Divider,
+  Switch,
 } from "antd";
-import {
-  CameraOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
+import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styles from "./RatingProposal.module.css";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -45,7 +42,7 @@ const RatingProposal = ({ id }: Props) => {
   const fetchContract = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/v1/contracts/${id}`
+        `http://localhost:5001/api/v1/contracts/${id}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -78,7 +75,7 @@ const RatingProposal = ({ id }: Props) => {
         lng: data.toLocation?.longitude,
       });
       setImagePaths(
-        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean)
+        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean),
       );
       setError(false);
       setModalVisible(false);
@@ -100,21 +97,27 @@ const RatingProposal = ({ id }: Props) => {
         <div className={styles.imageRow}>
           {[0, 1, 2].map((idx) => (
             <div key={idx} className={styles.imageBox}>
-              {imagePaths[idx] ? (
-                <img
-                  src={
-                    process.env.NODE_ENV === "production"
-                      ? `https://sopra-fs25-group-39-client.vercel.app${imagePaths[idx]}`
-                      : `http://localhost:5001${imagePaths[idx]}`
-                  }
-                  alt={`upload-${idx}`}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              ) : (
-                <div className={styles.cameraIcon}>
-                  <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-                </div>
-              )}
+              {imagePaths[idx]
+                ? (
+                  <img
+                    src={process.env.NODE_ENV === "production"
+                      ? `https://sopra-fs25-group-39-client.vercel.app${
+                        imagePaths[idx]
+                      }`
+                      : `http://localhost:5001${imagePaths[idx]}`}
+                    alt={`upload-${idx}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                )
+                : (
+                  <div className={styles.cameraIcon}>
+                    <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
+                  </div>
+                )}
             </div>
           ))}
         </div>
@@ -141,8 +144,7 @@ const RatingProposal = ({ id }: Props) => {
                 style={{ width: "100%" }}
                 showTime={{ format: "HH:mm", showSecond: false }}
                 disabledDate={(current) =>
-                  current && current < dayjs().startOf("minute")
-                }
+                  current && current < dayjs().startOf("minute")}
                 disabled
               />
             </Form.Item>
@@ -221,7 +223,7 @@ const RatingProposal = ({ id }: Props) => {
               };
               await axios.post(
                 `http://localhost:5001/api/v1/contracts/${id}/driver-rating`,
-                payload
+                payload,
               );
               Modal.success({
                 title: "Thank you!",
@@ -230,7 +232,7 @@ const RatingProposal = ({ id }: Props) => {
                 onOk: () => router.push("/dashboard"),
               });
             } catch (err) {
-              console.log(err)
+              console.log(err);
             }
           }}
         >
@@ -255,21 +257,22 @@ const RatingProposal = ({ id }: Props) => {
             shouldUpdate={(prev, cur) => prev.issues !== cur.issues}
           >
             {({ getFieldValue }) =>
-              getFieldValue("issues") ? (
-                <Form.Item
-                  name="issueDetails"
-                  label="Please describe the issue"
-                  rules={[
-                    { required: true, message: "Please describe the issue" },
-                  ]}
-                >
-                  <Input.TextArea
-                    rows={3}
-                    placeholder="Explain what went wrong..."
-                  />
-                </Form.Item>
-              ) : null
-            }
+              getFieldValue("issues")
+                ? (
+                  <Form.Item
+                    name="issueDetails"
+                    label="Please describe the issue"
+                    rules={[
+                      { required: true, message: "Please describe the issue" },
+                    ]}
+                  >
+                    <Input.TextArea
+                      rows={3}
+                      placeholder="Explain what went wrong..."
+                    />
+                  </Form.Item>
+                )
+                : null}
           </Form.Item>
 
           <Form.Item>
@@ -281,31 +284,35 @@ const RatingProposal = ({ id }: Props) => {
       </Form>
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>
-          {loading ? (
-            <div style={{ padding: 64 }}>
-              <Spin size="large" />
-            </div>
-          ) : error ? (
-            <div className={styles.registerError}>
-              <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-              <p>UUUUUUPPPPPPSSSS</p>
-              <Row justify="center" gutter={16}>
-                <Col>
-                  <Button
-                    type="primary"
-                    onClick={() => router.push("/dashboard/proposal/new")}
-                  >
-                    Create New
-                  </Button>
-                </Col>
-                <Col>
-                  <Button onClick={() => router.push("/dashboard")}>
-                    Back to Overview
-                  </Button>
-                </Col>
-              </Row>
-            </div>
-          ) : null}
+          {loading
+            ? (
+              <div style={{ padding: 64 }}>
+                <Spin size="large" />
+              </div>
+            )
+            : error
+            ? (
+              <div className={styles.registerError}>
+                <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
+                <p>UUUUUUPPPPPPSSSS</p>
+                <Row justify="center" gutter={16}>
+                  <Col>
+                    <Button
+                      type="primary"
+                      onClick={() => router.push("/dashboard/proposal/new")}
+                    >
+                      Create New
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button onClick={() => router.push("/dashboard")}>
+                      Back to Overview
+                    </Button>
+                  </Col>
+                </Row>
+              </div>
+            )
+            : null}
         </div>
       </Modal>
     </div>

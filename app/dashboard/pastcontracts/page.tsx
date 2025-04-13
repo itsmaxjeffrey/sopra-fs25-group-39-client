@@ -1,20 +1,24 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Table, Spin } from "antd";
+import { Spin, Table } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const PastContracts = () => {
-const [contracts, setContracts] = useState<any[]>([]);
+  const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const userId = typeof window !== "undefined" ? localStorage.getItem("id") : null;
+  const userId = typeof window !== "undefined"
+    ? localStorage.getItem("id")
+    : null;
 
   useEffect(() => {
     const fetchContracts = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/api/v1/users/${userId}/contracts`);
+        const res = await axios.get(
+          `http://localhost:5001/api/v1/users/${userId}/contracts`,
+        );
         const now = dayjs().startOf("day");
 
         const past = res.data
@@ -63,16 +67,15 @@ const [contracts, setContracts] = useState<any[]>([]);
   return (
     <div style={{ padding: 24 }}>
       <h1>Past Contracts</h1>
-      {loading ? (
-        <Spin size="large" />
-      ) : (
+      {loading ? <Spin size="large" /> : (
         <Table
           columns={columns}
           dataSource={contracts}
           rowKey="contractId"
           onRow={(record) => ({
             onClick: () => {
-              window.location.href = `/dashboard/proposal/${record.contractId}?type=FINALIZED`;
+              window.location.href =
+                `/dashboard/proposal/${record.contractId}?type=FINALIZED`;
             },
           })}
         />

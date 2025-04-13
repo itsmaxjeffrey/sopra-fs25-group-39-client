@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { Input, Button, Typography, Upload, Image } from "antd";
-import { UploadOutlined, FileImageOutlined } from "@ant-design/icons";
+import { Button, Image, Input, Typography, Upload } from "antd";
+import { FileImageOutlined, UploadOutlined } from "@ant-design/icons";
 import styles from "../Account.module.css";
 import axios from "axios";
 
@@ -9,10 +9,9 @@ import axios from "axios";
 
 const { Title } = Typography;
 
-const BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://sopra-fs25-group-39-client.vercel.app"
-    : "http://localhost:5001";
+const BASE_URL = process.env.NODE_ENV === "production"
+  ? "https://sopra-fs25-group-39-client.vercel.app"
+  : "http://localhost:5001";
 
 const extractFilename = (path: string) => path?.split("/")?.pop();
 
@@ -25,7 +24,7 @@ const VehicleDataTab = ({
 }: any) => {
   const [licenseKey, setLicenseKey] = useState(0);
   const [insuranceKey, setInsuranceKey] = useState(0);
-  
+
   const handleSave = () => {
     const token = localStorage.getItem("token");
     const id = localStorage.getItem("id");
@@ -123,26 +122,33 @@ const VehicleDataTab = ({
         <div className={styles.uploadItem}>
           <label>Driver&apos;s License</label>
           <div className={styles.uploadWrapper}>
-            {editedData?.driverLicensePath ? (
-              <Image
-                key={licenseKey}
-                width={160}
-                height={100}
-                src={`${BASE_URL}${editedData.driverLicensePath}?key=${licenseKey}`}
-                style={{ objectFit: "cover", borderRadius: 4 }}
-              />
-            ) : (
-              <div className={styles.uploadPlaceholder}>
-                <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
-              </div>
-            )}
+            {editedData?.driverLicensePath
+              ? (
+                <Image
+                  key={licenseKey}
+                  width={160}
+                  height={100}
+                  src={`${BASE_URL}${editedData.driverLicensePath}?key=${licenseKey}`}
+                  style={{ objectFit: "cover", borderRadius: 4 }}
+                />
+              )
+              : (
+                <div className={styles.uploadPlaceholder}>
+                  <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
+                </div>
+              )}
             <Upload
               showUploadList={false}
               beforeUpload={async (file) => {
                 const formData = new FormData();
                 formData.append("file", file);
-                await axios.put(`${BASE_URL}/api/v1/files/update/license/${extractFilename(editedData.driverLicensePath)}`, formData);
-                setLicenseKey(prev => prev + 1);
+                await axios.put(
+                  `${BASE_URL}/api/v1/files/update/license/${
+                    extractFilename(editedData.driverLicensePath)
+                  }`,
+                  formData,
+                );
+                setLicenseKey((prev) => prev + 1);
                 return false;
               }}
             >
@@ -156,26 +162,33 @@ const VehicleDataTab = ({
         <div className={styles.uploadItem}>
           <label>Insurance Proof</label>
           <div className={styles.uploadWrapper}>
-            {editedData?.driverInsurancePath ? (
-              <Image
-                key={insuranceKey}
-                width={160}
-                height={100}
-                src={`${BASE_URL}${editedData.driverInsurancePath}?key=${insuranceKey}`}
-                style={{ objectFit: "cover", borderRadius: 4 }}
-              />
-            ) : (
-              <div className={styles.uploadPlaceholder}>
-                <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
-              </div>
-            )}
+            {editedData?.driverInsurancePath
+              ? (
+                <Image
+                  key={insuranceKey}
+                  width={160}
+                  height={100}
+                  src={`${BASE_URL}${editedData.driverInsurancePath}?key=${insuranceKey}`}
+                  style={{ objectFit: "cover", borderRadius: 4 }}
+                />
+              )
+              : (
+                <div className={styles.uploadPlaceholder}>
+                  <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
+                </div>
+              )}
             <Upload
               showUploadList={false}
               beforeUpload={async (file) => {
                 const formData = new FormData();
                 formData.append("file", file);
-                await axios.put(`${BASE_URL}/api/v1/files/update/insurance/${extractFilename(editedData.driverInsurancePath)}`, formData);
-                setInsuranceKey(prev => prev + 1);
+                await axios.put(
+                  `${BASE_URL}/api/v1/files/update/insurance/${
+                    extractFilename(editedData.driverInsurancePath)
+                  }`,
+                  formData,
+                );
+                setInsuranceKey((prev) => prev + 1);
                 return false;
               }}
             >

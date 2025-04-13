@@ -1,18 +1,18 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  Button,
+  Col,
+  DatePicker,
   Form,
   Input,
-  DatePicker,
+  InputNumber,
+  Modal,
   Row,
-  Col,
-  Button,
+  Spin,
   Switch,
   Upload,
-  Modal,
-  Spin,
-  InputNumber,
 } from "antd";
 import {
   CameraOutlined,
@@ -31,14 +31,18 @@ const NewProposalFormPage = () => {
   const [form] = Form.useForm();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
-    "loading"
+    "loading",
   );
   const [errorMessage, setErrorMessage] = useState("");
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
-  const [imageFiles, setImageFiles] = useState<(File | null)[]>([null, null, null]);
+  const [imageFiles, setImageFiles] = useState<(File | null)[]>([
+    null,
+    null,
+    null,
+  ]);
 
   const handleFinish = async (values: any) => {
     console.log("Submitting values:", values);
@@ -62,7 +66,10 @@ const NewProposalFormPage = () => {
         formData.append("type", "proposal");
 
         try {
-          const res = await axios.post("http://localhost:5001/api/v1/files/upload/proposal", formData);
+          const res = await axios.post(
+            "http://localhost:5001/api/v1/files/upload/proposal",
+            formData,
+          );
           uploadedPaths[i] = res.data.filePath;
         } catch (err) {
           console.error("Image upload failed for index", i, err);
@@ -138,17 +145,23 @@ const NewProposalFormPage = () => {
                 }}
                 showUploadList={false}
               >
-                {imageFiles[idx] ? (
-                  <img
-                    src={URL.createObjectURL(imageFiles[idx]!)}
-                    alt={`upload-${idx}`}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                ) : (
-                  <div className={styles.cameraIcon}>
-                    <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-                  </div>
-                )}
+                {imageFiles[idx]
+                  ? (
+                    <img
+                      src={URL.createObjectURL(imageFiles[idx]!)}
+                      alt={`upload-${idx}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  )
+                  : (
+                    <div className={styles.cameraIcon}>
+                      <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
+                    </div>
+                  )}
               </Upload>
             </div>
           ))}
@@ -190,8 +203,7 @@ const NewProposalFormPage = () => {
                 style={{ width: "100%" }}
                 showTime={{ format: "HH:mm", showSecond: false }}
                 disabledDate={(current) =>
-                  current && current < dayjs().startOf("minute")
-                }
+                  current && current < dayjs().startOf("minute")}
               />
             </Form.Item>
           </Col>

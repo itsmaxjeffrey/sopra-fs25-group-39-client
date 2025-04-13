@@ -1,21 +1,18 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Button,
+  Col,
+  DatePicker,
   Form,
   Input,
   InputNumber,
-  DatePicker,
-  Row,
-  Col,
-  Button,
-  Switch,
   Modal,
+  Row,
   Spin,
+  Switch,
 } from "antd";
-import {
-  CameraOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
+import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styles from "./Edit.module.css";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -45,7 +42,7 @@ const EditProposalFormPage = ({ id }: Props) => {
   const fetchContract = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/v1/contracts/${id}`
+        `http://localhost:5001/api/v1/contracts/${id}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -78,7 +75,7 @@ const EditProposalFormPage = ({ id }: Props) => {
         lng: data.toLocation?.longitude,
       });
       setImagePaths(
-        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean)
+        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean),
       );
       setError(false);
       setModalVisible(false);
@@ -127,13 +124,14 @@ const EditProposalFormPage = ({ id }: Props) => {
       manPower: parseInt(values.manPower),
       price: parseFloat(values.price),
       mass: Number(values.mass),
-      volume: Number(values.length) * Number(values.width) * Number(values.height),
+      volume: Number(values.length) * Number(values.width) *
+        Number(values.height),
     };
 
     try {
       const response = await axios.put(
         `http://localhost:5001/api/v1/contracts/${id}`,
-        payload
+        payload,
       );
       console.log("PUT response:", response.data);
       setChanged(false);
@@ -149,21 +147,27 @@ const EditProposalFormPage = ({ id }: Props) => {
         <div className={styles.imageRow}>
           {[0, 1, 2].map((idx) => (
             <div key={idx} className={styles.imageBox}>
-              {imagePaths[idx] ? (
-                <img
-                  src={
-                    process.env.NODE_ENV === "production"
-                      ? `https://sopra-fs25-group-39-client.vercel.app${imagePaths[idx]}`
-                      : `http://localhost:5001${imagePaths[idx]}`
-                  }
-                  alt={`upload-${idx}`}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              ) : (
-                <div className={styles.cameraIcon}>
-                  <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-                </div>
-              )}
+              {imagePaths[idx]
+                ? (
+                  <img
+                    src={process.env.NODE_ENV === "production"
+                      ? `https://sopra-fs25-group-39-client.vercel.app${
+                        imagePaths[idx]
+                      }`
+                      : `http://localhost:5001${imagePaths[idx]}`}
+                    alt={`upload-${idx}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                )
+                : (
+                  <div className={styles.cameraIcon}>
+                    <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
+                  </div>
+                )}
             </div>
           ))}
         </div>
@@ -195,8 +199,7 @@ const EditProposalFormPage = ({ id }: Props) => {
                 style={{ width: "100%" }}
                 showTime={{ format: "HH:mm", showSecond: false }}
                 disabledDate={(current) =>
-                  current && current < dayjs().startOf("minute")
-                }
+                  current && current < dayjs().startOf("minute")}
               />
             </Form.Item>
           </Col>
@@ -282,8 +285,6 @@ const EditProposalFormPage = ({ id }: Props) => {
             </Form.Item>
           </Col>
         </Row>
-        
- 
 
         <Row gutter={16}>
           <Col span={8}>
@@ -361,31 +362,35 @@ const EditProposalFormPage = ({ id }: Props) => {
       </Form>
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>
-          {loading ? (
-            <div style={{ padding: 64 }}>
-              <Spin size="large" />
-            </div>
-          ) : error ? (
-            <div className={styles.registerError}>
-              <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-              <p>UUUUUUPPPPPPSSSS</p>
-              <Row justify="center" gutter={16}>
-                <Col>
-                  <Button
-                    type="primary"
-                    onClick={() => router.push("/dashboard/proposal/new")}
-                  >
-                    Create New
-                  </Button>
-                </Col>
-                <Col>
-                  <Button onClick={() => router.push("/dashboard")}>
-                    Back to Overview
-                  </Button>
-                </Col>
-              </Row>
-            </div>
-          ) : null}
+          {loading
+            ? (
+              <div style={{ padding: 64 }}>
+                <Spin size="large" />
+              </div>
+            )
+            : error
+            ? (
+              <div className={styles.registerError}>
+                <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
+                <p>UUUUUUPPPPPPSSSS</p>
+                <Row justify="center" gutter={16}>
+                  <Col>
+                    <Button
+                      type="primary"
+                      onClick={() => router.push("/dashboard/proposal/new")}
+                    >
+                      Create New
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button onClick={() => router.push("/dashboard")}>
+                      Back to Overview
+                    </Button>
+                  </Col>
+                </Row>
+              </div>
+            )
+            : null}
         </div>
       </Modal>
       <Modal

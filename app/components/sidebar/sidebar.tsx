@@ -6,7 +6,6 @@ import { Modal } from "antd";
 
 import styles from "./sidebar.module.css";
 
-
 const Sidebar = ({ accountType }: { accountType: string | null }) => {
   const router = useRouter();
   const pathname = usePathname();

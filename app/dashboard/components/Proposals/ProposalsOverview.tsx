@@ -4,11 +4,11 @@ import axios from "axios";
 import { Spin } from "antd";
 import Link from "next/link";
 import {
-  FileTextOutlined,
-  ClockCircleOutlined,
-  LockOutlined,
-  EnvironmentOutlined,
   CalendarOutlined,
+  ClockCircleOutlined,
+  EnvironmentOutlined,
+  FileTextOutlined,
+  LockOutlined,
 } from "@ant-design/icons";
 
 interface Proposal {
@@ -45,7 +45,7 @@ const ProposalsOverview = () => {
         const sorted = res.data.sort(
           (a: Proposal, b: Proposal) =>
             new Date(a.creationDateTime).getTime() -
-            new Date(b.creationDateTime).getTime()
+            new Date(b.creationDateTime).getTime(),
         );
         setContracts(sorted);
       })
@@ -88,34 +88,34 @@ const ProposalsOverview = () => {
         </h2>
         <div className={styles.cardRow}>
           {contracts.filter((c) => c.contractStatus === "REQUESTED").length ===
-          0 ? (
-            <p className={styles.emptySection}>No open proposals</p>
-          ) : (
-            contracts
-              .filter((c) => c.contractStatus === "REQUESTED")
-              .map((c) => (
-                <Link
-                  key={c.contractId}
-                  href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
-                  className={styles.link}
-                >
-                  <div className={styles.card}>
-                    <div className={styles.icon}>
-                      <FileTextOutlined />
+              0
+            ? <p className={styles.emptySection}>No open proposals</p>
+            : (
+              contracts
+                .filter((c) => c.contractStatus === "REQUESTED")
+                .map((c) => (
+                  <Link
+                    key={c.contractId}
+                    href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
+                    className={styles.link}
+                  >
+                    <div className={styles.card}>
+                      <div className={styles.icon}>
+                        <FileTextOutlined />
+                      </div>
+                      <h3>{c.title}</h3>
+                      <p>
+                        <CalendarOutlined />{" "}
+                        {new Date(c.moveDateTime).toLocaleString()}
+                      </p>
+                      <p>
+                        <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
+                        {c.toLocation.address}
+                      </p>
                     </div>
-                    <h3>{c.title}</h3>
-                    <p>
-                      <CalendarOutlined />{" "}
-                      {new Date(c.moveDateTime).toLocaleString()}
-                    </p>
-                    <p>
-                      <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
-                      {c.toLocation.address}
-                    </p>
-                  </div>
-                </Link>
-              ))
-          )}
+                  </Link>
+                ))
+            )}
         </div>
       </div>
 
@@ -125,34 +125,34 @@ const ProposalsOverview = () => {
         </h2>
         <div className={styles.cardRow}>
           {contracts.filter((c) => c.contractStatus === "OFFERED").length ===
-          0 ? (
-            <p className={styles.emptySection}>Nothing pending</p>
-          ) : (
-            contracts
-              .filter((c) => c.contractStatus === "OFFERED")
-              .map((c) => (
-                <Link
-                  key={c.contractId}
-                  href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
-                  className={styles.link}
-                >
-                  <div className={styles.card}>
-                    <div className={styles.icon}>
-                      <ClockCircleOutlined />
+              0
+            ? <p className={styles.emptySection}>Nothing pending</p>
+            : (
+              contracts
+                .filter((c) => c.contractStatus === "OFFERED")
+                .map((c) => (
+                  <Link
+                    key={c.contractId}
+                    href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
+                    className={styles.link}
+                  >
+                    <div className={styles.card}>
+                      <div className={styles.icon}>
+                        <ClockCircleOutlined />
+                      </div>
+                      <h3>{c.title}</h3>
+                      <p>
+                        <CalendarOutlined />{" "}
+                        {new Date(c.moveDateTime).toLocaleString()}
+                      </p>
+                      <p>
+                        <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
+                        {c.toLocation.address}
+                      </p>
                     </div>
-                    <h3>{c.title}</h3>
-                    <p>
-                      <CalendarOutlined />{" "}
-                      {new Date(c.moveDateTime).toLocaleString()}
-                    </p>
-                    <p>
-                      <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
-                      {c.toLocation.address}
-                    </p>
-                  </div>
-                </Link>
-              ))
-          )}
+                  </Link>
+                ))
+            )}
         </div>
       </div>
 
@@ -162,34 +162,34 @@ const ProposalsOverview = () => {
         </h2>
         <div className={styles.cardRow}>
           {contracts.filter((c) => c.contractStatus === "ACCEPTED").length ===
-          0 ? (
-            <p className={styles.emptySection}>No confirmed moves</p>
-          ) : (
-            contracts
-              .filter((c) => c.contractStatus === "ACCEPTED")
-              .map((c) => (
-                <Link
-                  key={c.contractId}
-                  href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
-                  className={styles.link}
-                >
-                  <div className={styles.card}>
-                    <div className={styles.icon}>
-                      <LockOutlined />
+              0
+            ? <p className={styles.emptySection}>No confirmed moves</p>
+            : (
+              contracts
+                .filter((c) => c.contractStatus === "ACCEPTED")
+                .map((c) => (
+                  <Link
+                    key={c.contractId}
+                    href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
+                    className={styles.link}
+                  >
+                    <div className={styles.card}>
+                      <div className={styles.icon}>
+                        <LockOutlined />
+                      </div>
+                      <h3>{c.title}</h3>
+                      <p>
+                        <CalendarOutlined />{" "}
+                        {new Date(c.moveDateTime).toLocaleString()}
+                      </p>
+                      <p>
+                        <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
+                        {c.toLocation.address}
+                      </p>
                     </div>
-                    <h3>{c.title}</h3>
-                    <p>
-                      <CalendarOutlined />{" "}
-                      {new Date(c.moveDateTime).toLocaleString()}
-                    </p>
-                    <p>
-                      <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
-                      {c.toLocation.address}
-                    </p>
-                  </div>
-                </Link>
-              ))
-          )}
+                  </Link>
+                ))
+            )}
         </div>
       </div>
     </div>
