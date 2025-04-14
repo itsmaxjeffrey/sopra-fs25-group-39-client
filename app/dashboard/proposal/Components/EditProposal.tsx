@@ -5,6 +5,7 @@ import {
   Col,
   DatePicker,
   Form,
+  Image,
   Input,
   InputNumber,
   Modal,
@@ -98,6 +99,7 @@ const EditProposalFormPage = ({ id }: Props) => {
 
   useEffect(() => {
     fetchContract();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, id]);
 
   const onFinish = async (values: any) => {
@@ -149,7 +151,7 @@ const EditProposalFormPage = ({ id }: Props) => {
             <div key={idx} className={styles.imageBox}>
               {imagePaths[idx]
                 ? (
-                  <img
+                  <Image
                     src={process.env.NODE_ENV === "production"
                       ? `https://sopra-fs25-group-39-client.vercel.app${
                         imagePaths[idx]

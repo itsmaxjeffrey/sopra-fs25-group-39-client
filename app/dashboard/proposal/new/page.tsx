@@ -6,6 +6,7 @@ import {
   Col,
   DatePicker,
   Form,
+  Image,
   Input,
   InputNumber,
   Modal,
@@ -147,7 +148,7 @@ const NewProposalFormPage = () => {
               >
                 {imageFiles[idx]
                   ? (
-                    <img
+                    <Image
                       src={URL.createObjectURL(imageFiles[idx]!)}
                       alt={`upload-${idx}`}
                       style={{

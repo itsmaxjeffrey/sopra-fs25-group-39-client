@@ -6,6 +6,7 @@ import {
   DatePicker,
   Divider,
   Form,
+  Image,
   Input,
   Modal,
   Row,
@@ -88,6 +89,7 @@ const RatingProposal = ({ id }: Props) => {
 
   useEffect(() => {
     fetchContract();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, id]);
 
   return (
@@ -99,7 +101,7 @@ const RatingProposal = ({ id }: Props) => {
             <div key={idx} className={styles.imageBox}>
               {imagePaths[idx]
                 ? (
-                  <img
+                  <Image
                     src={process.env.NODE_ENV === "production"
                       ? `https://sopra-fs25-group-39-client.vercel.app${
                         imagePaths[idx]

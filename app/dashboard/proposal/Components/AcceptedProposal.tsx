@@ -1,6 +1,16 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Col, DatePicker, Form, Input, Modal, Row, Spin } from "antd";
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Image,
+  Input,
+  Modal,
+  Row,
+  Spin,
+} from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styles from "./Edit.module.css";
 import { useRouter } from "next/navigation";
@@ -87,6 +97,7 @@ const AcceptedProposal = ({ id }: Props) => {
 
   useEffect(() => {
     fetchContract();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, id]);
 
   return (
@@ -98,7 +109,7 @@ const AcceptedProposal = ({ id }: Props) => {
             <div key={idx} className={styles.imageBox}>
               {imagePaths[idx]
                 ? (
-                  <img
+                  <Image
                     src={process.env.NODE_ENV === "production"
                       ? `https://sopra-fs25-group-39-client.vercel.app${
                         imagePaths[idx]

@@ -1,6 +1,7 @@
 //best to save this under /users/public/requesters/{id}
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { Image } from "antd";
 
 interface Requester {
   id: string;
@@ -27,6 +28,7 @@ const RequesterProfilePage: React.FC = () => {
           setError("An error occurred while fetching the profile.");
         }
       } catch (err) {
+        console.error("Error fetching the requester profile:", err);
         setError("An error occurred while fetching the profile.");
       }
     };
@@ -53,8 +55,8 @@ const RequesterProfilePage: React.FC = () => {
           justifyContent: "center",
         }}
       >
-        <h1>{requester.name}'s Requester Profile</h1>
-        <img
+        <h1>{requester.name}&apos;s Requester Profile</h1>
+        <Image
           src={requester.profilePictureUrl}
           alt={`${requester.name}'s profile`}
           style={{

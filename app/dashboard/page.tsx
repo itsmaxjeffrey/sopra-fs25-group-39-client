@@ -1,5 +1,4 @@
 "use client";
-import DriverMap from "./components/DriverMap";
 import ProposalsOverview from "./components/Proposals/ProposalsOverview";
 import DriverHomePage from "./DriverHomePage";
 import { useContext } from "react";

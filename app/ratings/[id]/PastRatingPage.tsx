@@ -1,14 +1,13 @@
 //probably best to create a new folder "ratings"
 //then insert this page at root/ratings/{id}
 import React, { useEffect, useState } from "react";
-import { Button, Input, Rate } from "antd";
+import { Button, Image, Input, Rate } from "antd";
 import "antd/dist/antd.css";
 
 interface User {
   username: string;
   profilePictureUrl: string;
 }
-
 
 interface Contract {
   id: number;
@@ -43,6 +42,7 @@ const RatingPage: React.FC = () => {
           setError("An error occurred while fetching the rating details.");
         }
       } catch (err) {
+        console.error("Error fetching the rating details:", err);
         setError("An error occurred while fetching the rating details.");
       }
     };
@@ -67,8 +67,8 @@ const RatingPage: React.FC = () => {
         padding: "20px",
       }}
     >
-      <h1>{rating.fromUser.username}'s Rating</h1>
-      <img
+      <h1>{rating.fromUser.username}&apos;s Rating</h1>
+      <Image
         src={rating.fromUser.profilePictureUrl}
         alt="Requester Profile"
         style={{

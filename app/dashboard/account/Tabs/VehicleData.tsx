@@ -129,6 +129,7 @@ const VehicleDataTab = ({
                   width={160}
                   height={100}
                   src={`${BASE_URL}${editedData.driverLicensePath}?key=${licenseKey}`}
+                  alt="Driver's License"
                   style={{ objectFit: "cover", borderRadius: 4 }}
                 />
               )
@@ -169,6 +170,7 @@ const VehicleDataTab = ({
                   width={160}
                   height={100}
                   src={`${BASE_URL}${editedData.driverInsurancePath}?key=${insuranceKey}`}
+                  alt="Insurance Proof"
                   style={{ objectFit: "cover", borderRadius: 4 }}
                 />
               )
