@@ -15,10 +15,5 @@ const HomePage = () => {
     </div>
   );
 };
-    <div>
-      <DriverMap /> {/* Use the map component here */}
-    </div>
-  );
-};
 
 export default HomePage;
