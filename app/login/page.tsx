@@ -7,6 +7,12 @@ import Login from "./components/login";
 import Driver from "./components/driver";
 import styles from "./login.module.css";
 import Customer from "./components/customer";
+import axios from "axios";
+
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://sopra-fs25-group-39-client.vercel.app"
+    : "http://localhost:5001";
 
 const { Title } = Typography;
 
@@ -17,17 +23,8 @@ const AuthPage = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    fetch("http://localhost:5001/api/v1/auth/refresh", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
+    axios
+      .post(`${BASE_URL}/api/v1/auth/refresh`, { token })
       .then(() => {
         router.push("/dashboard");
       })

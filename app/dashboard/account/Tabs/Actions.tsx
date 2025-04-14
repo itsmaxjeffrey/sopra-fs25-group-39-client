@@ -129,6 +129,7 @@ const ActionsTab = () => {
           deleteForm.resetFields();
         }}
         okText="Delete"
+        okType="danger"
         cancelText="Cancel"
         centered
       >

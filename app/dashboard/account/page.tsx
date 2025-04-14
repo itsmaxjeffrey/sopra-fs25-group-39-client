@@ -11,6 +11,11 @@ import ActionsTab from "./Tabs/Actions";
 
 const { Title } = Typography;
 
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://sopra-fs25-group-39-client.vercel.app"
+    : "http://localhost:5001";
+
 const AccountPage = () => {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -29,7 +34,7 @@ const AccountPage = () => {
     }
 
     axios
-      .get(`http://localhost:5001/api/v1/users/${id}`, {
+      .get(`${BASE_URL}/api/v1/users/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,7 +86,7 @@ const AccountPage = () => {
               />
             ),
           },
-          ...(userData.accountType === "driver"
+          ...(userData.userAccountType === "DRIVER"
             ? [
               {
                 key: "2",

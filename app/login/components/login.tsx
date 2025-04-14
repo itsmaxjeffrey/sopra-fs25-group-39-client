@@ -2,6 +2,12 @@
 import React, { useState } from "react";
 import { Alert, Button, Input } from "antd";
 import styles from "../login.module.css";
+import axios from "axios";
+
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://sopra-fs25-group-39-client.vercel.app"
+    : "http://localhost:5001";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -16,19 +22,15 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5001/api/v1/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
+      const res = await axios.post(`${BASE_URL}/api/v1/auth/login`, {
+        username,
+        password,
       });
 
-      const data = await res.json();
-      console.log(data);
+      const data = res.data;
 
-      if (!res.ok) {
-        throw new Error(data.message || "Login fehlgeschlagen");
+      if (res.status !== 200) {
+        throw new Error(data.message || "Login failed");
       }
 
       localStorage.setItem("token", data.token);

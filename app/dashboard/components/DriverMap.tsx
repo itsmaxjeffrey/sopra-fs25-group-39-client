@@ -201,6 +201,39 @@ const DriverMap: React.FC<DriverMapProps> = (
     setMapError("Failed to load Google Map. Please try again later.");
   };
 
+  const fetchProposals = async (location: { lat: number; lng: number }) => {
+    if (isLoadingRef.current) return; // Prevent fetch if already loading
+    isLoadingRef.current = true;
+    try {
+
+      const response = await fetch(`${BASE_URL}/api/v1/map/contracts?lat=${location.lat}&lng=${location.lng}&radius=5000&filters={}`);
+
+      const data = await response.json();
+      setAllProposals(data.features);
+
+      // Filter proposals immediately after fetching
+      if (mapInstance) {
+        const bounds = mapInstance.getBounds();
+        if (bounds) {
+          const filtered = data.features.filter(
+            (proposal: { geometry: { coordinates: [number, number] } }) => {
+              const proposalLat = proposal.geometry.coordinates[0];
+              const proposalLng = proposal.geometry.coordinates[1];
+              return bounds.contains(
+                new google.maps.LatLng(proposalLat, proposalLng),
+              );
+            },
+          );
+          setFilteredProposals(filtered);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching proposals:", error);
+    } finally {
+      isLoadingRef.current = false;
+    }
+  };
+
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace();
@@ -277,6 +310,7 @@ const DriverMap: React.FC<DriverMapProps> = (
         options={{ fullscreenControl: false, streetViewControl: false }}
         onLoad={handleMapLoad}
         onDragEnd={handleMapDragEnd}
+
         onZoomChanged={handleMapZoom}
       >
         {/* Search Input */}
@@ -299,23 +333,17 @@ const DriverMap: React.FC<DriverMapProps> = (
           </Autocomplete>
         </div>
 
-        {filteredContracts.map((
-          contract: {
-            contractId: string;
-            fromLocation: { latitude: number; longitude: number };
-          },
-        ) => (
-          <Marker
-            key={contract.contractId}
-            position={{
-              lat: contract.fromLocation.latitude,
-              lng: contract.fromLocation.longitude,
-            }}
-            onClick={() => {
-              window.location.href = `/offers/${contract.contractId}`;
-            }}
-          />
-        ))}
+        {filteredProposals.map(
+          (proposal: { id: string; geometry: { coordinates: [number, number] } }) => (
+            <Marker
+              key={proposal.id}
+              position={{
+                lat: proposal.geometry.coordinates[0],
+                lng: proposal.geometry.coordinates[1],
+              }}
+            />
+          )
+        )}
       </GoogleMap>
     </LoadScript>
   );
