@@ -1,5 +1,5 @@
 // component responsible for rendering the Google Map
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Autocomplete,
   GoogleMap,
@@ -11,11 +11,6 @@ import {
 // Define MAP_LIBRARIES outside the component to avoid redefinition on every render
 const MAP_LIBRARIES: Libraries = ["places"];
 
-const mapContainerStyle = {
-  width: "100%",
-  height: "700px",
-};
-
 const center = {
   lat: 47.3769, // Default to Zurich coordinates
   lng: 8.5417,
@@ -23,10 +18,18 @@ const center = {
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-const DriverMap = () => {
+interface DriverMapProps {
+  containerStyle: React.CSSProperties;
+  filters: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  onCenterChanged?: (lat: number, lng: number) => void;
+}
+
+const DriverMap: React.FC<DriverMapProps> = (
+  { containerStyle, filters, onCenterChanged },
+) => {
   const [selectedLocation, setSelectedLocation] = useState(center);
-  const [allProposals, setAllProposals] = useState([]);
-  const [filteredProposals, setFilteredProposals] = useState([]);
+  const [allContracts, setallContracts] = useState([]);
+  const [filteredContracts, setfilteredContracts] = useState([]);
   const [mapError, setMapError] = useState<string | null>(null);
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -34,38 +37,162 @@ const DriverMap = () => {
 
   const BASE_URL = process.env.NODE_ENV === "production"
     ? "https://sopra-fs25-group-39-client.vercel.app/" // Production API URL
-    : "http://localhost:5001"; // Development API URL, change to 3000 as soon as the backend has implemented the get contracts endpoint
+    : "http://localhost:5001"; // Development API URL, change to 3000 as soon as the backend has implemented the get contracts endpoint (Mock Backend URL = localhost 5001)
+
+  const fetchContracts = useCallback(
+    async () => {
+      if (isLoadingRef.current) return; // Prevent fetch if already loading
+      isLoadingRef.current = true;
+      try {
+        const query: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+        if (filters.lat !== null) query.lat = selectedLocation.lat;
+        if (filters.lng !== null) query.lng = selectedLocation.lng;
+
+        const filterParams: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+        if (filters.radius !== null) filterParams.radius = filters.radius;
+        if (filters.price !== null) filterParams.price = filters.price;
+        if (filters.weight !== null) filterParams.weight = filters.weight;
+        if (filters.volume !== null) filterParams.volume = filters.volume;
+        if (filters.requiredPeople !== null) {
+          filterParams.requiredPeople = filters.requiredPeople;
+        }
+        if (filters.fragile !== null) filterParams.fragile = filters.fragile;
+        if (filters.coolingRequired !== null) {
+          filterParams.coolingRequired = filters.coolingRequired;
+        }
+        if (filters.rideAlong !== null) {
+          filterParams.rideAlong = filters.rideAlong;
+        }
+        if (filters.moveDateTime !== null) {
+          filterParams.moveDateTime = filters.moveDateTime.format(
+            "YYYY-MM-DDTHH:mm:ss",
+          );
+        }
+
+        if (Object.keys(filterParams).length > 0) {
+          query.filters = JSON.stringify(filterParams);
+        }
+
+        console.log("Filters passed to the API call:", query);
+
+        const response = await fetch(
+          `${BASE_URL}/api/v1/map/contracts?lat=${selectedLocation.lat}&lng=${selectedLocation.lng}&filters=${
+            encodeURIComponent(query.filters)
+          }`,
+        );
+        const data = await response.json();
+        setallContracts(Array.isArray(data.contracts) ? data.contracts : []);
+
+        // Filter contracts immediately after fetching
+        if (mapInstance) {
+          const bounds = mapInstance.getBounds();
+          if (bounds) {
+            const filtered = data.contracts.filter(
+              (
+                contract: {
+                  fromLocation: { latitude: number; longitude: number };
+                },
+              ) => {
+                const contractLat = contract.fromLocation.latitude;
+                const contractLng = contract.fromLocation.longitude;
+                return bounds.contains(
+                  new google.maps.LatLng(contractLat, contractLng),
+                );
+              },
+            );
+            setfilteredContracts(filtered);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching contracts:", error);
+      } finally {
+        isLoadingRef.current = false;
+      }
+    },
+    [selectedLocation, filters, mapInstance, BASE_URL],
+  );
+
+  const filtercontractsByBounds = useCallback(() => {
+    if (!mapInstance) {
+      console.error("mapInstance is null or undefined");
+      return;
+    }
+
+    if (!Array.isArray(allContracts) || allContracts.length === 0) {
+      console.error("allContracts is not a valid array or is empty");
+      return;
+    }
+
+    const bounds = mapInstance.getBounds();
+    if (!bounds) {
+      console.error("mapInstance.getBounds() returned null or undefined");
+      return;
+    }
+
+    const filtered = allContracts.filter(
+      (contract: { fromLocation: { latitude: number; longitude: number } }) => {
+        if (
+          !contract.fromLocation ||
+          typeof contract.fromLocation.latitude !== "number" ||
+          typeof contract.fromLocation.longitude !== "number"
+        ) {
+          console.error(
+            "Invalid contract fromLocation or coordinates",
+            contract,
+          );
+          return false;
+        }
+
+        const contractLat = contract.fromLocation.latitude;
+        const contractLng = contract.fromLocation.longitude;
+
+        return bounds.contains(
+          new google.maps.LatLng(contractLat, contractLng),
+        );
+      },
+    );
+
+    setfilteredContracts(filtered);
+  }, [allContracts, mapInstance]);
 
   useEffect(() => {
     if (!GOOGLE_MAPS_API_KEY) {
       setMapError("Google Maps API key is missing.");
     }
-    if (selectedLocation) {
-      fetchProposals(selectedLocation);
+    fetchContracts();
+    if (onCenterChanged) {
+      onCenterChanged(center.lat, center.lng);
     }
-  }, [selectedLocation]);
+  }, [fetchContracts, filters, onCenterChanged]);
 
   useEffect(() => {
     if (mapInstance) {
-      fetchProposals(selectedLocation);
+      const center = mapInstance.getCenter();
+      if (center) {
+        fetchContracts();
+      }
     }
-  }, [mapInstance]);
+  }, [fetchContracts, mapInstance, filters]);
 
   useEffect(() => {
-    if (mapInstance && allProposals.length > 0) {
-      filterProposalsByBounds();
+    if (mapInstance && allContracts.length > 0) {
+      filtercontractsByBounds();
     }
-  }, [mapInstance, allProposals]);
+  }, [filtercontractsByBounds, mapInstance, allContracts]);
 
   // Handle successful map load
   const handleMapLoad = (map: google.maps.Map) => {
+    if (!map || typeof map.getBounds !== "function") {
+      console.error("Google Map failed to load properly.");
+      setMapError("Map failed to initialize.");
+      return;
+    }
     setMapInstance(map);
+
     console.log("Google Map Loaded Successfully");
     setMapError(null); // Reset any error if map is loaded successfully
-
-    if (allProposals.length > 0) {
-      setTimeout(filterProposalsByBounds, 100);
-    }
   };
 
   // Handle error in loading map
@@ -107,7 +234,6 @@ const DriverMap = () => {
     }
   };
 
-
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace();
@@ -116,41 +242,48 @@ const DriverMap = () => {
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
         };
-        setSelectedLocation(newLocation);
 
-        fetchProposals(newLocation);
+        // Update map center
+        setSelectedLocation(newLocation);
+        if (mapInstance) {
+          mapInstance.setCenter(
+            new google.maps.LatLng(newLocation.lat, newLocation.lng),
+          );
+        }
+
+        // Notify parent component of center change (if applicable)
+        if (onCenterChanged) {
+          onCenterChanged(newLocation.lat, newLocation.lng);
+        }
+
+        // Update filters with the new coordinates
+        filters.lat = newLocation.lat;
+        filters.lng = newLocation.lng;
+
+        // Notify parent component of center change (if applicable)
+        if (onCenterChanged) {
+          onCenterChanged(newLocation.lat, newLocation.lng);
+        }
+        fetchContracts();
       } else {
         console.error("No location data available for this place.");
       }
     }
   };
 
-  const filterProposalsByBounds = () => {
-    if (mapInstance) {
-      const bounds = mapInstance.getBounds();
-      if (!bounds) return;
-
-      const filtered = allProposals.filter(
-        (proposal: { geometry: { coordinates: [number, number] } }) => {
-          const proposalLat = proposal.geometry.coordinates[0];
-          const proposalLng = proposal.geometry.coordinates[1];
-          return bounds.contains(
-            new google.maps.LatLng(proposalLat, proposalLng),
-          );
-        },
-      );
-
-      setFilteredProposals(filtered);
-    }
-  };
-
   const handleMapDragEnd = () => {
-    filterProposalsByBounds();
+    if (mapInstance) {
+      const center = mapInstance.getCenter();
+      if (center && onCenterChanged) {
+        onCenterChanged(center.lat(), center.lng());
+      }
+    }
+    filtercontractsByBounds();
   };
 
   const handleMapZoom = () => {
     if (mapInstance) {
-      filterProposalsByBounds(); // Re-filter proposals when zooming or panning
+      filtercontractsByBounds();
     }
   };
 
@@ -171,9 +304,10 @@ const DriverMap = () => {
       onError={handleMapError}
     >
       <GoogleMap
-        mapContainerStyle={mapContainerStyle}
+        mapContainerStyle={containerStyle}
         center={selectedLocation}
         zoom={12}
+        options={{ fullscreenControl: false, streetViewControl: false }}
         onLoad={handleMapLoad}
         onDragEnd={handleMapDragEnd}
 

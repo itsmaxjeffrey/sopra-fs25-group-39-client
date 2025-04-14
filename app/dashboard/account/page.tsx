@@ -1,7 +1,6 @@
-
 "use client";
 import React, { useEffect, useState } from "react";
-import { Tabs, Spin, Typography } from "antd";
+import { Spin, Tabs, Typography } from "antd";
 import axios from "axios";
 import styles from "./Account.module.css";
 import UserDataTab from "./Tabs/UserData";
@@ -89,20 +88,20 @@ const AccountPage = () => {
           },
           ...(userData.userAccountType === "DRIVER"
             ? [
-                {
-                  key: "2",
-                  label: "Vehicle Info",
-                  children: (
-                    <VehicleDataTab
-                      editedData={editedData}
-                      userData={userData}
-                      setEditedData={setEditedData}
-                      changed={changed}
-                      setChanged={setChanged}
-                    />
-                  ),
-                },
-              ]
+              {
+                key: "2",
+                label: "Vehicle Info",
+                children: (
+                  <VehicleDataTab
+                    editedData={editedData}
+                    userData={userData}
+                    setEditedData={setEditedData}
+                    changed={changed}
+                    setChanged={setChanged}
+                  />
+                ),
+              },
+            ]
             : []),
           {
             key: "3",
@@ -113,7 +112,6 @@ const AccountPage = () => {
       />
     </div>
   );
-
 };
 
 export default AccountPage;

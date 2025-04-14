@@ -2,11 +2,10 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Spin, Modal } from "antd";
+import { Modal, Spin } from "antd";
 import axios from "axios";
 
 import styles from "./sidebar.module.css";
-
 
 const Sidebar = () => {
   const router = useRouter();

@@ -44,47 +44,94 @@ reason).
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
+
 ---
 
 ## Contributions Week 2 - 01.04.2025 to 07.04.2025
 
+| **Student**          | **Date**     | **Link to Commit**                                                                                                                                                                                                         | **Description**                                                                                                                                                                                                                                                                                                                                                                        | **Relevance**                                                                                                                  |
+| -------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **[@ojg9]**          | 06.04.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/f6395954b27ddafef9f0d8f06a50fa02242adf52                                                                                                                | Implemented Filters (Except Location Picker) for Contracts on Driver Home Screen                                                                                                                                                                                                                                                                                                       | Second Acceptance Criterium of User Story S11                                                                                  |
+|                      | [date]       | [Link to Commit 2]                                                                                                                                                                                                         | [Brief description of the task]                                                                                                                                                                                                                                                                                                                                                        | [Why this contribution is relevant]                                                                                            |
+| **@xdecentralix**    | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/930c0e1e765c535f7d8c35bdd5d92b8d7efecd82)                                                                                            | Added various API methods for contracts                                                                                                                                                                                                                                                                                                                                                | The contract lifecycle is a core functionality for our app – frontend needs to interact                                        |
+| **@xdecentralix**    | 05.04.2025   | [Link to Commit 2](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/0d760c88107f2d5dcdddc756c597138381ec9968)                                                                                            | Updated and added more API methods for contracts (incl. scheduling)                                                                                                                                                                                                                                                                                                                    | The contract lifecycle is a core functionality for our app – frontend needs to interact                                        |
+| **@xdecentralix**    | 05.04.2025   | [Link to Commit 3](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/d06aeb2b0b37ac5ccd678b7e356b289e74f1e854)                                                                                            | Created Offers logic and endpoints                                                                                                                                                                                                                                                                                                                                                     | The offers lifecycle is also a core functionality for our app – frontend needs to interact and backend needs to process offers |
+| **[@dariohug]**      | [01.04.2025] | [[cbc5792](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/cbc5792311584e5f948d0baa11e15b67891de92e)]                                                                                                   | [Started with Polling -> Looking at java future logic]                                                                                                                                                                                                                                                                                                                                 | [Keed Drivers updated about new contracts of interest in (almost) realtime (<1s)]                                              |
+| **[@dariohug]**      | [05.04.2025] | [[eef2cce](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/eef2cce865b0590f7306b6c6a6bcf9f64ab1dc1f)]                                                                                                   | [Implementing Backend LongPolling -> 5 Testcases]                                                                                                                                                                                                                                                                                                                                      | [Keed Drivers updated about new contracts of interest in (almost) realtime (<1s)]                                              |
+| **[@itsmaxjeffrey]** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/922a7a37a60b5c68bef8ea6a7580c337c7c67fbe)                                                                                            | refactored the authentication login into its own folder and abstracted the login from register                                                                                                                                                                                                                                                                                         | easier to use                                                                                                                  |
+| **[@itsmaxjeffrey]** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/c9c9801782fc2e1b1347b4fb0c44a1b6cffaabb0)                                                                                            | abstracted the user dto dtype for login/register                                                                                                                                                                                                                                                                                                                                       | dtos are needed to be sent back to the client after successful authentication                                                  |
+| **[@itsmaxjeffrey]** | 05.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/f9df4fb1eec5742333fdfc61fd463a582c36cc0c)                                                                                            | created DTO Mappers and DTOs for almost all the classes and abstracted the already existing ones into their own mapper.                                                                                                                                                                                                                                                                | more abstraction helps with reusability of code                                                                                |
+| **[@itsmaxjeffrey]** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/pull/158)                                                                                                                                   | added header auth support in frontend for apiService.ts                                                                                                                                                                                                                                                                                                                                | token will be sent along the userId inside the header                                                                          |
+| **[@fksm2003]**      | 03.04.2025   | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/b628a6b59587d4b7394a0abfeeb0538795336589](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/f0fe22f71a6ed0468fdb979a68da1263aee9f314) | Logout Modal.                                                                                                                                                                                                                                                                                                                                                                          | So users don't lohout accidentally and now they are going to logout.                                                           |
+| **[@fksm2003]**      | 03.04.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/4b9d59a10f791d8349f716b0e38a815cbd2177ba                                                                                                                | Requester aswell as Driver Edit Profile Page. Including 3 Subpages: 1. Personal Information editing (eg. Name, Email adress, etc.), 2. Vehicle Information (only for Driver). Including options to edit Vehicle Model, Insurance Upload, etc. 3. Actions- so changing Password (with confirmation) and deleting an user account (with security check so it doesn't happen by accident) | So users can edit their profile and adapt if changes occur (eg. buying a new car)                                              |
+
+---
+
+## Contributions Week 3 - 08.04.2025 to 14.04.2025
+
+| **Student**        | **Date**   | **Link to Commit**                                                                                            | **Description**                              | **Relevance**                           |
+| ------------------ | ---------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------------- |
+| **@ojg9**          | 09.04.2025 | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/edcd8fc2c771ea5ebda6f5ca10d07f9ba0d6951f] | Fixed errors in Filter on Driver Home Screen | [Finished second part of Userstory S11] |
+| **@ojg9**          | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@xdecentralix**  | [date]     | [Link to Commit 1]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@xdecentralix**  | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **[@dariohug]**      | [13.04.2025] | [[3ec2c86](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/3ec2c86841daf9395720997eab4dccca7a3941cd))]                                                                                                   | [Added Registration Endpoint] | [Allow users (drivers and requesters) to regsiter]    |
+| **@dariohug**      | [13.04.2025]     |  [[d20acda](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/3ec2c86841daf9395720997eab4dccca7a3941cd](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/d20acdad902dad9ddbbf6498bfcc82adeeb7b22a))]                                                                                            | [Started on integratin FE and BE]              | [Unifies JSON Backages for requests and responses]     |
+| **@dariohug**      | [13.04.2025]     |  [[334738f](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/3ec2c86841daf9395720997eab4dccca7a3941cd](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/d20acdad902dad9ddbbf6498bfcc82adeeb7b22a))]                                                                                            | [Started on integratin FE and BE]              | [Unifies JSON Backages for requests and responses]     |
+| **@fksm2003**      | [date]     | [Link to Commit 1]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@fksm2003**      | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@itsmaxjeffrey** | [date]     | [Link to Commit 1]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+| **@itsmaxjeffrey** | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]              | [Why this contribution is relevant]     |
+
+---
+_Easter Break_
+---
+
+## Contributions Week 4 - 22.04.2025 to 28.04.2025
+
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@ojg9]** | 06.04.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/f6395954b27ddafef9f0d8f06a50fa02242adf52 | Implemented Filters (Except Location Picker) for Contracts on Driver Home Screen | Second Acceptance Criterium of User Story S11 |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@xdecentralix** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/930c0e1e765c535f7d8c35bdd5d92b8d7efecd82) | Added various API methods for contracts | The contract lifecycle is a core functionality for our app – frontend needs to interact |
-| **@xdecentralix** | 05.04.2025   | [Link to Commit 2](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/0d760c88107f2d5dcdddc756c597138381ec9968) | Updated and added more API methods for contracts (incl. scheduling) | The contract lifecycle is a core functionality for our app – frontend needs to interact |
-| **@xdecentralix** | 05.04.2025   | [Link to Commit 3](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/d06aeb2b0b37ac5ccd678b7e356b289e74f1e854) | Created Offers logic and endpoints | The offers lifecycle is also a  core functionality for our app – frontend needs to interact and backend needs to process offers |
-|**[@dariohug]**    | [01.04.2025] |[[cbc5792](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/cbc5792311584e5f948d0baa11e15b67891de92e)] | [Started with Polling -> Looking at java future logic] | [Keed Drivers updated about new contracts of interest in (almost) realtime (<1s)] |
-|**[@dariohug]**    | [05.04.2025] |[[eef2cce](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/eef2cce865b0590f7306b6c6a6bcf9f64ab1dc1f)] | [Implementing Backend LongPolling -> 5 Testcases] | [Keed Drivers updated about new contracts of interest in (almost) realtime (<1s)] |
-| **[@itsmaxjeffrey]** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/922a7a37a60b5c68bef8ea6a7580c337c7c67fbe) | refactored the authentication login into its own folder and abstracted the login from register | easier to use  |
-| **[@itsmaxjeffrey]** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/c9c9801782fc2e1b1347b4fb0c44a1b6cffaabb0) | abstracted the user dto dtype for login/register| dtos are needed to be sent back to the client after successful authentication  |
-| **[@itsmaxjeffrey]** | 05.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/f9df4fb1eec5742333fdfc61fd463a582c36cc0c) | created DTO Mappers and DTOs for almost all the classes and abstracted the already existing ones into their own mapper. | more abstraction helps with reusability of code  |
-| **[@itsmaxjeffrey]** | 04.04.2025   | [Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/pull/158) | added header auth support in frontend for apiService.ts | token will be sent along the userId inside the header |
-| **[@fksm2003]** | 03.04.2025   | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/b628a6b59587d4b7394a0abfeeb0538795336589](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/f0fe22f71a6ed0468fdb979a68da1263aee9f314) | Logout Modal.  |  So users don't lohout accidentally and now they are going to logout. |
-|  **[@fksm2003]** | 03.04.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/4b9d59a10f791d8349f716b0e38a815cbd2177ba | Requester aswell as Driver Edit Profile Page. Including 3 Subpages: 1. Personal Information editing (eg. Name, Email adress, etc.), 2. Vehicle Information (only for Driver). Including options to edit Vehicle Model, Insurance Upload, etc. 3. Actions- so changing Password (with confirmation) and deleting an user account (with security check so it doesn't happen by accident) | So users can edit their profile and adapt if changes occur (eg. buying a new car) |
-
+| **@ojg9**          | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@ojg9**          | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
 
-## Contributions Week 3 - [Begin Date] to [End Date]
+## Contributions Week 5 - 29.04.2025 to 05.05.2025
 
-_Continue with the same table format as above._
+| **Student**        | **Date**   | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | ---------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **@ojg9**          | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@ojg9**          | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | 06.05.2025 | n/a                | Weekly Meeting Attendance Joker | xdecentralix took both jokers       |
+| **@xdecentralix**  | Week 5     | n/a                | Weekly Contribution Joker       | xdecentralix took both jokers       |
+| **@dariohug**      | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
 
-## Contributions Week 4 - [Begin Date] to [End Date]
+## Contributions Week 6 - 06.05.2025 to 12.05.2025
 
-_Continue with the same table format as above._
-
----
-
-## Contributions Week 5 - [Begin Date] to [End Date]
-
-_Continue with the same table format as above._
-
----
-
-## Contributions Week 6 - [Begin Date] to [End Date]
-
-_Continue with the same table format as above._
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **@ojg9**          | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@ojg9**          | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { DatePicker, Input, Button, Typography, Upload, Image } from "antd";
-import { UploadOutlined, CameraOutlined } from "@ant-design/icons";
+import { Button, DatePicker, Image, Input, Typography, Upload } from "antd";
+import { CameraOutlined, UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import styles from "../Account.module.css";
 //import axios from "axios";
@@ -135,6 +135,7 @@ const UserDataTab = ({
             value={
               editedData?.birthDate ? dayjs(editedData.birthDate) : null
             }
+
             onChange={(date) => {
               setChanged(true);
               setEditedData({
