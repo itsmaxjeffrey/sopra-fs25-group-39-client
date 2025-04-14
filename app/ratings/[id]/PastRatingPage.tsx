@@ -4,13 +4,25 @@ import React, { useEffect, useState } from "react";
 import { Button, Input, Rate } from "antd";
 import "antd/dist/antd.css";
 
+interface User {
+  username: string;
+  profilePictureUrl: string;
+}
+
+
+interface Contract {
+  id: number;
+  description: string;
+  // Extend as needed
+}
+
 interface Rating {
-  requesterName: string;
-  driverName: string;
-  driverRating: number;
-  contractInfo: string;
+  fromUser: User;
+  toUser: User;
+  contract: Contract;
+  ratingValue: number;
+  flagIssues: boolean;
   comment: string;
-  requesterProfilePictureUrl: string;
 }
 
 const RatingPage: React.FC = () => {
@@ -21,7 +33,7 @@ const RatingPage: React.FC = () => {
     const fetchRating = async () => {
       try {
         // Perform an actual API call
-        const response = await fetch(`/api/v1/ratings/${id}`); // Update to your actual API endpoint
+        const response = await fetch(`/api/v1/ratings/TODO`); // Update to your actual API endpoint
         if (response.ok) {
           const data: Rating = await response.json();
           setRating(data);
@@ -36,7 +48,7 @@ const RatingPage: React.FC = () => {
     };
 
     fetchRating();
-  }, [id]);
+  }, [rating?.contract.id]);
 
   if (error) {
     return <div>{error}</div>;
@@ -55,9 +67,9 @@ const RatingPage: React.FC = () => {
         padding: "20px",
       }}
     >
-      <h1>{rating.requesterName}'s Rating</h1>
+      <h1>{rating.fromUser.username}'s Rating</h1>
       <img
-        src={rating.requesterProfilePictureUrl}
+        src={rating.fromUser.profilePictureUrl}
         alt="Requester Profile"
         style={{
           borderRadius: "50%",
@@ -66,13 +78,13 @@ const RatingPage: React.FC = () => {
           objectFit: "cover",
         }}
       />
-      <h2>Rated Driver: {rating.driverName}</h2>
+      <h2>Rated Driver: {rating.toUser.username}</h2>
       <h3>Rating of Driver:</h3>
-      <Rate value={rating.driverRating} disabled />
+      <Rate value={rating.ratingValue} disabled />
 
       <h3>Contract Information</h3>
       <Input.TextArea
-        value={rating.contractInfo}
+        value={rating.contract.description}
         readOnly
         style={{
           width: "80%",
