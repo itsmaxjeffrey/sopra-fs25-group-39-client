@@ -35,6 +35,9 @@ const DriverMap: React.FC<DriverMapProps> = (
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const isLoadingRef = useRef(false);
 
+  console.log(filteredContracts)
+  
+
   const BASE_URL = process.env.NODE_ENV === "production"
     ? "https://sopra-fs25-group-39-client.vercel.app/" // Production API URL
     : "http://localhost:5001"; // Development API URL, change to 3000 as soon as the backend has implemented the get contracts endpoint (Mock Backend URL = localhost 5001)
@@ -233,6 +236,8 @@ const DriverMap: React.FC<DriverMapProps> = (
       isLoadingRef.current = false;
     }
   };
+
+  console.log(fetchProposals)
 
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {
