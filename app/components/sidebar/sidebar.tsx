@@ -2,16 +2,17 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Modal, Spin } from "antd";
-import axios from "axios";
+import { Modal } from "antd";
 
 import styles from "./sidebar.module.css";
 
-const Sidebar = () => {
+
+const Sidebar = ({ accountType }: { accountType: string | null }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const router = useRouter();
   const [showConfirm, setShowConfirm] = React.useState(false);
+
+  if (!accountType) return null;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
