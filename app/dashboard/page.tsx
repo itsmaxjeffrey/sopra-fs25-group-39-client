@@ -1,5 +1,4 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
 import DriverMap from "./components/DriverMap";
 import ProposalsOverview from "./components/Proposals/ProposalsOverview";
 import { useContext } from "react";
