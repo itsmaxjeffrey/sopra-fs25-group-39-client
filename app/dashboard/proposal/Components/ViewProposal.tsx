@@ -36,7 +36,6 @@ const ViewProposal = ({ id }: Props) => {
   const toRef = useRef<any>(null);
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
 
   const fetchContract = async () => {
