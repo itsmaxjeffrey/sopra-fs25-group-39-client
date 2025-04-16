@@ -6,6 +6,7 @@ import OfferProposal from "../Components/OfferProposal";
 import AcceptedProposal from "../Components/AcceptedProposal";
 import RatingProposal from "../Components/RatingProposal";
 import FinalizedProposal from "../Components/FinalizedProposal";
+import ViewProposal from "../Components/ViewProposal";
 
 const Page = () => {
   const { id } = useParams();
@@ -25,6 +26,8 @@ const Page = () => {
       return <RatingProposal id={id.toString()} />;
     case "FINALIZED":
       return <FinalizedProposal id={id.toString()} />;
+    case "VIEW":
+      return <ViewProposal id={id.toString()} />;
     default:
       return <p style={{ padding: 24 }}>❓ Unknown proposal type</p>;
   }
