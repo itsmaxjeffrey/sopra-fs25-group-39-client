@@ -31,7 +31,8 @@ export default function DashboardLayout({
         },
       })
       .then((res) => {
-        setAccountType(res.data.user.userAccountType);
+        console.log("API Response:", res.data);
+        setAccountType(res.data.user.accountType);
       })
       .catch((err) => {
         console.error("Failed to fetch user in layout:", err);
@@ -39,7 +40,7 @@ export default function DashboardLayout({
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
+  if (loading || !accountType) {
     return (
       <div style={{ padding: 64 }}>
         <Spin size="large" />

@@ -41,6 +41,20 @@ const OfferProposal = ({ id }: Props) => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
 
+  interface Offer {
+    id: string;
+    //title: string;
+    driverName: string;
+    driverId: string;
+    price: number;
+    rating: number;
+    averageRating: number; // Added averageRating property
+  }
+
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [loadingOffers, setLoadingOffers] = useState(true);
+  const [errorOffers, setErrorOffers] = useState(false);
+
   const fetchContract = async () => {
     try {
       const res = await axios.get(
@@ -99,6 +113,24 @@ const OfferProposal = ({ id }: Props) => {
 
   useEffect(() => {
     fetchContract();
+    const fetchOffers = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5001/api/v1/contracts/${id}/offers`
+        );
+        
+        console.log("Offers API Response:", res.data); // Debugging the API response
+        setOffers(res.data); // Store the offers in state
+        setErrorOffers(false);
+      } catch (error) {
+        console.error("Error fetching offers:", error);
+        setErrorOffers(true);
+      } finally {
+        setLoadingOffers(false);
+      }
+    };
+
+    fetchOffers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, id]);
 
@@ -301,39 +333,26 @@ const OfferProposal = ({ id }: Props) => {
         </Row>
 
         <Divider />
-
         <div className={styles.scrollContainer}>
-          <OfferCard
-            title={"Fridge and Piano"}
-            driverName={"Peter Baumgartner"}
-            price={205}
-            rating={3}
-          />
-          <OfferCard
-            title={"Fridge and Piano"}
-            driverName={"Peter Baumgartner"}
-            price={205}
-            rating={5}
-          />
-          <OfferCard
-            title={"Fridge and Piano"}
-            driverName={"Peter Baumgartner"}
-            price={205}
-            rating={1}
-          />
-          <OfferCard
-            title={"Fridge and Piano"}
-            driverName={"Peter Baumgartner"}
-            price={205}
-            rating={5}
-          />
-          <OfferCard
-            title={"Fridge and Piano"}
-            driverName={"Peter Baumgartner"}
-            price={205}
-            rating={4}
-          />
-        </div>
+        {loadingOffers ? (
+          <p>Loading offers...</p>
+        ) : errorOffers ? (
+          <p>Error loading offers. Please try again later.</p>
+        ) : offers.length === 0 ? (
+          <p>No offers available for this proposal.</p>
+        ) : (
+          offers.map((offer) => (
+            <OfferCard
+              key={offer.id} // Use a unique key for each OfferCard
+              //title={offer.title || "No Title"} // Fallback if title is missing
+              driverName={offer.driverName}
+              driverId={offer.driverId}
+              price={offer.price}
+              rating={Math.floor(offer.averageRating)}
+            />
+          ))
+        )}
+      </div>
         <br />
 
         <Form.Item>

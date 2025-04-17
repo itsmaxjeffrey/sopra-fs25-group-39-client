@@ -90,8 +90,36 @@ const ViewProposal = ({ id }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, id]);
 
-  const acceptProposal = () => {
-    console.log("Proposal accepted!");
+  const acceptProposal = async () => {
+    try {
+      setLoading(true); // Show loading spinner while the request is being processed
+  
+      const driverId = localStorage.getItem("id");
+    if (!driverId) {
+      throw new Error("Driver ID not found in local storage.");
+    }
+      const response = await axios.post("http://localhost:5001/api/v1/offers", {
+        contractId: id,
+        driverId: driverId,
+      });
+  
+      if (response.status === 201) {
+        console.log("Proposal accepted successfully!", response.data);
+        Modal.success({
+          title: "Success",
+          content: "The proposal has been accepted successfully!",
+          onOk: () => router.push("/dashboard"), // Redirect to overview
+        });
+      }
+    } catch (error) {
+      console.error("Error accepting proposal:", error);
+      Modal.error({
+        title: "Error",
+        content: "An unexpected error occurred. Please try again later.",
+      });
+    } finally {
+      setLoading(false); // Hide loading spinner
+    }
   };
 
   return (

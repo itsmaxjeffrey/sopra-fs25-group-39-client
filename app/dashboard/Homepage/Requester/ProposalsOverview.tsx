@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "./ProposalsOverview.module.css";
+import styles from "./components/ProposalsOverview.module.css";
 import axios from "axios";
 import { Spin } from "antd";
 import Link from "next/link";
@@ -42,6 +42,7 @@ const ProposalsOverview = () => {
         },
       })
       .then((res) => {
+        console.log("API Response:", res.data); // Debugging the API response
         const sorted = res.data.sort(
           (a: Proposal, b: Proposal) =>
             new Date(a.creationDateTime).getTime() -

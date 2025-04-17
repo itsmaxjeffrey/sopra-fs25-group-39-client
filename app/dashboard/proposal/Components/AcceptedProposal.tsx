@@ -222,12 +222,16 @@ const AcceptedProposal = ({ id }: Props) => {
         <Title level={2}>Your driver:</Title>
 
         <div className={styles.scrollContainer}>
-          <OfferCard
-            title={"Fridge and Piano"}
-            driverName={"Peter Baumgartner"}
-            price={205}
-            rating={3}
-          />
+            {!loading && !error && fromCoords.address && toCoords.address ? (
+            <OfferCard
+              driverName={form.getFieldValue("driverName")}
+              driverId={form.getFieldValue("driverId")}
+              price={form.getFieldValue("price")}
+              rating={Math.round(form.getFieldValue("averageRating") || 0)} // Ensure rating is an integer
+            />
+          ) : (
+            <p>Loading driver information...</p>
+          )}
         </div>
         <br />
 
