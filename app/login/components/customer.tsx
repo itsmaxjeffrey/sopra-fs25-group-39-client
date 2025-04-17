@@ -10,12 +10,19 @@ import {
   Row,
   Spin,
   Typography,
+  Upload,
 } from "antd";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
+import axios from "axios";
+
+const BASE_URL = process.env.NODE_ENV === "production"
+  ? "https://sopra-fs25-group-39-client.vercel.app"
+  : "http://localhost:5001";
+
 import styles from "../login.module.css";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -25,11 +32,35 @@ const { Title } = Typography;
 const Customer = () => {
   const [fromData, setFormData] = useState<any>({}); // later add "formData" to use it
 
+  const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
+    null,
+  );
+
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
     "loading",
   );
   const [errorMessage, setErrorMessage] = useState("");
+
+  const uploadFile = async (file: File, type: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", type);
+
+    console.log("Picute heeheh");
+
+    const response = await axios.post(
+      `${BASE_URL}/api/v1/files/upload/profileimage`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    return response.data.filePath;
+  };
 
   return (
     <div className={styles.driverContainer}>
@@ -84,6 +115,36 @@ const Customer = () => {
               setErrorMessage(err.message);
               setModalState("error");
             });
+          try {
+            let profilePicturePath = null;
+            console.log(profilePictureFile);
+
+            if (profilePictureFile) {
+              profilePicturePath = await uploadFile(
+                profilePictureFile,
+                "profile",
+              );
+            }
+
+            await axios.post(`${BASE_URL}/api/v1/auth/register/requester`, {
+              user: {
+                userAccountType: "REQUESTER",
+                firstName,
+                lastName,
+                birthDate: birthdate,
+                email,
+                phoneNumber: phone,
+                username,
+                password,
+                profilePicturePath,
+              },
+            });
+
+            setModalState("success");
+          } catch (err: any) {
+            setErrorMessage(err.message);
+            setModalState("error");
+          }
         }}
       >
         <div className={styles.formSection}>
@@ -216,6 +277,26 @@ const Customer = () => {
                   ]}
                 >
                   <Input.Password />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Profile Picture" name="profilePicture">
+                  <Upload
+                    listType="picture"
+                    maxCount={1}
+                    beforeUpload={() => false}
+                    onChange={({ fileList }) => {
+                      const file = fileList[0]?.originFileObj;
+                      if (file) {
+                        setProfilePictureFile(file);
+                      } else {
+                        setProfilePictureFile(null);
+                      }
+                    }}
+                    onRemove={() => setProfilePictureFile(null)}
+                  >
+                    <Button>Upload Profile Picture</Button>
+                  </Upload>
                 </Form.Item>
               </Col>
             </Row>

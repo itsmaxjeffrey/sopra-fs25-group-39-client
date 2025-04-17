@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Button,
   Col,
@@ -18,18 +18,46 @@ import {
   LoadingOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
+import { Autocomplete, LoadScript } from "@react-google-maps/api";
 import styles from "../login.module.css";
+import axios from "axios";
 
 const { Title } = Typography;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const Driver = () => {
+  const [formStepOneData, setFormStepOneData] = useState<any>({});
+  const [step, setStep] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
     "loading",
   );
   const [errorMessage, setErrorMessage] = useState("");
+  const [preferredRange, setPreferredRange] = useState("");
+  const [location, setLocation] = useState({
+    latitude: null,
+    longitude: null,
+    formattedAddress: "",
+  });
+  const autoRef = useRef<any>(null);
+  const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
+    null,
+  );
+  const [driverLicenseFile, setDriverLicenseFile] = useState<File | null>(null);
+
+  const [insuranceProofFile, setInsuranceProofFile] = useState<File | null>(
+    null,
+  );
+
+  const handleStepOneFinish = (values: any) => {
+    setFormStepOneData(values);
+    setStep(2);
+  };
+
+  const handleStepTwoFinish = async (values: any) => {
+    const { vehicleModel, licensePlate, weightCapacity, volumeCapacity } =
+      values;
   const [licenseFilePath, setLicenseFilePath] = useState<string | null>(null);
   const [insuranceFilePath, setInsuranceFilePath] = useState<string | null>(null);
 
@@ -261,125 +289,185 @@ const Driver = () => {
           </div>
         </div>
 
-        <div className={styles.formSection}>
-          <div>
-            <Title level={5}>Vehicle Information</Title>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  label="Vehicle Make & Model"
-                  name="vehicleModel"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter your vehicle model",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Honda Civic 2.0" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  label="License Plate"
-                  name="licensePlate"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter your license plate",
-                    },
-                  ]}
-                >
-                  <Input placeholder="ZH 123 456" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  label="Weight Capacity"
-                  name="weightCapacity"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter the weight capacity",
-                    },
-                  ]}
-                >
-                  <Input placeholder="5 Tons" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  label="Volume Capacity"
-                  name="volumeCapacity"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter the volume capacity",
-                    },
-                  ]}
-                >
-                  <Input placeholder="15 Cubic" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-              <Form.Item label="Driver’s License" name="driversLicense">
-              <Upload
-                beforeUpload={() => false} // Prevent automatic upload
-                onChange={async (info) => {
-                  const file = info.file.originFileObj; // Get the selected file
-                  if (file) {
-                    try {
-                      const filePath = await handleFileUpload(file, "license");
-                      setLicenseFilePath(filePath); // Store the file path
-                    } catch (error) {
-                      setErrorMessage("Failed to upload driver’s license");
-                    }
-                  }
-                }}
-                maxCount={1}
-              >
-                <Button icon={<UploadOutlined />}>Upload License</Button>
-              </Upload>
-              </Form.Item>
-              </Col>
-              <Col span={12}>
-              <Form.Item label="Proof of Insurance" name="insuranceProof">
-              <Upload
-                beforeUpload={() => false} // Prevent automatic upload
-                onChange={async (info) => {
-                  const file = info.file.originFileObj; // Get the selected file
-                  if (file) {
-                    try {
-                      const filePath = await handleFileUpload(file, "insurance");
-                      setInsuranceFilePath(filePath); // Store the file path
-                    } catch (error) {
-                      setErrorMessage("Failed to upload insurance proof");
-                    }
-                  }
-                }}
-                maxCount={1}
-              >
-                <Button icon={<UploadOutlined />}>Upload Insurance</Button>
-              </Upload>
-              </Form.Item>
-              </Col>
-            </Row>
-          </div>
-        </div>
+          <Form.Item className={styles.stepControls}>
+            <Button type="primary" htmlType="submit">
+              Next
+            </Button>
+          </Form.Item>
+        </Form>
+      )}
 
-        <Form.Item className={styles.formButtonGroup}>
-          <Button
-            danger
-            style={{ marginRight: 12 }}
-            onClick={() => window.location.reload()}
-          >
-            Cancel
-          </Button>
-          <Button type="primary" htmlType="submit">
-            Register
-          </Button>
-        </Form.Item>
-      </Form>
+      {step === 2 && (
+        <Form layout="vertical" onFinish={handleStepTwoFinish}>
+          <div className={styles.formSection}>
+            <div>
+              <Title level={5}>Vehicle Information</Title>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    label="Vehicle Make & Model"
+                    name="vehicleModel"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your vehicle model",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Honda Civic 2.0" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    label="License Plate"
+                    name="licensePlate"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your license plate",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="ZH 123 456" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    label="Weight Capacity"
+                    name="weightCapacity"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter the weight capacity",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="5 Tons" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    label="Volume Capacity"
+                    name="volumeCapacity"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter the volume capacity",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="15 Cubic" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    label="Preferred Range (in km)"
+                    name="preferredRange"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter preferred range",
+                      },
+                    ]}
+                  >
+                    <Input
+                      type="number"
+                      placeholder="e.g. 50"
+                      onChange={(e) => setPreferredRange(e.target.value)}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item label="Location" name="address">
+                    <LoadScript
+                      googleMapsApiKey={process.env
+                        .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
+                      libraries={["places"]}
+                    >
+                      <Autocomplete
+                        onLoad={(ref) => (autoRef.current = ref)}
+                        onPlaceChanged={() => {
+                          const place = autoRef.current?.getPlace();
+                          if (
+                            place &&
+                            place.geometry &&
+                            place.formatted_address
+                          ) {
+                            setLocation({
+                              latitude: place.geometry.location.lat(),
+                              longitude: place.geometry.location.lng(),
+                              formattedAddress: place.formatted_address,
+                            });
+                          }
+                        }}
+                      >
+                        <Input placeholder="Enter your address" />
+                      </Autocomplete>
+                    </LoadScript>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item label="Driver’s License" name="driversLicense">
+                    <Upload
+                      listType="picture"
+                      maxCount={1}
+                      beforeUpload={() => false}
+                      onChange={({ fileList }) => {
+                        const file = fileList[0]?.originFileObj;
+                        if (file) {
+                          setDriverLicenseFile(file);
+                        } else {
+                          setDriverLicenseFile(null);
+                        }
+                      }}
+                      onRemove={() => setDriverLicenseFile(null)}
+                    >
+                      <Button icon={<UploadOutlined />}>
+                        Upload Picture (optional)
+                      </Button>
+                    </Upload>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item label="Proof of Insurance" name="insuranceProof">
+                    <Upload
+                      listType="picture"
+                      maxCount={1}
+                      beforeUpload={() => false}
+                      onChange={({ fileList }) => {
+                        const file = fileList[0]?.originFileObj;
+                        if (file) {
+                          setInsuranceProofFile(file);
+                        } else {
+                          setInsuranceProofFile(null);
+                        }
+                      }}
+                      onRemove={() => setInsuranceProofFile(null)}
+                    >
+                      <Button icon={<UploadOutlined />}>
+                        Upload Picture (optional)
+                      </Button>
+                    </Upload>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </div>
+          </div>
+
+          <Form.Item className={styles.stepControls}>
+            <Button
+              danger
+              style={{ marginRight: 12 }}
+              onClick={() => window.location.reload()}
+            >
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit">
+              Register
+            </Button>
+          </Form.Item>
+        </Form>
+      )}
 
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>

@@ -1,22 +1,15 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Modal, Spin } from "antd";
-import axios from "axios";
+import { Modal } from "antd";
 
 import styles from "./sidebar.module.css";
 
-const Sidebar = () => {
+const Sidebar = ({ accountType }: { accountType: string | null }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
-  const [accountType, setAccountType] = useState<string | null>(null);
-  const [showConfirm, setShowConfirm] = useState(false);
-
-  useEffect(() => {
-    const userId = localStorage.getItem("id");
-    const token = localStorage.getItem("token");
+  const [showConfirm, setShowConfirm] = React.useState(false);
 
     if (userId && token) {
       axios
@@ -45,14 +38,6 @@ const Sidebar = () => {
     router.push("/");
   };
 
-  if (loading) {
-    return (
-      <div className={styles.sidebar}>
-        <Spin size="large" />
-      </div>
-    );
-  }
-
   return (
     <div className={styles.sidebar}>
       <nav>
@@ -64,7 +49,7 @@ const Sidebar = () => {
             <Link href="/dashboard">Home</Link>
           </li>
 
-          {accountType === "driver" && (
+          {accountType === "DRIVER" && (
             <>
               <li
                 className={`${styles.navItem} ${pathname === "/dashboard/filter" ? styles.active : ""
@@ -85,13 +70,23 @@ const Sidebar = () => {
             </>
           )}
 
-          {accountType === "customer" && (
-            <li
-              className={`${styles.navItem} ${pathname === "/dashboard/pastcontracts" ? styles.active : ""
+          {accountType === "REQUESTER" && (
+            <>
+              <li
+                className={`${styles.navItem} ${
+                  pathname === "/dashboard/proposal/new" ? styles.active : ""
                 }`}
-            >
-              <Link href="/dashboard/pastcontracts">Past Contracts</Link>
-            </li>
+              >
+                <Link href="/dashboard/proposal/new">New Proposal</Link>
+              </li>
+              <li
+                className={`${styles.navItem} ${
+                  pathname === "/dashboard/pastcontracts" ? styles.active : ""
+                }`}
+              >
+                <Link href="/dashboard/pastcontracts">Past Contracts</Link>
+              </li>
+            </>
           )}
 
           <li

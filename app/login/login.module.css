@@ -70,6 +70,14 @@
   margin-left: 20px;
 }
 
+/* Step controls styles */
+.stepControls {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  gap: 12px;
+}
+
 /* Loading popup styles */
 .registerCenter {
   text-align: center;

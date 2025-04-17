@@ -11,6 +11,10 @@ import ActionsTab from "./Tabs/Actions";
 
 const { Title } = Typography;
 
+const BASE_URL = process.env.NODE_ENV === "production"
+  ? "https://sopra-fs25-group-39-client.vercel.app"
+  : "http://localhost:5001";
+
 const AccountPage = () => {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -81,7 +85,7 @@ const AccountPage = () => {
               />
             ),
           },
-          ...(userData.accountType === "driver"
+          ...(userData.userAccountType === "DRIVER"
             ? [
               {
                 key: "2",

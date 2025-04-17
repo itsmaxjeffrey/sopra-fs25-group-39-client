@@ -1,4 +1,3 @@
-'use client'
 import React, { useEffect, useState } from "react";
 import styles from "./ProposalsOverview.module.css";
 import axios from "axios";
@@ -6,7 +5,6 @@ import { Spin } from "antd";
 import Link from "next/link";
 import {
   CalendarOutlined,
-  CheckOutlined,
   ClockCircleOutlined,
   EnvironmentOutlined,
   FileTextOutlined,
@@ -86,7 +84,7 @@ const ProposalsOverview = () => {
 
       <div className={styles.section}>
         <h2>
-          <ClockCircleOutlined />Pending Confirmation by Requester
+          <FileTextOutlined /> Open Proposals
         </h2>
         <div className={styles.cardRow}>
           {contracts.filter((c) => c.contractStatus === "REQUESTED").length ===
@@ -123,7 +121,7 @@ const ProposalsOverview = () => {
 
       <div className={styles.section}>
         <h2>
-          <LockOutlined /> Locked-In Contracts
+          <ClockCircleOutlined /> Pending Confirmation
         </h2>
         <div className={styles.cardRow}>
           {contracts.filter((c) => c.contractStatus === "OFFERED").length ===
@@ -160,7 +158,7 @@ const ProposalsOverview = () => {
 
       <div className={styles.section}>
         <h2>
-          <CheckOutlined /> Fulfilled Contracts
+          <LockOutlined /> Locked-In Contracts
         </h2>
         <div className={styles.cardRow}>
           {contracts.filter((c) => c.contractStatus === "ACCEPTED").length ===
