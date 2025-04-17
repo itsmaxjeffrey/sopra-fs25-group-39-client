@@ -41,7 +41,7 @@ const ViewProposal = ({ id }: Props) => {
   const fetchContract = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/v1/contracts/${id}`
+        `http://localhost:5001/api/v1/contracts/${id}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -74,7 +74,7 @@ const ViewProposal = ({ id }: Props) => {
         lng: data.toLocation?.longitude,
       });
       setImagePaths(
-        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean)
+        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean),
       );
       setError(false);
       setModalVisible(false);
@@ -93,16 +93,16 @@ const ViewProposal = ({ id }: Props) => {
   const acceptProposal = async () => {
     try {
       setLoading(true); // Show loading spinner while the request is being processed
-  
+
       const driverId = localStorage.getItem("id");
-    if (!driverId) {
-      throw new Error("Driver ID not found in local storage.");
-    }
+      if (!driverId) {
+        throw new Error("Driver ID not found in local storage.");
+      }
       const response = await axios.post("http://localhost:5001/api/v1/offers", {
         contractId: id,
         driverId: driverId,
       });
-  
+
       if (response.status === 201) {
         console.log("Proposal accepted successfully!", response.data);
         Modal.success({
@@ -129,25 +129,27 @@ const ViewProposal = ({ id }: Props) => {
         <div className={styles.imageRow}>
           {[0, 1, 2].map((idx) => (
             <div key={idx} className={styles.imageBox}>
-              {imagePaths[idx] ? (
-                <Image
-                  src={
-                    process.env.NODE_ENV === "production"
-                      ? `https://sopra-fs25-group-39-client.vercel.app${imagePaths[idx]}`
-                      : `http://localhost:5001${imagePaths[idx]}`
-                  }
-                  alt={`upload-${idx}`}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              ) : (
-                <div className={styles.cameraIcon}>
-                  <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-                </div>
-              )}
+              {imagePaths[idx]
+                ? (
+                  <Image
+                    src={process.env.NODE_ENV === "production"
+                      ? `https://sopra-fs25-group-39-client.vercel.app${
+                        imagePaths[idx]
+                      }`
+                      : `http://localhost:5001${imagePaths[idx]}`}
+                    alt={`upload-${idx}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                )
+                : (
+                  <div className={styles.cameraIcon}>
+                    <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
+                  </div>
+                )}
             </div>
           ))}
         </div>
@@ -174,8 +176,7 @@ const ViewProposal = ({ id }: Props) => {
                 style={{ width: "100%" }}
                 showTime={{ format: "HH:mm", showSecond: false }}
                 disabledDate={(current) =>
-                  current && current < dayjs().startOf("minute")
-                }
+                  current && current < dayjs().startOf("minute")}
                 disabled
               />
             </Form.Item>
@@ -321,7 +322,12 @@ const ViewProposal = ({ id }: Props) => {
         <Form.Item>
           <Row justify="start" gutter={16}>
             <Col>
-              <Button type="primary" htmlType="button" onClick={acceptProposal} style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}>
+              <Button
+                type="primary"
+                htmlType="button"
+                onClick={acceptProposal}
+                style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
+              >
                 Accept Proposal
               </Button>
             </Col>
@@ -330,26 +336,31 @@ const ViewProposal = ({ id }: Props) => {
       </Form>
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>
-          {loading ? (
-            <div style={{ padding: 64 }}>
-              <Spin size="large" />
-            </div>
-          ) : error ? (
-            <div className={styles.registerError}>
-              <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-              <p>UUUUUUPPPPPPSSSS</p>
-              <Row justify="center" gutter={16}>
-                <Col></Col>
-                <Col>
-                  <Button
-                    onClick={() => router.push("/dashboard/contract-overview")}
-                  >
-                    Back to Overview
-                  </Button>
-                </Col>
-              </Row>
-            </div>
-          ) : null}
+          {loading
+            ? (
+              <div style={{ padding: 64 }}>
+                <Spin size="large" />
+              </div>
+            )
+            : error
+            ? (
+              <div className={styles.registerError}>
+                <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
+                <p>UUUUUUPPPPPPSSSS</p>
+                <Row justify="center" gutter={16}>
+                  <Col></Col>
+                  <Col>
+                    <Button
+                      onClick={() =>
+                        router.push("/dashboard/contract-overview")}
+                    >
+                      Back to Overview
+                    </Button>
+                  </Col>
+                </Row>
+              </div>
+            )
+            : null}
         </div>
       </Modal>
     </div>

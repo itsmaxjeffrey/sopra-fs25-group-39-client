@@ -9,7 +9,7 @@ const HomePage = () => {
   console.log("Account Type:", accountType); // Debugging
 
   if (!accountType) {
-    return <p>Loading account type...</p>; 
+    return <p>Loading account type...</p>;
   }
 
   return (

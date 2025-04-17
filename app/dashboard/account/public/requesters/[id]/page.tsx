@@ -1,18 +1,17 @@
 "use client";
 //best to save this under /users/public/requesters/{id}
 import React, { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Image } from "antd";
 
 interface Requester {
-  username: any;
+  username: string;
   id: string;
   name: string;
   profilePictureUrl: string;
 }
 
 const RequesterProfilePage: React.FC = () => {
-  const router = useRouter();
   const { id } = useParams();
   const [requester, setRequester] = useState<Requester | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +19,9 @@ const RequesterProfilePage: React.FC = () => {
   useEffect(() => {
     const fetchRequesterProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/v1/users/${id}`);
+        const response = await fetch(
+          `http://localhost:5001/api/v1/users/${id}`,
+        );
         if (response.ok) {
           const data = await response.json();
           setRequester(data.user);

@@ -2,7 +2,7 @@
 
 import React from "react";
 import styles from "./OfferCard.module.css";
-import { StarFilled, UserOutlined, } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
 import { Rate } from "antd";
 import Link from "next/link"; // Import Link from next/link
 
@@ -23,7 +23,10 @@ const OfferCard: React.FC<OfferCardProps> = (
         <span>Driver:</span>
         <span className={styles.driverInfoRight}>
           {/* Wrap driver name and icon in a Link */}
-          <Link href={`/dashboard/account/public/drivers/${driverId}`} className={styles.driverLink}>
+          <Link
+            href={`/dashboard/account/public/drivers/${driverId}`}
+            className={styles.driverLink}
+          >
             {driverName}
             <UserOutlined style={{ fontSize: "20px", marginLeft: "8px" }} />
           </Link>
@@ -36,7 +39,7 @@ const OfferCard: React.FC<OfferCardProps> = (
       <div className={styles.row}>
         <span>Avg. Rating of Driver:</span>
         <span className={styles.stars}>
-        <Rate disabled defaultValue={rating} />
+          <Rate disabled defaultValue={rating} />
         </span>
       </div>
     </div>

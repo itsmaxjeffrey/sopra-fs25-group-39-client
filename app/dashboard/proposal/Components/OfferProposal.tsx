@@ -116,9 +116,9 @@ const OfferProposal = ({ id }: Props) => {
     const fetchOffers = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5001/api/v1/contracts/${id}/offers`
+          `http://localhost:5001/api/v1/contracts/${id}/offers`,
         );
-        
+
         console.log("Offers API Response:", res.data); // Debugging the API response
         setOffers(res.data); // Store the offers in state
         setErrorOffers(false);
@@ -334,25 +334,25 @@ const OfferProposal = ({ id }: Props) => {
 
         <Divider />
         <div className={styles.scrollContainer}>
-        {loadingOffers ? (
-          <p>Loading offers...</p>
-        ) : errorOffers ? (
-          <p>Error loading offers. Please try again later.</p>
-        ) : offers.length === 0 ? (
-          <p>No offers available for this proposal.</p>
-        ) : (
-          offers.map((offer) => (
-            <OfferCard
-              key={offer.id} // Use a unique key for each OfferCard
-              //title={offer.title || "No Title"} // Fallback if title is missing
-              driverName={offer.driverName}
-              driverId={offer.driverId}
-              price={offer.price}
-              rating={Math.floor(offer.averageRating)}
-            />
-          ))
-        )}
-      </div>
+          {loadingOffers
+            ? <p>Loading offers...</p>
+            : errorOffers
+            ? <p>Error loading offers. Please try again later.</p>
+            : offers.length === 0
+            ? <p>No offers available for this proposal.</p>
+            : (
+              offers.map((offer) => (
+                <OfferCard
+                  key={offer.id} // Use a unique key for each OfferCard
+                  //title={offer.title || "No Title"} // Fallback if title is missing
+                  driverName={offer.driverName}
+                  driverId={offer.driverId}
+                  price={offer.price}
+                  rating={Math.floor(offer.averageRating)}
+                />
+              ))
+            )}
+        </div>
         <br />
 
         <Form.Item>

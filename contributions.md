@@ -90,18 +90,18 @@ _Easter Break_
 
 ## Contributions Week 4 - 22.04.2025 to 28.04.2025
 
-| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
-| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **@ojg9**          | 18.04.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/da34549d54c3ee7efa1ec5ad0ee7066f62998cb7 | Fixed many very different small bugs | Get code in a form that is working and ready for hand-in of M3 |
-| **@ojg9**          | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@xdecentralix**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@xdecentralix**  | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@dariohug**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@dariohug**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **Student**        | **Date**   | **Link to Commit**                                                                                          | **Description**                      | **Relevance**                                                  |
+| ------------------ | ---------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------- |
+| **@ojg9**          | 18.04.2025 | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/da34549d54c3ee7efa1ec5ad0ee7066f62998cb7 | Fixed many very different small bugs | Get code in a form that is working and ready for hand-in of M3 |
+| **@ojg9**          | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
+| **@xdecentralix**  | [date]     | [Link to Commit 1]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
+| **@xdecentralix**  | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
+| **@dariohug**      | [date]     | [Link to Commit 1]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
+| **@dariohug**      | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
+| **@fksm2003**      | [date]     | [Link to Commit 1]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
+| **@fksm2003**      | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
+| **@itsmaxjeffrey** | [date]     | [Link to Commit 1]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
+| **@itsmaxjeffrey** | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
 
 ---
 

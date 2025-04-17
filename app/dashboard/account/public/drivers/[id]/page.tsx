@@ -2,7 +2,7 @@
 "use client";
 // pages/driver/[id].tsx
 import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button, Card, Carousel, Input, message, Rate, Spin } from "antd";
 import axios from "axios";
 import Image from "next/image";
@@ -51,7 +51,6 @@ export default function DriverProfilePage() {
     if (!id || typeof id !== "string") return;
 
     console.log("Driver ID:", id, typeof id); // Debugging the ID
-
 
     const fetchDriver = async () => {
       try {
@@ -106,28 +105,35 @@ export default function DriverProfilePage() {
             {driver.username}&apos;s Driver Profile
           </h1>
           <div className="text-lg mb-2">Avg. Rating of Driver:</div>
-          <Rate disabled allowHalf value={averageRating} className="text-yellow-500 text-2xl" />
+          <Rate
+            disabled
+            allowHalf
+            value={averageRating}
+            className="text-yellow-500 text-2xl"
+          />
 
           <div>
             {/* Profile Picture */}
-            {driver.profilePicture ? (
-              <Image
-                src={driver.profilePicture}
-                alt="Driver"
-                width={150}
-                height={150}
-                className="rounded-full object-cover border-4 border-white shadow-md"
-              />
-            ) : (
-              <div
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: "50%",
-                  backgroundColor: "gray",
-                }}
-              />
-            )}
+            {driver.profilePicture
+              ? (
+                <Image
+                  src={driver.profilePicture}
+                  alt="Driver"
+                  width={150}
+                  height={150}
+                  className="rounded-full object-cover border-4 border-white shadow-md"
+                />
+              )
+              : (
+                <div
+                  style={{
+                    width: 150,
+                    height: 150,
+                    borderRadius: "50%",
+                    backgroundColor: "gray",
+                  }}
+                />
+              )}
 
             {/* Vehicle Info */}
             {driver.car
@@ -160,30 +166,31 @@ export default function DriverProfilePage() {
 
           {/* Ratings Section */}
           <div className="mt-4">
-        <h3 className="text-xl font-semibold mb-4">Comments</h3>
-            {driver.ratings && driver.ratings.length > 0 ? (
-              <Carousel autoplay>
-                {driver.ratings.map((rating) => (
-                  <Card
-                    key={rating.contract.id}
-                    title={`Rated by: ${rating.fromUser.username}`}
-                    extra={<Rate value={rating.ratingValue} disabled />}
-                    style={{
-                      cursor: "pointer",
-                      border: "1px solid #f0f0f0",
-                      borderRadius: "8px",
-                      margin: "0 auto",
-                      width: "80%",
-                    }}
-                    onClick={() => router.push(`/ratings/${rating.contract.id}`)}
-                  >
-                    <p>{rating.comment || "No comment provided."}</p>
-                  </Card>
-                ))}
-              </Carousel>
-            ) : (
-              <p>No ratings yet.</p>
-            )}
+            <h3 className="text-xl font-semibold mb-4">Comments</h3>
+            {driver.ratings && driver.ratings.length > 0
+              ? (
+                <Carousel autoplay>
+                  {driver.ratings.map((rating) => (
+                    <Card
+                      key={rating.contract.id}
+                      title={`Rated by: ${rating.fromUser.username}`}
+                      extra={<Rate value={rating.ratingValue} disabled />}
+                      style={{
+                        cursor: "pointer",
+                        border: "1px solid #f0f0f0",
+                        borderRadius: "8px",
+                        margin: "0 auto",
+                        width: "80%",
+                      }}
+                      onClick={() =>
+                        router.push(`/ratings/${rating.contract.id}`)}
+                    >
+                      <p>{rating.comment || "No comment provided."}</p>
+                    </Card>
+                  ))}
+                </Carousel>
+              )
+              : <p>No ratings yet.</p>}
           </div>
 
           {/* Return Button */}

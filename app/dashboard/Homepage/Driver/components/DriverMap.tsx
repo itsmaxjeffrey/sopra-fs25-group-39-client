@@ -7,8 +7,8 @@ import {
   Autocomplete,
   GoogleMap,
   Libraries,
-  Marker,
   LoadScriptNext,
+  Marker,
 } from "@react-google-maps/api";
 
 // Define MAP_LIBRARIES outside the component to avoid redefinition on every render
@@ -118,28 +118,34 @@ const DriverMap: React.FC<DriverMapProps> = (
         if (Array.isArray(data)) {
           setallContracts(data);
 
-        // Filter contracts immediately after fetching
-      if (mapInstance) {
-        const bounds = mapInstance.getBounds();
+          // Filter contracts immediately after fetching
+          if (mapInstance) {
+            const bounds = mapInstance.getBounds();
 
-        if (bounds) {
-          const filtered = data.filter(
-            (contract: { fromLocation: { latitude: number; longitude: number } }) => {
-              const contractLat = contract.fromLocation.latitude;
-              const contractLng = contract.fromLocation.longitude;
+            if (bounds) {
+              const filtered = data.filter(
+                (
+                  contract: {
+                    fromLocation: { latitude: number; longitude: number };
+                  },
+                ) => {
+                  const contractLat = contract.fromLocation.latitude;
+                  const contractLng = contract.fromLocation.longitude;
 
-              return bounds.contains(new google.maps.LatLng(contractLat, contractLng));
-            },
-          );
+                  return bounds.contains(
+                    new google.maps.LatLng(contractLat, contractLng),
+                  );
+                },
+              );
 
-          setfilteredContracts(filtered);
+              setfilteredContracts(filtered);
+            }
+          }
+        } else {
+          console.warn("Unexpected response format:", data);
+          setallContracts([]);
+          setfilteredContracts([]);
         }
-      }
-    } else {
-      console.warn("Unexpected response format:", data);
-      setallContracts([]);
-      setfilteredContracts([]);
-    }
       } catch (error) {
         console.error("Error fetching contracts:", error);
       } finally {
@@ -346,7 +352,7 @@ const DriverMap: React.FC<DriverMapProps> = (
         onZoomChanged={handleMapZoom}
       >
         <div style={{ background: "red", height: "50px" }}>MAP CONTENT</div>
-        
+
         {/* Search Input */}
 
         <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
@@ -387,7 +393,8 @@ const DriverMap: React.FC<DriverMapProps> = (
               lng: contract.fromLocation.longitude,
             }}
             onClick={() => {
-              window.location.href = `/dashboard/proposal/${contract.contractId}?type=VIEW`;
+              window.location.href =
+                `/dashboard/proposal/${contract.contractId}?type=VIEW`;
             }}
           />
         ))}
