@@ -92,7 +92,7 @@ _Easter Break_
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **@ojg9**          | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@ojg9**          | 18.04.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/da34549d54c3ee7efa1ec5ad0ee7066f62998cb7 | Fixed many very different small bugs | Get code in a form that is working and ready for hand-in of M3 |
 | **@ojg9**          | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@xdecentralix**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@xdecentralix**  | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
