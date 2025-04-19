@@ -4,7 +4,7 @@ import React from "react";
 import styles from "./OfferCard.module.css";
 import { UserOutlined } from "@ant-design/icons";
 import { Rate } from "antd";
-import Link from "next/link"; // Import Link from next/link
+import Link from "next/link"; 
 
 interface OfferCardProps {
   //title: string;
@@ -12,13 +12,18 @@ interface OfferCardProps {
   driverId: string;
   price: number;
   rating: number;
+  isSelected: boolean; // New prop to indicate if the card is selected
+  onClick: () => void; // New prop for handling clicks
 }
 
 const OfferCard: React.FC<OfferCardProps> = (
-  { driverName, driverId, price, rating },
+  { driverName, driverId, price, isSelected, rating, onClick },
 ) => {
   return (
-    <div className={styles.card}>
+    <div
+      className={`${styles.card} ${isSelected ? styles.selected : ""}`} // Add selected class if the card is selected
+      onClick={onClick} // Handle click
+    >
       <div className={styles.row}>
         <span>Driver:</span>
         <span className={styles.driverInfoRight}>

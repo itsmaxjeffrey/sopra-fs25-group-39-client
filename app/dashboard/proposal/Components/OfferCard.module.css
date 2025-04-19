@@ -5,6 +5,9 @@
   padding: 16px;
   min-width: 350px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .title {
@@ -41,6 +44,7 @@
 
 .card:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  border-color: #1890ff;
 }
 
 .row span {
@@ -52,4 +56,8 @@
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+}
+.card.selected {
+  border-color: #52c41a; /* Green border for selected card */
+  box-shadow: 0 0 8px rgba(82, 196, 26, 0.6);
 }

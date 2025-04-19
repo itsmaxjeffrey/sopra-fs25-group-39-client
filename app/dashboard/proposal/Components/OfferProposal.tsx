@@ -40,9 +40,10 @@ const OfferProposal = ({ id }: Props) => {
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
+  const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null);
 
   interface Offer {
-    id: string;
+    offerId: string;
     //title: string;
     driverName: string;
     driverId: string;
@@ -111,6 +112,42 @@ const OfferProposal = ({ id }: Props) => {
     }
   };
 
+  const handleCardClick = (offerId: string) => {
+    console.log("Clicked Offer ID:", offerId);
+    // Toggle selection: if the clicked card is already selected, unselect it
+    setSelectedOfferId((prevSelectedId) =>
+      prevSelectedId === offerId ? null : offerId
+    );
+  };
+
+  const handleConfirmSelection = async () => {
+    if (!selectedOfferId) {
+      Modal.warning({
+        title: "No Offer Selected",
+        content: "Please select an offer before confirming.",
+      });
+      return;
+    }
+
+    try {
+      await axios.put(
+        `http://localhost:5001/api/v1/offers/${selectedOfferId}/status?status=ACCEPTED`,
+      );
+      Modal.success({
+        title: "Success",
+        content: "The offer has been successfully accepted!",
+        onOk: () => router.push("/dashboard"),
+      });
+    } catch (error) {
+      console.error("Error confirming selection:", error);
+      Modal.error({
+        title: "Error",
+        content: "An error occurred while accepting the offer. Please try again.",
+      });
+    }
+  };
+
+
   useEffect(() => {
     fetchContract();
     const fetchOffers = async () => {
@@ -121,6 +158,7 @@ const OfferProposal = ({ id }: Props) => {
 
         console.log("Offers API Response:", res.data); // Debugging the API response
         setOffers(res.data); // Store the offers in state
+        console.log("Offers:", res.data); // Debugging the offers state
         setErrorOffers(false);
       } catch (error) {
         console.error("Error fetching offers:", error);
@@ -343,12 +381,14 @@ const OfferProposal = ({ id }: Props) => {
             : (
               offers.map((offer) => (
                 <OfferCard
-                  key={offer.id} // Use a unique key for each OfferCard
+                  key={offer.offerId} // Use a unique key for each OfferCard
                   //title={offer.title || "No Title"} // Fallback if title is missing
                   driverName={offer.driverName}
                   driverId={offer.driverId}
                   price={offer.price}
                   rating={Math.floor(offer.averageRating)}
+                  isSelected={selectedOfferId === offer.offerId} 
+                  onClick={() => handleCardClick(offer.offerId)}
                 />
               ))
             )}
@@ -357,6 +397,19 @@ const OfferProposal = ({ id }: Props) => {
 
         <Form.Item>
           <Row justify="start" gutter={16}>
+          <Col>
+              <Button
+                type="primary"
+                onClick={handleConfirmSelection}
+                disabled={!selectedOfferId} // Disable button if no offer is selected
+                style={{
+                  backgroundColor: selectedOfferId ? "#52c41a" : undefined, // Green if selected
+                  borderColor: selectedOfferId ? "#52c41a" : undefined,
+                }}
+              >
+                Confirm Selection
+              </Button>
+            </Col>
             <Col>
               <Button
                 danger
