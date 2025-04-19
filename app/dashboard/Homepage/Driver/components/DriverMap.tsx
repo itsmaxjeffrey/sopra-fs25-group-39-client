@@ -116,7 +116,14 @@ const DriverMap: React.FC<DriverMapProps> = (
         const data = await response.json();
 
         if (Array.isArray(data)) {
-          setallContracts(data);
+
+          const requestedContracts = data.filter(
+            (contract: { contractStatus: string }) =>
+              contract.contractStatus === "REQUESTED",
+          );
+
+
+          setallContracts(requestedContracts);
 
           // Filter contracts immediately after fetching
           if (mapInstance) {
