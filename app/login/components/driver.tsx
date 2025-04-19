@@ -58,6 +58,8 @@ const Driver = () => {
   const handleStepTwoFinish = async (values: any) => {
     const { vehicleModel, licensePlate, weightCapacity, volumeCapacity } =
       values;
+  };
+
   const [licenseFilePath, setLicenseFilePath] = useState<string | null>(null);
   const [insuranceFilePath, setInsuranceFilePath] = useState<string | null>(null);
 
@@ -295,7 +297,7 @@ const Driver = () => {
             </Button>
           </Form.Item>
         </Form>
-      )}
+      }
 
       {step === 2 && (
         <Form layout="vertical" onFinish={handleStepTwoFinish}>

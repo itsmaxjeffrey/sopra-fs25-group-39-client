@@ -6,7 +6,7 @@ import axios from "axios";
 
 const BASE_URL = process.env.NODE_ENV === "production"
   ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:5001";
+  : "http://localhost:8080";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
