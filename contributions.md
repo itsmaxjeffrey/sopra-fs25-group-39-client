@@ -98,8 +98,8 @@ _Easter Break_
 | **@xdecentralix**  | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
 | **@dariohug**      | [date]     | [Link to Commit 1]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
 | **@dariohug**      | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
-| **@fksm2003**      | [date]     | [Link to Commit 1]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
-| **@fksm2003**      | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
+| **@fksm2003**      | [16.04.2025]     | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/6a98072ede726ad019022dbc653b475786583c1f] | [Contract Overview Page with contract details and integrated object pictures] | [For driver to see the contract and is able to accept it]                            |
+| **@fksm2003**      | [16.04.2025]     | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/71458e9b046645c4f1a5673054b2d1f18c810be6]   | [Past Contract Overview Requester]      | [So the requester can view his past contracts- so all the finished moves]                            |
 | **@itsmaxjeffrey** | [date]     | [Link to Commit 1]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
 | **@itsmaxjeffrey** | [date]     | [Link to Commit 2]                                                                                          | [Brief description of the task]      | [Why this contribution is relevant]                            |
 
@@ -115,8 +115,8 @@ _Easter Break_
 | **@xdecentralix**  | Week 5     | n/a                | Weekly Contribution Joker       | xdecentralix took both jokers       |
 | **@dariohug**      | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@dariohug**      | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [16.04.2025]     | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/b9fbb117718a223536941c1560ab13a6629d4dbb] | [Implemented Past Contract Overview Page and integrated Rating Page] | [Why this contribution is relevant] |
+| **@fksm2003**      | [16.04.2025]     | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/af103a5967c36d3f267e7b66921807d3d06b751a] | [Implemented Driver COntract Overview. So all the different states of a proposal (Pending confirmation by Requester, Locked-In Contracts, and Fulfilled Contracts)] | [So the driver knows what contracts he still needs to fullfill, which are done, and for which he is waiting for a reply. THis is important to keep an overview of his work schedule] |
 | **@itsmaxjeffrey** | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@itsmaxjeffrey** | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
