@@ -44,10 +44,37 @@ const Dashboard: React.FC = () => {
     clear: clearToken, // all we need in this scenario is a method to clear the token
   } = useLocalStorage<string>("token", ""); // if you wanted to select a different token, i.e "lobby", useLocalStorage<string>("lobby", "");
 
-  const handleLogout = (): void => {
-    // Clear token using the returned function 'clear' from the hook
-    clearToken();
-    router.push("/login");
+  const handleLogout = async () => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+  
+    if (!token || !userId) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      router.push("/");
+      return;
+    }
+  
+    try {
+      await axios.post(
+        "http://localhost:8080/api/v1/auth/logout",
+        {},
+        {
+          headers: {
+            UserId: userId,
+            Authorization: `${token}`,
+          },
+        }
+      );
+  
+      console.log("Successfully logged out");
+    } catch (error) {
+      console.error("Failed to log out:", error);
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      router.push("/");
+    }
   };
 
   useEffect(() => {

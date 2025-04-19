@@ -25,13 +25,13 @@ const AccountPage = () => {
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
-
+  
     if (!userId || !token) {
       setError("No user ID or token found");
       setLoading(false);
       return;
     }
-
+  
     axios
       .get(`http://localhost:8080/api/v1/users/${userId}`, {
         headers: {
@@ -40,9 +40,14 @@ const AccountPage = () => {
         },
       })
       .then((res) => {
-        setUserData(res.data.user);
-        setEditedData(res.data.user);
-        localStorage.setItem("token", res.data.token);
+        const user = res.data;
+        console.log(user);
+        setUserData({
+          ...user,
+          profilePicturePath: user.profilePicturePath,
+        });
+        setEditedData(user);
+        localStorage.setItem("token", user.token);
       })
       .catch((err) => {
         setError(err.message);

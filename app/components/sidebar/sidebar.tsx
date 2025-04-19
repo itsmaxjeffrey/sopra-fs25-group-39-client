@@ -35,10 +35,37 @@ const Sidebar = ({ accountType: initialAccountType }: { accountType: string | nu
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    router.push("/");
+  const handleLogout = async () => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+  
+    if (!token || !userId) {
+     localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      router.push("/");
+      return;
+    }
+  
+    try {
+      await axios.post(
+        "http://localhost:8080/api/v1/auth/logout",
+        {}, 
+        {
+          headers: {
+            UserId: userId,
+            Authorization: `${token}`,
+          },
+        }
+      );
+  
+      console.log("Successfully logged out");
+    } catch (error) {
+      console.error("Failed to log out:", error);
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      router.push("/");
+    }
   };
 
   return (

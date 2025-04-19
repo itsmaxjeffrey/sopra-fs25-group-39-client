@@ -16,8 +16,15 @@ const PastContracts = () => {
   useEffect(() => {
     const fetchContracts = async () => {
       try {
+        const token = localStorage.getItem("token");
         const res = await axios.get(
           `http://localhost:8080/api/v1/users/${userId}/contracts`,
+          {
+            headers: {
+              UserId: `${userId}`,
+              Authorization: `${token}`,
+            },
+          }
         );
         const now = dayjs().startOf("day");
 
