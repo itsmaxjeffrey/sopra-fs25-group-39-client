@@ -19,25 +19,29 @@ export default function DashboardLayout({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const id = localStorage.getItem("id");
+    const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
 
-    if (!id || !token) return;
+    console.log("UserId:", userId, "Token:", token); // Debugging log
+
+    if (!userId || !token) return;
 
     axios
-      .get(`http://localhost:5001/api/v1/users/${id}`, {
+      .get(`http://localhost:8080/api/v1/users/${userId}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          UserId: `${userId}`,
+          Authorization: `${token}`,
         },
       })
       .then((res) => {
         console.log("API Response:", res.data);
-        setAccountType(res.data.user.accountType);
+        setAccountType(res.data.userAccountType);
       })
       .catch((err) => {
         console.error("Failed to fetch user in layout:", err);
       })
-      .finally(() => setLoading(false));
+      .then(() => setLoading(false))
+      .catch(() => setLoading(false));
   }, []);
 
   if (loading || !accountType) {

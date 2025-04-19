@@ -21,7 +21,7 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
 
       //   if (!res.ok) {
       //     localStorage.removeItem("token");
-      //     localStorage.removeItem("id");
+      //     localStorage.removeItem("userId");
       //     router.push("/login");
       //   } else {
       //     const data = await res.json();
@@ -30,7 +30,7 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
       // } catch (err) {
       //   console.error("Auth check failed:", err);
       //   localStorage.removeItem("token");
-      //   localStorage.removeItem("id");
+      //   localStorage.removeItem("userId");
       //   router.push("/login");
       // }
     };

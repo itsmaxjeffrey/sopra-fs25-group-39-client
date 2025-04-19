@@ -23,10 +23,10 @@ import { Autocomplete } from "@react-google-maps/api";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  id: string;
+  userId: string;
 }
 
-const EditProposalFormPage = ({ id }: Props) => {
+const EditProposalFormPage = ({ userId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [changed, setChanged] = useState(false);
@@ -43,7 +43,7 @@ const EditProposalFormPage = ({ id }: Props) => {
   const fetchContract = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/v1/contracts/${id}`,
+        `http://localhost:8080/api/v1/contracts/${userId}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -90,7 +90,7 @@ const EditProposalFormPage = ({ id }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`http://localhost:5001/api/v1/contracts/${id}`);
+      await axios.delete(`http://localhost:8080/api/v1/contracts/${userId}`);
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
@@ -100,7 +100,7 @@ const EditProposalFormPage = ({ id }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, id]);
+  }, [form, userId]);
 
   const onFinish = async (values: any) => {
     const payload = {
@@ -132,7 +132,7 @@ const EditProposalFormPage = ({ id }: Props) => {
 
     try {
       const response = await axios.put(
-        `http://localhost:5001/api/v1/contracts/${id}`,
+        `http://localhost:8080/api/v1/contracts/${userId}`,
         payload,
       );
       console.log("PUT response:", response.data);
@@ -156,7 +156,7 @@ const EditProposalFormPage = ({ id }: Props) => {
                       ? `https://sopra-fs25-group-39-client.vercel.app${
                         imagePaths[idx]
                       }`
-                      : `http://localhost:5001${imagePaths[idx]}`}
+                      : `http://localhost:8080${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",

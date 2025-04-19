@@ -11,7 +11,7 @@ const { Title } = Typography;
 
 const BASE_URL = process.env.NODE_ENV === "production"
   ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:5001";
+  : "http://localhost:8080";
 
 const extractFilename = (path: string) => path?.split("/")?.pop();
 
@@ -27,9 +27,9 @@ const VehicleDataTab = ({
 
   const handleSave = () => {
     const token = localStorage.getItem("token");
-    const id = localStorage.getItem("id");
+    const userId = localStorage.getItem("userId");
 
-    if (!token || !id) return;
+    if (!token || !userId) return;
 
     console.log("Would send vehicle data:", editedData);
   };

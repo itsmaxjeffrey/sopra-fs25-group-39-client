@@ -23,10 +23,10 @@ import Title from "antd/es/typography/Title";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  id: string;
+  userId: string;
 }
 
-const AcceptedProposal = ({ id }: Props) => {
+const AcceptedProposal = ({ userId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ const AcceptedProposal = ({ id }: Props) => {
   const fetchContract = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/v1/contracts/${id}`,
+        `http://localhost:8080/api/v1/contracts/${userId}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -88,7 +88,7 @@ const AcceptedProposal = ({ id }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`http://localhost:5001/api/v1/contracts/${id}`);
+      await axios.delete(`http://localhost:8080/api/v1/contracts/${userId}`);
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
@@ -98,7 +98,7 @@ const AcceptedProposal = ({ id }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, id]);
+  }, [form, userId]);
 
   return (
     <div className={styles.wrapper}>
@@ -114,7 +114,7 @@ const AcceptedProposal = ({ id }: Props) => {
                       ? `https://sopra-fs25-group-39-client.vercel.app${
                         imagePaths[idx]
                       }`
-                      : `http://localhost:5001${imagePaths[idx]}`}
+                      : `http://localhost:8080${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",

@@ -1,5 +1,5 @@
 //probably best to create a new folder "ratings"
-//then insert this page at root/ratings/{id}
+//then insert this page at root/ratings/{userId}
 import React, { useEffect, useState } from "react";
 import { Button, Image, Input, Rate } from "antd";
 import "antd/dist/antd.css";
@@ -10,7 +10,7 @@ interface User {
 }
 
 interface Contract {
-  id: number;
+  userId: number;
   description: string;
   // Extend as needed
 }
@@ -48,7 +48,7 @@ const RatingPage: React.FC = () => {
     };
 
     fetchRating();
-  }, [rating?.contract.id]);
+  }, [rating?.contract.userId]);
 
   if (error) {
     return <div>{error}</div>;

@@ -50,7 +50,7 @@ const NewProposalFormPage = () => {
     setModalState("loading");
     setModalVisible(true);
 
-    const userId = localStorage.getItem("id");
+    const userId = localStorage.getItem("userId");
 
     const length = Number(values.length);
     const width = Number(values.width);
@@ -68,7 +68,7 @@ const NewProposalFormPage = () => {
 
         try {
           const res = await axios.post(
-            "http://localhost:5001/api/v1/files/upload/proposal",
+            "http://localhost:8080/api/v1/files/upload/proposal",
             formData,
           );
           uploadedPaths[i] = res.data.filePath;
@@ -113,7 +113,7 @@ const NewProposalFormPage = () => {
     setTimeout(async () => {
       try {
         console.log("WOULD SEND:", JSON.stringify(payload, null, 2));
-        await axios.post("http://localhost:5001/api/v1/contracts", payload);
+        await axios.post("http://localhost:8080/api/v1/contracts", payload);
         setModalState("success");
       } catch (err: any) {
         console.error("Creation failed", err);

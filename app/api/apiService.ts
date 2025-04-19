@@ -10,7 +10,7 @@ export class ApiService {
   private userId: string | null = null;
 
   setAuthToken(token: string) { this.authToken = token;}
-  setUserId(id: string) { this.userId = id; }
+  setUserId(userId: string) { this.userId = userId; }
 
   private getHeaders(): HeadersInit {
     const headers: Record<string, string> = {

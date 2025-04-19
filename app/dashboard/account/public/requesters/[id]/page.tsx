@@ -1,18 +1,18 @@
 "use client";
-//best to save this under /users/public/requesters/{id}
+//best to save this under /users/public/requesters/{userId}
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Image } from "antd";
 
 interface Requester {
   username: string;
-  id: string;
+  userId: string;
   name: string;
   profilePictureUrl: string;
 }
 
 const RequesterProfilePage: React.FC = () => {
-  const { id } = useParams();
+  const { userId } = useParams();
   const [requester, setRequester] = useState<Requester | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,7 +20,7 @@ const RequesterProfilePage: React.FC = () => {
     const fetchRequesterProfile = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5001/api/v1/users/${id}`,
+          `http://localhost:8080/api/v1/users/${userId}`,
         );
         if (response.ok) {
           const data = await response.json();
@@ -37,7 +37,7 @@ const RequesterProfilePage: React.FC = () => {
     };
 
     fetchRequesterProfile();
-  }, [id]);
+  }, [userId]);
 
   if (error) {
     return <div>{error}</div>;

@@ -25,10 +25,10 @@ import { Rate } from "antd";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  id: string;
+  userId: string;
 }
 
-const RatingProposal = ({ id }: Props) => {
+const RatingProposal = ({ userId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -43,7 +43,7 @@ const RatingProposal = ({ id }: Props) => {
   const fetchContract = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/v1/contracts/${id}`,
+        `http://localhost:8080/api/v1/contracts/${userId}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -90,7 +90,7 @@ const RatingProposal = ({ id }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, id]);
+  }, [form, userId]);
 
   return (
     <div className={styles.wrapper}>
@@ -106,7 +106,7 @@ const RatingProposal = ({ id }: Props) => {
                       ? `https://sopra-fs25-group-39-client.vercel.app${
                         imagePaths[idx]
                       }`
-                      : `http://localhost:5001${imagePaths[idx]}`}
+                      : `http://localhost:8080${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",
@@ -218,13 +218,13 @@ const RatingProposal = ({ id }: Props) => {
           onFinish={async (values) => {
             try {
               const payload = {
-                id,
+                userId,
                 rating: values.rating,
                 issues: values.issues || false,
                 issueDetails: values.issues ? values.issueDetails || "" : "",
               };
               await axios.post(
-                `http://localhost:5001/api/v1/contracts/${id}/driver-rating`,
+                `http://localhost:8080/api/v1/contracts/${userId}/driver-rating`,
                 payload,
               );
               Modal.success({

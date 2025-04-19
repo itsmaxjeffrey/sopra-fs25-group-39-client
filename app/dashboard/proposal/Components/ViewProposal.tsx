@@ -23,10 +23,10 @@ import { Autocomplete } from "@react-google-maps/api";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  id: string;
+  userId: string;
 }
 
-const ViewProposal = ({ id }: Props) => {
+const ViewProposal = ({ userId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -41,7 +41,7 @@ const ViewProposal = ({ id }: Props) => {
   const fetchContract = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/v1/contracts/${id}`,
+        `http://localhost:8080/api/v1/contracts/${userId}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -88,18 +88,18 @@ const ViewProposal = ({ id }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, id]);
+  }, [form, userId]);
 
   const acceptProposal = async () => {
     try {
       setLoading(true); // Show loading spinner while the request is being processed
 
-      const driverId = localStorage.getItem("id");
+      const driverId = localStorage.getItem("userId");
       if (!driverId) {
         throw new Error("Driver ID not found in local storage.");
       }
-      const response = await axios.post("http://localhost:5001/api/v1/offers", {
-        contractId: id,
+      const response = await axios.post("http://localhost:8080/api/v1/offers", {
+        contractId: userId,
         driverId: driverId,
       });
 
@@ -136,7 +136,7 @@ const ViewProposal = ({ id }: Props) => {
                       ? `https://sopra-fs25-group-39-client.vercel.app${
                         imagePaths[idx]
                       }`
-                      : `http://localhost:5001${imagePaths[idx]}`}
+                      : `http://localhost:8080${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",

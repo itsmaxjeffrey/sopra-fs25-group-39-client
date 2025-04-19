@@ -13,7 +13,7 @@ const { Title } = Typography;
 
 const BASE_URL = process.env.NODE_ENV === "production"
   ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:5001";
+  : "http://localhost:8080";
 
 const AccountPage = () => {
   const [userData, setUserData] = useState<any>(null);
@@ -23,19 +23,20 @@ const AccountPage = () => {
   const [changed, setChanged] = useState(false);
 
   useEffect(() => {
-    const id = localStorage.getItem("id");
+    const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
 
-    if (!id || !token) {
+    if (!userId || !token) {
       setError("No user ID or token found");
       setLoading(false);
       return;
     }
 
     axios
-      .get(`http://localhost:8080/api/v1/users/${id}`, {
+      .get(`http://localhost:8080/api/v1/users/${userId}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          UserId: `${userId}`,
+          Authorization: `${token}`,
         },
       })
       .then((res) => {

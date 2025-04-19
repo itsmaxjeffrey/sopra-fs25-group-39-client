@@ -19,7 +19,7 @@ const Login = () => {
   const handleLogin = async () => {
     setError("");
     setLoading(true);
-
+  
     try {
       const res = await fetch("http://localhost:8080/api/v1/auth/login", {
         method: "POST",
@@ -28,15 +28,16 @@ const Login = () => {
         },
         body: JSON.stringify({ username, password }),
       });
-
-      const data = res.data;
-
+  
+      // Parse the response JSON
+      const data = await res.json();
+  
       if (res.status !== 200) {
         throw new Error(data.message || "Login failed");
       }
-
+  
       localStorage.setItem("token", data.token);
-      localStorage.setItem("id", data.userId);
+      localStorage.setItem("userId", data.userId);
       window.location.href = "/dashboard";
     } catch (err: any) {
       setError(err.message);

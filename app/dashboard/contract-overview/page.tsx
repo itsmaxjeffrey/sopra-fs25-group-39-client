@@ -32,15 +32,16 @@ const ProposalsOverview = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const id = localStorage.getItem("id");
+    const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
 
-    if (!id || !token) return;
+    if (!userId || !token) return;
 
     axios
-      .get(`http://localhost:5001/api/v1/users/${id}/contracts`, {
+      .get(`http://localhost:8080/api/v1/users/${userId}/contracts`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          UserId: `${userId}`,
+          Authorization: `${token}`,
         },
       })
       .then((res) => {

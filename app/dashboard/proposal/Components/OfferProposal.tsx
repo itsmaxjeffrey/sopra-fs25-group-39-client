@@ -25,10 +25,10 @@ import OfferCard from "./OfferCard";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  id: string;
+  userId: string;
 }
 
-const OfferProposal = ({ id }: Props) => {
+const OfferProposal = ({ userId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ const OfferProposal = ({ id }: Props) => {
   const [imagePaths, setImagePaths] = useState<string[]>([]);
 
   interface Offer {
-    id: string;
+    userId: string;
     //title: string;
     driverName: string;
     driverId: string;
@@ -58,7 +58,7 @@ const OfferProposal = ({ id }: Props) => {
   const fetchContract = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/v1/contracts/${id}`,
+        `http://localhost:8080/api/v1/contracts/${userId}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -104,7 +104,7 @@ const OfferProposal = ({ id }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`http://localhost:5001/api/v1/contracts/${id}`);
+      await axios.delete(`http://localhost:8080/api/v1/contracts/${userId}`);
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
@@ -116,7 +116,7 @@ const OfferProposal = ({ id }: Props) => {
     const fetchOffers = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5001/api/v1/contracts/${id}/offers`,
+          `http://localhost:8080/api/v1/contracts/${userId}/offers`,
         );
 
         console.log("Offers API Response:", res.data); // Debugging the API response
@@ -132,7 +132,7 @@ const OfferProposal = ({ id }: Props) => {
 
     fetchOffers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, id]);
+  }, [form, userId]);
 
   return (
     <div className={styles.wrapper}>
@@ -148,7 +148,7 @@ const OfferProposal = ({ id }: Props) => {
                       ? `https://sopra-fs25-group-39-client.vercel.app${
                         imagePaths[idx]
                       }`
-                      : `http://localhost:5001${imagePaths[idx]}`}
+                      : `http://localhost:8080${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",
@@ -343,7 +343,7 @@ const OfferProposal = ({ id }: Props) => {
             : (
               offers.map((offer) => (
                 <OfferCard
-                  key={offer.id} // Use a unique key for each OfferCard
+                  key={offer.userId} // Use a unique key for each OfferCard
                   //title={offer.title || "No Title"} // Fallback if title is missing
                   driverName={offer.driverName}
                   driverId={offer.driverId}

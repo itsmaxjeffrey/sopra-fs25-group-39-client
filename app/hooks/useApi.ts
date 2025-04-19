@@ -6,7 +6,7 @@ import useLocalStorage from "./useLocalStorage";
 
 export const useApi = () => {
   const {value: token} = useLocalStorage('token',null);
-  const {value: userId} = useLocalStorage('id', null);
+  const {value: userId} = useLocalStorage('userId', null);
 
 
   return useMemo(() =>{

@@ -21,7 +21,7 @@ import axios from "axios";
 
 const BASE_URL = process.env.NODE_ENV === "production"
   ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:5001";
+  : "http://localhost:8080";
 
 import styles from "../login.module.css";
 
@@ -64,89 +64,51 @@ const Customer = () => {
 
   return (
     <div className={styles.driverContainer}>
-      <Form
-        layout="vertical"
-        onFinish={(values) => {
-          const {
+  <Form
+    layout="vertical"
+    onFinish={async (values) => { // Make the onFinish handler async
+      const {
+        firstName,
+        lastName,
+        birthDate,
+        email,
+        phoneNumber,
+        username,
+        password,
+      } = values;
+
+      setModalVisible(true);
+      setModalState("loading");
+
+      try {
+        let profilePicturePath = null;
+        console.log(profilePictureFile);
+
+        if (profilePictureFile) {
+          profilePicturePath = await uploadFile(profilePictureFile, "profile");
+        }
+
+        await axios.post(`${BASE_URL}/api/v1/auth/register/requester`, {
+          user: {
+            userAccountType: "REQUESTER",
             firstName,
             lastName,
-            birthDate,
+            birthDate: birthDate ? birthDate.format("YYYY-MM-DD") : null,
             email,
             phoneNumber,
             username,
-            password
-          } = values;
+            password,
+            profilePicturePath,
+          },
+        });
 
-          setModalVisible(true);
-          setModalState("loading");
-
-          fetch("http://localhost:8080/api/v1/auth/register", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              user: {
-                firstName,
-                lastName,
-                birthDate: birthDate ? birthDate.format("YYYY-MM-DD") : null, // Format birthDate
-                email,
-                phoneNumber,
-                username,
-                password,
-                userAccountType: "REQUESTER"
-              }, 
-              car: null,
-              location: null
-            }),
-          })
-            .then((res) => {
-              if (!res.ok) {
-                return res.json().then((data) => {
-                  throw new Error(data.message || "Registration failed");
-                });
-              }
-              return res.json();
-            })
-            .then(() => {
-              setModalState("success");
-            })
-            .catch((err) => {
-              setErrorMessage(err.message);
-              setModalState("error");
-            });
-          try {
-            let profilePicturePath = null;
-            console.log(profilePictureFile);
-
-            if (profilePictureFile) {
-              profilePicturePath = await uploadFile(
-                profilePictureFile,
-                "profile",
-              );
-            }
-
-            await axios.post(`${BASE_URL}/api/v1/auth/register/requester`, {
-              user: {
-                userAccountType: "REQUESTER",
-                firstName,
-                lastName,
-                birthDate: birthdate,
-                email,
-                phoneNumber: phone,
-                username,
-                password,
-                profilePicturePath,
-              },
-            });
-
-            setModalState("success");
-          } catch (err: any) {
-            setErrorMessage(err.message);
-            setModalState("error");
-          }
-        }}
-      >
+        setModalState("success");
+      } catch (err: any) {
+        setErrorMessage(err.message);
+        setModalState("error");
+      }
+    }}
+  >
         <div className={styles.formSection}>
           <div>
             <Title level={5}>Personal Information</Title>

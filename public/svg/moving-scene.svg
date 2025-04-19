@@ -2,7 +2,7 @@
 <!-- Generator: Adobe Illustrator 27.5.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 750 500" style="enable-background:new 0 0 750 500;" xml:space="preserve">
-<g id="Background_Complete">
+<g userId="Background_Complete">
 	<g>
 		<g>
 			<rect x="42.392" y="231.747" style="fill:#EBEBEB;" width="48.653" height="12.871"/>
@@ -526,7 +526,7 @@
 		</g>
 	</g>
 </g>
-<g id="Background_Simple" style="display:none;">
+<g userId="Background_Simple" style="display:none;">
 	<path style="display:inline;fill:#F5F5F5;" d="M590.894,144.679l-0.727-4.634c-6.131-39.068-32.698-72.014-69.812-84.587
 		c-4.771-1.616-9.66-2.889-14.63-3.787c-35.783-6.471-74.618,6.645-99.566,33.626c-14.672,15.868-25.482,36.637-44.829,46.068
 		c-25.18,12.275-54.682,0.866-80.071-10.501c-25.389-11.367-54.942-22.707-80.069-10.322c-15.737,7.757-26.258,23.658-32.086,40.31
@@ -537,13 +537,13 @@
 	
 		<ellipse transform="matrix(0.1602 -0.9871 0.9871 0.1602 -15.7464 154.197)" style="display:inline;fill:#F5F5F5;" cx="82.745" cy="86.352" rx="36.312" ry="36.312"/>
 </g>
-<g id="Floor">
+<g userId="Floor">
 	<g>
 		<path style="fill:#263238;" d="M711.917,456.406c0,0.144-153.094,0.26-341.9,0.26c-188.872,0-341.933-0.117-341.933-0.26
 			c0-0.144,153.061-0.26,341.933-0.26C558.823,456.146,711.917,456.263,711.917,456.406z"/>
 	</g>
 </g>
-<g id="Box">
+<g userId="Box">
 	<g>
 		<g>
 			
@@ -559,7 +559,7 @@
 		</g>
 	</g>
 </g>
-<g id="Table">
+<g userId="Table">
 	<g>
 		<g>
 			<rect x="224.622" y="358.647" style="fill:#455A64;" width="83.567" height="8.633"/>
@@ -581,7 +581,7 @@
 		</g>
 	</g>
 </g>
-<g id="Speech_Bubble">
+<g userId="Speech_Bubble">
 	<g>
 		<g>
 			<g>
@@ -651,7 +651,7 @@
 		</g>
 	</g>
 </g>
-<g id="Plant">
+<g userId="Plant">
 	<g>
 		<g>
 			<g>
@@ -1044,7 +1044,7 @@
 		</g>
 	</g>
 </g>
-<g id="Character_2">
+<g userId="Character_2">
 	<g>
 		<g>
 			<g>
@@ -1546,7 +1546,7 @@
 		</g>
 	</g>
 </g>
-<g id="Character_1">
+<g userId="Character_1">
 	<g>
 		<g>
 			<g>
@@ -2325,7 +2325,7 @@
 		</g>
 	</g>
 </g>
-<g id="Couch">
+<g userId="Couch">
 	<g>
 		<g>
 			<g>

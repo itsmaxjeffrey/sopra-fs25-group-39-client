@@ -8,7 +8,7 @@ import styles from "../Account.module.css";
 
 const BASE_URL = process.env.NODE_ENV === "production"
   ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:5001";
+  : "http://localhost:8080";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -25,20 +25,20 @@ const UserDataTab = ({
 
   const handleSave = () => {
     const token = localStorage.getItem("token");
-    const id = localStorage.getItem("id");
+    const userId = localStorage.getItem("userId");
 
-    if (!token || !id) return;
+    if (!token || !userId) return;
 
     console.log("Would send data:", editedData);
   };
 
   const handleUpload = (file: any) => {
     const token = localStorage.getItem("token");
-    const id = localStorage.getItem("id");
+    const userId = localStorage.getItem("userId");
     const formData = new FormData();
     formData.append("file", file);
 
-    if (!token || !id) return;
+    if (!token || !userId) return;
 
     // Call your API to upload the image
     fetch(
@@ -48,7 +48,8 @@ const UserDataTab = ({
       {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${token}`,
+          UserId: `${userId}`,
+          Authorization: `${token}`,
         },
         body: formData,
       },

@@ -9,25 +9,25 @@ import FinalizedProposal from "../Components/FinalizedProposal";
 import ViewProposal from "../Components/ViewProposal";
 
 const Page = () => {
-  const { id } = useParams();
+  const { userId } = useParams();
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
 
-  if (!id) return <p style={{ padding: 24 }}>❌ Invalid proposal ID</p>;
+  if (!userId) return <p style={{ padding: 24 }}>❌ Invalid proposal ID</p>;
 
   switch (type) {
     case "REQUESTED":
-      return <EditProposal id={id.toString()} />;
+      return <EditProposal userId={userId.toString()} />;
     case "OFFERED":
-      return <OfferProposal id={id.toString()} />;
+      return <OfferProposal userId={userId.toString()} />;
     case "ACCEPTED":
-      return <AcceptedProposal id={id.toString()} />;
+      return <AcceptedProposal userId={userId.toString()} />;
     case "COMPLETED":
-      return <RatingProposal id={id.toString()} />;
+      return <RatingProposal userId={userId.toString()} />;
     case "FINALIZED":
-      return <FinalizedProposal id={id.toString()} />;
+      return <FinalizedProposal userId={userId.toString()} />;
     case "VIEW":
-      return <ViewProposal id={id.toString()} />;
+      return <ViewProposal userId={userId.toString()} />;
     default:
       return <p style={{ padding: 24 }}>❓ Unknown proposal type</p>;
   }

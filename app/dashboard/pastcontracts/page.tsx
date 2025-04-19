@@ -10,14 +10,14 @@ const PastContracts = () => {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const userId = typeof window !== "undefined"
-    ? localStorage.getItem("id")
+    ? localStorage.getItem("userId")
     : null;
 
   useEffect(() => {
     const fetchContracts = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5001/api/v1/users/${userId}/contracts`,
+          `http://localhost:8080/api/v1/users/${userId}/contracts`,
         );
         const now = dayjs().startOf("day");
 

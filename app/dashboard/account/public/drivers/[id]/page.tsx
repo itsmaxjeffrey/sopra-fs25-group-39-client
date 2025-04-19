@@ -1,6 +1,6 @@
-//best to save this under /users/public/drivers/{id}
+//best to save this under /users/public/drivers/{userId}
 "use client";
-// pages/driver/[id].tsx
+// pages/driver/[userId].tsx
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button, Card, Carousel, Input, message, Rate, Spin } from "antd";
@@ -12,7 +12,7 @@ interface User {
 }
 
 interface Contract {
-  id: number;
+  userId: number;
   // Extend as needed
 }
 
@@ -42,20 +42,20 @@ interface Driver {
 
 export default function DriverProfilePage() {
   const router = useRouter();
-  const { id } = useParams();
+  const { userId } = useParams();
 
   const [driver, setDriver] = useState<Driver | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id || typeof id !== "string") return;
+    if (!userId || typeof userId !== "string") return;
 
-    console.log("Driver ID:", id, typeof id); // Debugging the ID
+    console.log("Driver ID:", userId, typeof userId); // Debugging the ID
 
     const fetchDriver = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/api/v1/users/${id}`);
-        if (!res.data || !res.data.user || !res.data.user.id) {
+        const res = await axios.get(`http://localhost:8080/api/v1/users/${userId}`);
+        if (!res.data || !res.data.user || !res.data.user.userId) {
           throw new Error("Invalid driver data");
         }
         setDriver(res.data.user);
@@ -73,7 +73,7 @@ export default function DriverProfilePage() {
     };
 
     fetchDriver();
-  }, [id]);
+  }, [userId]);
 
   const averageRating = driver?.ratings && driver.ratings.length > 0
     ? driver.ratings.reduce((acc, r) => acc + r.ratingValue, 0) /
@@ -172,7 +172,7 @@ export default function DriverProfilePage() {
                 <Carousel autoplay>
                   {driver.ratings.map((rating) => (
                     <Card
-                      key={rating.contract.id}
+                      key={rating.contract.userId}
                       title={`Rated by: ${rating.fromUser.username}`}
                       extra={<Rate value={rating.ratingValue} disabled />}
                       style={{
@@ -183,7 +183,7 @@ export default function DriverProfilePage() {
                         width: "80%",
                       }}
                       onClick={() =>
-                        router.push(`/ratings/${rating.contract.id}`)}
+                        router.push(`/ratings/${rating.contract.userId}`)}
                     >
                       <p>{rating.comment || "No comment provided."}</p>
                     </Card>

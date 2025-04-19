@@ -9,9 +9,11 @@ import styles from "./login.module.css";
 import Customer from "./components/customer";
 import axios from "axios";
 
-const BASE_URL = process.env.NODE_ENV === "production"
-  ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:5001";
+// const BASE_URL = process.env.NODE_ENV === "production"
+//   ? "https://sopra-fs25-group-39-client.vercel.app"
+//   : "http://localhost:8080";
+
+const BASE_URL = "http://localhost:8080";
 
 const { Title } = Typography;
 
@@ -19,26 +21,31 @@ const AuthPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    fetch("http://localhost:8080/api/v1/auth/refresh", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then(() => {
+    const refreshAuthToken = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+  
+      try {
+        const res = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+  
+        if (!res.ok) {
+          throw new Error("Failed to refresh token");
+        }
+  
+        const data = await res.json();
         router.push("/dashboard");
-      })
-      .catch(() => {
+      } catch (error) {
         localStorage.removeItem("token");
-      });
+      }
+    };
+  
+    refreshAuthToken();
   }, [router]);
 
   const [mode, setMode] = useState<"login" | "register">("login");
