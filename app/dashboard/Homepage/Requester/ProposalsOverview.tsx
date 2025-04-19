@@ -28,6 +28,7 @@ interface Proposal {
 const ProposalsOverview = () => {
   const [contracts, setContracts] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     const id = localStorage.getItem("id");
@@ -52,6 +53,13 @@ const ProposalsOverview = () => {
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
+
+      // Fetch username
+    getName(id, token).then((username) => {
+      if (username) {
+        setUsername(username);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -63,8 +71,26 @@ const ProposalsOverview = () => {
     if (hour < 18) return "Good afternoon";
     return "Good evening";
   };
-
-  const username = localStorage.getItem("username");
+  const getName = async (id: string, token: string): Promise<string | null> => {
+      try {
+        const response = await axios.get(`http://localhost:5001/api/v1/users/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        console.log("User API Response:", response.data);
+    
+        if (response.status === 200) {
+          return response.data.user.username; // Assuming the API returns a `name` field
+        }
+      } catch (error) {
+        console.error("Error fetching user name:", error);
+      }
+    
+      return null; // Return null if the request fails
+    };
+  
 
   if (loading) {
     return (
@@ -78,7 +104,7 @@ const ProposalsOverview = () => {
     <div className={styles.page}>
       <div className={styles.greeting}>
         <h1>
-          {getGreeting()}, {username} 👋
+        {getGreeting()}, {username || "User"} 👋
         </h1>
         <p>Here’s a quick overview of your move requests</p>
       </div>
