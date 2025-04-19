@@ -115,7 +115,7 @@ _Easter Break_
 | **@xdecentralix**  | Week 5     | n/a                | Weekly Contribution Joker       | xdecentralix took both jokers       |
 | **@dariohug**      | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@dariohug**      | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@fksm2003**      | [16.04.2025]     | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/b9fbb117718a223536941c1560ab13a6629d4dbb] | [Implemented Past Contract Overview Page and integrated Rating Page] | [Why this contribution is relevant] |
+| **@fksm2003**      | [16.04.2025]     | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/b9fbb117718a223536941c1560ab13a6629d4dbb] | [Implemented Past Contract Overview Page and integrated Rating Page] | [For the Requester being able to rate the driver which was responsible for the move] |
 | **@fksm2003**      | [16.04.2025]     | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/af103a5967c36d3f267e7b66921807d3d06b751a] | [Implemented Driver COntract Overview. So all the different states of a proposal (Pending confirmation by Requester, Locked-In Contracts, and Fulfilled Contracts)] | [So the driver knows what contracts he still needs to fullfill, which are done, and for which he is waiting for a reply. THis is important to keep an overview of his work schedule] |
 | **@itsmaxjeffrey** | [date]     | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@itsmaxjeffrey** | [date]     | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
