@@ -51,7 +51,7 @@ const Sidebar = ({ accountType: initialAccountType }: { accountType: string | nu
             <Link href="/dashboard">Home</Link>
           </li>
 
-          {accountType === "driver" && (
+          {accountType === "DRIVER" && (
             <>
               <li
                 className={`${styles.navItem} ${
@@ -63,7 +63,7 @@ const Sidebar = ({ accountType: initialAccountType }: { accountType: string | nu
             </>
           )}
 
-          {accountType === "requester" && (
+          {accountType === "REQUESTER" && (
             <>
               <li
                 className={`${styles.navItem} ${

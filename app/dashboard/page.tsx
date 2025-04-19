@@ -14,8 +14,8 @@ const HomePage = () => {
 
   return (
     <div>
-      {accountType === "driver" && <DriverHomePage />}
-      {accountType === "requester" && <ProposalsOverview />}
+      {accountType === "DRIVER" && <DriverHomePage />}
+      {accountType === "REQUESTER" && <ProposalsOverview />}
     </div>
   );
 };
