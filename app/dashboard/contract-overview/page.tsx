@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useEffect, useState } from "react";
 import styles from "./ProposalsOverview.module.css";
 import axios from "axios";

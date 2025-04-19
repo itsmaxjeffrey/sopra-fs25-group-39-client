@@ -1,27 +1,30 @@
+"use client";
 //best to save this under /users/public/requesters/{id}
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
 import { Image } from "antd";
 
 interface Requester {
+  username: string;
   id: string;
   name: string;
   profilePictureUrl: string;
 }
 
 const RequesterProfilePage: React.FC = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const { id } = useParams();
   const [requester, setRequester] = useState<Requester | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRequesterProfile = async () => {
       try {
-        const response = await fetch(`/api/v1/users/requesters/${id}`);
+        const response = await fetch(
+          `http://localhost:5001/api/v1/users/${id}`,
+        );
         if (response.ok) {
           const data = await response.json();
-          setRequester(data);
+          setRequester(data.user);
         } else if (response.status === 404) {
           setError("Requester not found.");
         } else {
@@ -55,10 +58,10 @@ const RequesterProfilePage: React.FC = () => {
           justifyContent: "center",
         }}
       >
-        <h1>{requester.name}&apos;s Requester Profile</h1>
+        <h1>{requester.username}&apos;s Requester Profile</h1>
         <Image
           src={requester.profilePictureUrl}
-          alt={`${requester.name}'s profile`}
+          alt={`${requester.username}'s profile`}
           style={{
             borderRadius: "50%",
             width: "150px",

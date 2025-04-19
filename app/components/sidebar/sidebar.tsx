@@ -49,14 +49,8 @@ const Sidebar = ({ accountType }: { accountType: string | null }) => {
             <Link href="/dashboard">Home</Link>
           </li>
 
-          {accountType === "DRIVER" && (
+          {accountType === "driver" && (
             <>
-              <li
-                className={`${styles.navItem} ${pathname === "/dashboard/filter" ? styles.active : ""
-                  }`}
-              >
-                <Link href="/dashboard/filter">Filter Settings</Link>
-              </li>
               <li
                 className={`${styles.navItem} ${pathname === "/dashboard/contract-overview"
                     ? styles.active
@@ -70,7 +64,7 @@ const Sidebar = ({ accountType }: { accountType: string | null }) => {
             </>
           )}
 
-          {accountType === "REQUESTER" && (
+          {accountType === "requester" && (
             <>
               <li
                 className={`${styles.navItem} ${

@@ -1,3 +1,4 @@
+"use client";
 // component responsible for rendering the Google Map
 // from Commit 89667df
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -6,7 +7,7 @@ import {
   Autocomplete,
   GoogleMap,
   Libraries,
-  LoadScript,
+  LoadScriptNext,
   Marker,
 } from "@react-google-maps/api";
 
@@ -35,9 +36,15 @@ const DriverMap: React.FC<DriverMapProps> = (
 ) => {
   const [selectedLocation, setSelectedLocation] = useState(center);
 
-  const [allContracts, setallContracts] = useState([]);
+  interface Contract {
+    contractId: string;
+    fromLocation: { latitude: number; longitude: number };
+    // Add other properties of the contract object if needed
+  }
 
-  const [filteredContracts, setfilteredContracts] = useState([]);
+  const [allContracts, setallContracts] = useState<Contract[]>([]);
+
+  const [filteredContracts, setfilteredContracts] = useState<Contract[]>([]);
 
   const [mapError, setMapError] = useState<string | null>(null);
 
@@ -108,32 +115,36 @@ const DriverMap: React.FC<DriverMapProps> = (
 
         const data = await response.json();
 
-        setallContracts(Array.isArray(data.contracts) ? data.contracts : []);
+        if (Array.isArray(data)) {
+          setallContracts(data);
 
-        // Filter contracts immediately after fetching
+          // Filter contracts immediately after fetching
+          if (mapInstance) {
+            const bounds = mapInstance.getBounds();
 
-        if (mapInstance) {
-          const bounds = mapInstance.getBounds();
+            if (bounds) {
+              const filtered = data.filter(
+                (
+                  contract: {
+                    fromLocation: { latitude: number; longitude: number };
+                  },
+                ) => {
+                  const contractLat = contract.fromLocation.latitude;
+                  const contractLng = contract.fromLocation.longitude;
 
-          if (bounds) {
-            const filtered = data.contracts.filter(
-              (
-                contract: {
-                  fromLocation: { latitude: number; longitude: number };
+                  return bounds.contains(
+                    new google.maps.LatLng(contractLat, contractLng),
+                  );
                 },
-              ) => {
-                const contractLat = contract.fromLocation.latitude;
+              );
 
-                const contractLng = contract.fromLocation.longitude;
-
-                return bounds.contains(
-                  new google.maps.LatLng(contractLat, contractLng),
-                );
-              },
-            );
-
-            setfilteredContracts(filtered);
+              setfilteredContracts(filtered);
+            }
           }
+        } else {
+          console.warn("Unexpected response format:", data);
+          setallContracts([]);
+          setfilteredContracts([]);
         }
       } catch (error) {
         console.error("Error fetching contracts:", error);
@@ -197,7 +208,6 @@ const DriverMap: React.FC<DriverMapProps> = (
     if (!GOOGLE_MAPS_API_KEY) {
       setMapError("Google Maps API key is missing.");
     }
-
     fetchContracts();
 
     if (onCenterChanged) {
@@ -231,7 +241,7 @@ const DriverMap: React.FC<DriverMapProps> = (
 
       return;
     }
-
+    console.log("✅ Google Map loaded:", map);
     setMapInstance(map);
 
     console.log("Google Map Loaded Successfully");
@@ -323,10 +333,13 @@ const DriverMap: React.FC<DriverMapProps> = (
     return <div style={{ color: "red" }}>Missing API Key</div>;
   }
 
+  console.log("GOOGLE_MAPS_API_KEY:", GOOGLE_MAPS_API_KEY);
+
   return (
-    <LoadScript
+    <LoadScriptNext
       googleMapsApiKey={GOOGLE_MAPS_API_KEY}
       libraries={MAP_LIBRARIES}
+      onLoad={() => console.log("Google Maps script loaded successfully.")}
       onError={handleMapError}
     >
       <GoogleMap
@@ -338,6 +351,8 @@ const DriverMap: React.FC<DriverMapProps> = (
         onDragEnd={handleMapDragEnd}
         onZoomChanged={handleMapZoom}
       >
+        <div style={{ background: "red", height: "50px" }}>MAP CONTENT</div>
+
         {/* Search Input */}
 
         <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
@@ -378,12 +393,13 @@ const DriverMap: React.FC<DriverMapProps> = (
               lng: contract.fromLocation.longitude,
             }}
             onClick={() => {
-              window.location.href = `/offers/${contract.contractId}`;
+              window.location.href =
+                `/dashboard/proposal/${contract.contractId}?type=VIEW`;
             }}
           />
         ))}
       </GoogleMap>
-    </LoadScript>
+    </LoadScriptNext>
   );
 };
 
