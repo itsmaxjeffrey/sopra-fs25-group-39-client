@@ -57,7 +57,7 @@ const Customer = () => {
         },
       );
 
-      const filePath = response.data.filePath;
+      const filePath = (response.data as { filePath: string }).filePath;
       if (!filePath) {
         throw new Error("File path is missing in the response");
       }
@@ -254,18 +254,18 @@ const Customer = () => {
                       if (file) {
                         try {
                           const filePath = await uploadFile(file, "profile"); // Upload the file immediately
-                          setProfilePictureFile(file); // Store the file locally
+                          // setProfilePictureFile(file); // Store the file locally
                           setUploadedFilePath(filePath);
                         } catch (error) {
                           console.error("File upload failed:", error);
                         }
                       } else {
-                        setProfilePictureFile(null);
+                        // setProfilePictureFile(null);
                         setUploadedFilePath(null);
                       }
                     }}
                     onRemove={() => {
-                      setProfilePictureFile(null);
+                      // setProfilePictureFile(null);
                       setUploadedFilePath(null);
                     }}
                   >

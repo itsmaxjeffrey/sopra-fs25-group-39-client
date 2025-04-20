@@ -38,7 +38,7 @@ const ProposalsOverview = () => {
     if (!userId || !token) return;
 
     axios
-      .get(`http://localhost:8080/api/v1/users/${userId}/contracts`, {
+      .get<Proposal[]>(`http://localhost:8080/api/v1/users/${userId}/contracts`, {
         headers: {
           UserId: `${userId}`,
           Authorization: `${token}`,
@@ -53,7 +53,7 @@ const ProposalsOverview = () => {
         setContracts(sorted);
       })
       .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+      .then(() => setLoading(false));
   }, []);
 
   useEffect(() => {

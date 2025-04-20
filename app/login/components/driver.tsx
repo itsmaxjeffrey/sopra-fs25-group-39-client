@@ -69,8 +69,8 @@ const Driver = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const [preferredRange, setPreferredRange] = useState<number | null>(null);
-  const [driverLicenseFile, setDriverLicenseFile] = useState<File | null>(null);
-  const [insuranceProofFile, setInsuranceProofFile] = useState<File | null>(null);
+  const [driverLicenseFile] = useState<File | null>(null);
+  const [insuranceProofFile] = useState<File | null>(null);
   const [location, setLocation] = useState<Location | null>(null);
   const autoRef = useRef<google.maps.places.Autocomplete | null>(null);
 
@@ -88,7 +88,7 @@ const Driver = () => {
         },
       );
 
-      const filePath = response.data.filePath;
+      const filePath = (response.data as { filePath: string }).filePath;
       if (!filePath) {
         throw new Error("File path is missing in the response");
       }
@@ -150,8 +150,12 @@ const Driver = () => {
       });
 
       setModalState("success");
-    } catch (err: any) {
-      setErrorMessage(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrorMessage(err.message);
+      } else {
+        setErrorMessage("An unknown error occurred.");
+      }      
       setModalState("error");
     }
   };
@@ -298,15 +302,15 @@ const Driver = () => {
                       const file = fileList[0]?.originFileObj;
                       if (file) {
                         const filePath = await uploadFile(file, "profile");
-                        setProfilePictureFile(file);
+                        // setProfilePictureFile(file);
                         setUploadedFilePath(filePath);
                       } else {
-                        setProfilePictureFile(null);
+                        // setProfilePictureFile(null);
                         setUploadedFilePath(null);
                       }
                     }}
                     onRemove={() => {
-                      setProfilePictureFile(null);
+                      // setProfilePictureFile(null);
                       setUploadedFilePath(null);
                     }}
                   >

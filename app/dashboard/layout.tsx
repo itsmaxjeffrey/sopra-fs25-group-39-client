@@ -10,6 +10,15 @@ import { Libraries, LoadScript } from "@react-google-maps/api";
 
 const MAP_LIBRARIES: Libraries = ["places"];
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  token: string;
+  userAccountType: string;
+  profilePicturePath?: string;
+}
+
 export default function DashboardLayout({
   children,
 }: {
@@ -27,7 +36,7 @@ export default function DashboardLayout({
     if (!userId || !token) return;
 
     axios
-      .get(`http://localhost:8080/api/v1/users/${userId}`, {
+      .get<User>(`http://localhost:8080/api/v1/users/${userId}`, {
         headers: {
           UserId: `${userId}`,
           Authorization: `${token}`,

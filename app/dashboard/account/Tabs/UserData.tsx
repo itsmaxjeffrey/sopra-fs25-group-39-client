@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, DatePicker, Image, Input, Typography, Upload } from "antd";
 import { CameraOutlined, UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -36,6 +36,8 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
   changed,
   setChanged,
 }) => {
+  const [, setImageKey] = useState(0); // State to force re-render of the image
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");

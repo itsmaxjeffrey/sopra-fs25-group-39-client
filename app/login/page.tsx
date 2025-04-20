@@ -39,6 +39,7 @@ const AuthPage = () => {
 
         router.push("/dashboard");
       } catch (error) {
+        console.error("Error refreshing token:", error);
         localStorage.removeItem("token");
       }
     };

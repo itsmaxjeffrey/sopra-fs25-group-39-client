@@ -25,10 +25,39 @@ import { Rate } from "antd";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  userId: string;
+  proposalId: string;
 }
 
-const RatingProposal = ({ userId }: Props) => {
+interface ContractData {
+  contractId: number;
+  title: string;
+  contractDescription: string;
+  moveDateTime: string;
+  fromLocation?: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  };
+  toLocation?: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  };
+  length: number;
+  width: number;
+  height: number;
+  mass: number;
+  fragile: boolean;
+  coolingRequired: boolean;
+  rideAlong: boolean;
+  manPower: number;
+  price: number;
+  imagePath1?: string;
+  imagePath2?: string;
+  imagePath3?: string;
+}
+
+const RatingProposal = ({ proposalId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -42,8 +71,8 @@ const RatingProposal = ({ userId }: Props) => {
 
   const fetchContract = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8080/api/v1/contracts/${userId}`,
+      const res = await axios.get<ContractData>(
+        `http://localhost:8080/api/v1/contracts/${proposalId}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -90,7 +119,7 @@ const RatingProposal = ({ userId }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, userId]);
+  }, [form, proposalId]);
 
   return (
     <div className={styles.wrapper}>
@@ -218,13 +247,13 @@ const RatingProposal = ({ userId }: Props) => {
           onFinish={async (values) => {
             try {
               const payload = {
-                userId,
+                proposalId,
                 rating: values.rating,
                 issues: values.issues || false,
                 issueDetails: values.issues ? values.issueDetails || "" : "",
               };
               await axios.post(
-                `http://localhost:8080/api/v1/contracts/${userId}/driver-rating`,
+                `http://localhost:8080/api/v1/contracts/${proposalId}/driver-rating`,
                 payload,
               );
               Modal.success({

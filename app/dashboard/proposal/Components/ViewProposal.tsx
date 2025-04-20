@@ -28,10 +28,39 @@ const BASE_URL = process.env.NODE_ENV === "production"
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  userId: string;
+  proposalId: string;
 }
 
-const ViewProposal = ({ userId }: Props) => {
+interface ContractData {
+  contractId: number;
+  title: string;
+  contractDescription: string;
+  moveDateTime: string;
+  fromLocation?: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  };
+  toLocation?: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  };
+  length: number;
+  width: number;
+  height: number;
+  mass: number;
+  fragile: boolean;
+  coolingRequired: boolean;
+  rideAlong: boolean;
+  manPower: number;
+  price: number;
+  imagePath1?: string;
+  imagePath2?: string;
+  imagePath3?: string;
+}
+
+const ViewProposal = ({ proposalId }: Props) => {
   const { id } = useParams(); // Retrieve the proposal ID from the URL
   const router = useRouter();
   const [form] = Form.useForm();
@@ -46,13 +75,13 @@ const ViewProposal = ({ userId }: Props) => {
 
   const fetchContract = async () => {
     try {
-      console.log(`userId: ${userId}`);
+      // console.log(`userId: ${userId}`);
       console.log(`proposalId: ${id}`);
       if (!id) {
         throw new Error("Proposal ID is missing");
       }
-      const res = await axios.get(
-        `http://localhost:8080/api/v1/contracts/${userId}`,
+      const res = await axios.get<ContractData>(
+        `http://localhost:8080/api/v1/contracts/${proposalId}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -99,7 +128,7 @@ const ViewProposal = ({ userId }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, userId]);
+  }, [form, proposalId]);
 
   const acceptProposal = async () => {
     try {
@@ -110,7 +139,7 @@ const ViewProposal = ({ userId }: Props) => {
         throw new Error("Driver ID not found in local storage.");
       }
       const response = await axios.post("http://localhost:8080/api/v1/offers", {
-        contractId: userId,
+        contractId: proposalId,
         driverId: driverId,
       });
 

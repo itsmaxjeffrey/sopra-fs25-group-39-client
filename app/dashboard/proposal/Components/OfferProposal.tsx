@@ -25,10 +25,10 @@ import OfferCard from "./OfferCard";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  userId: string;
+  proposalId: string;
 }
 
-const OfferProposal = ({ userId }: Props) => {
+const OfferProposal = ({ proposalId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ const OfferProposal = ({ userId }: Props) => {
   const [imagePaths, setImagePaths] = useState<string[]>([]);
 
   interface Offer {
-    userId: string;
+    proposalId: string;
     //title: string;
     driverName: string;
     driverId: string;
@@ -51,14 +51,43 @@ const OfferProposal = ({ userId }: Props) => {
     averageRating: number; // Added averageRating property
   }
 
+  interface ContractData {
+    contractId: number;
+    title: string;
+    contractDescription: string;
+    moveDateTime: string;
+    fromLocation?: {
+      address: string;
+      latitude: number;
+      longitude: number;
+    };
+    toLocation?: {
+      address: string;
+      latitude: number;
+      longitude: number;
+    };
+    length: number;
+    width: number;
+    height: number;
+    mass: number;
+    fragile: boolean;
+    coolingRequired: boolean;
+    rideAlong: boolean;
+    manPower: number;
+    price: number;
+    imagePath1?: string;
+    imagePath2?: string;
+    imagePath3?: string;
+  }
+
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loadingOffers, setLoadingOffers] = useState(true);
   const [errorOffers, setErrorOffers] = useState(false);
 
   const fetchContract = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8080/api/v1/contracts/${userId}`,
+      const res = await axios.get<ContractData>(
+        `http://localhost:8080/api/v1/contracts/${proposalId}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -104,7 +133,7 @@ const OfferProposal = ({ userId }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/contracts/${userId}`);
+      await axios.delete(`http://localhost:8080/api/v1/contracts/${proposalId}`);
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
@@ -115,8 +144,8 @@ const OfferProposal = ({ userId }: Props) => {
     fetchContract();
     const fetchOffers = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:8080/api/v1/contracts/${userId}/offers`,
+        const res = await axios.get<Offer[]>(
+          `http://localhost:8080/api/v1/contracts/${proposalId}/offers`,
         );
 
         console.log("Offers API Response:", res.data); // Debugging the API response
@@ -132,7 +161,7 @@ const OfferProposal = ({ userId }: Props) => {
 
     fetchOffers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, userId]);
+  }, [form, proposalId]);
 
   return (
     <div className={styles.wrapper}>
@@ -343,7 +372,7 @@ const OfferProposal = ({ userId }: Props) => {
             : (
               offers.map((offer) => (
                 <OfferCard
-                  key={offer.userId} // Use a unique key for each OfferCard
+                  key={offer.proposalId} // Use a unique key for each OfferCard
                   //title={offer.title || "No Title"} // Fallback if title is missing
                   driverName={offer.driverName}
                   driverId={offer.driverId}

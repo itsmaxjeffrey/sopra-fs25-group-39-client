@@ -37,7 +37,7 @@ interface Driver {
   username: string;
   profilePicture: string;
   ratings: Rating[];
-  car: Car;
+  car: Car | null;
 }
 
 export default function DriverProfilePage() {
@@ -90,14 +90,9 @@ export default function DriverProfilePage() {
         };
 
         setDriver(driverData);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          message.error(
-            error.response?.data?.message || "Could not fetch driver profile.",
-          );
-        } else {
-          message.error("An unexpected error occurred.");
-        }
+      } catch (error: unknown) {
+        const err = error as Error & { response?: { data?: { message?: string } } };
+        message.error(err.response?.data?.message || err.message || "Unknown error.");
       } finally {
         setLoading(false);
       }

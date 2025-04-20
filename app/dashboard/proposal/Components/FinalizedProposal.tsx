@@ -23,10 +23,38 @@ import { Autocomplete } from "@react-google-maps/api";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  userId: string;
+  proposalId: string;
+}
+interface ContractData {
+  contractId: number;
+  title: string;
+  contractDescription: string;
+  moveDateTime: string;
+  fromLocation?: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  };
+  toLocation?: {
+    address: string;
+    latitude: number;
+    longitude: number;
+  };
+  length: number;
+  width: number;
+  height: number;
+  mass: number;
+  fragile: boolean;
+  coolingRequired: boolean;
+  rideAlong: boolean;
+  manPower: number;
+  price: number;
+  imagePath1?: string;
+  imagePath2?: string;
+  imagePath3?: string;
 }
 
-const FinalizedProposal = ({ userId }: Props) => {
+const FinalizedProposal = ({ proposalId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -41,8 +69,8 @@ const FinalizedProposal = ({ userId }: Props) => {
 
   const fetchContract = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8080/api/v1/contracts/${userId}`,
+      const res = await axios.get<ContractData>(
+        `http://localhost:8080/api/v1/contracts/${proposalId}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -88,7 +116,7 @@ const FinalizedProposal = ({ userId }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/contracts/${userId}`);
+      await axios.delete(`http://localhost:8080/api/v1/contracts/${proposalId}`);
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
@@ -98,7 +126,7 @@ const FinalizedProposal = ({ userId }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, userId]);
+  }, [form, proposalId]);
 
   return (
     <div className={styles.wrapper}>

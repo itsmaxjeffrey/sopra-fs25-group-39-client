@@ -49,8 +49,8 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       if (!proposalId) {
         throw new Error("Proposal ID is missing");
       }
-      const res = await axios.get(
-        `http://localhost:8080/api/v1/contracts/${proposalId}`,
+      const res = await axios.get<{ contract: any }>(
+        `${BASE_URL}/api/v1/contracts/${proposalId}`,
         {
           headers: {
             Authorization: localStorage.getItem("token") || "",

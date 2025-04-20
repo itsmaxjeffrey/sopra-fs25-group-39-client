@@ -23,10 +23,41 @@ import Title from "antd/es/typography/Title";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  userId: string;
+  proposalId: string;
 }
 
-const AcceptedProposal = ({ userId }: Props) => {
+interface Location {
+  address: string;
+  latitude: number;
+  longitude: number;
+}
+
+interface Contract {
+  contractId: number;
+  title: string;
+  contractDescription: string;
+  moveDateTime: string;
+  fromLocation: Location;
+  toLocation: Location;
+  length: number;
+  width: number;
+  height: number;
+  mass: number;
+  fragile: boolean;
+  coolingRequired: boolean;
+  rideAlong: boolean;
+  manPower: boolean;
+  price: number;
+  imagePath1?: string;
+  imagePath2?: string;
+  imagePath3?: string;
+  driverName?: string;
+  driverId?: number;
+  averageRating?: number;
+}
+
+
+const AcceptedProposal = ({ proposalId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -41,8 +72,8 @@ const AcceptedProposal = ({ userId }: Props) => {
 
   const fetchContract = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8080/api/v1/contracts/${userId}`,
+      const res = await axios.get<Contract>(
+        `http://localhost:8080/api/v1/contracts/${proposalId}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -75,7 +106,7 @@ const AcceptedProposal = ({ userId }: Props) => {
         lng: data.toLocation?.longitude,
       });
       setImagePaths(
-        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean),
+        [data.imagePath1, data.imagePath2, data.imagePath3].filter((path): path is string => !!path),
       );
       setError(false);
       setModalVisible(false);
@@ -88,7 +119,7 @@ const AcceptedProposal = ({ userId }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/contracts/${userId}`);
+      await axios.delete(`http://localhost:8080/api/v1/contracts/${proposalId}`);
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
@@ -98,7 +129,7 @@ const AcceptedProposal = ({ userId }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, userId]);
+  }, [form, proposalId]);
 
   return (
     <div className={styles.wrapper}>

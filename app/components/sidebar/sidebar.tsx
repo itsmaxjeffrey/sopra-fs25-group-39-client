@@ -18,7 +18,7 @@ const Sidebar = (
   React.useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-    console.log("UserId:", userId, "Token:", token); // Debugging log
+    console.log("UserId:", userId, "Token:", token);
     if (userId && token) {
       axios
         .get(`http://localhost:8080/api/v1/users/${userId}`, {
@@ -28,7 +28,8 @@ const Sidebar = (
           },
         })
         .then((res) => {
-          setAccountType(res.data.userAccountType);
+          const data = res.data as { userAccountType: string }; 
+          setAccountType(data.userAccountType);
         })
         .catch((err) => {
           console.error("Failed to fetch user:", err);

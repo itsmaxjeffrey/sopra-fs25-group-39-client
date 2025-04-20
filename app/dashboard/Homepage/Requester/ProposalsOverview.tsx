@@ -35,35 +35,43 @@ const ProposalsOverview = () => {
 
     if (!userId || !token) return;
 
-    axios
-      .get(`http://localhost:8080/api/v1/users/${userId}/contracts`, {
-        headers: {
-          UserId: `${userId}`,
-          Authorization: `${token}`,
-        },
-      })
-      .then((res) => {
+    const fetchContracts = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/v1/users/${userId}/contracts`,
+          {
+            headers: {
+              UserId: `${userId}`,
+              Authorization: `${token}`,
+            },
+          }
+        );
         console.log("API Response:", res.data); // Debugging the API response
 
         // Deconstruct the contracts array from the response
-        const { contracts } = res.data;
+        const { contracts } = res.data as { contracts: Proposal[] };
 
         if (Array.isArray(contracts)) {
           // Sort the contracts by creationDateTime
           const sorted = contracts.sort(
             (a: Proposal, b: Proposal) =>
               new Date(a.creationDateTime).getTime() -
-              new Date(b.creationDateTime).getTime(),
+              new Date(b.creationDateTime).getTime()
           );
           setContracts(sorted);
         } else {
           console.error(
-            "Unexpected response format: contracts is not an array",
+            "Unexpected response format: contracts is not an array"
           );
         }
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContracts();
   }, []);
 
   useEffect(() => {

@@ -6,6 +6,12 @@ import dayjs from "dayjs";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+interface Contract {
+  contractId: string;
+  moveDateTime: string;
+  fromLocation: { latitude: number; longitude: number };
+}
+
 const PastContracts = () => {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +23,7 @@ const PastContracts = () => {
     const fetchContracts = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(
+        const res = await axios.get<Contract[]>(
           `http://localhost:8080/api/v1/users/${userId}/contracts`,
           {
             headers: {

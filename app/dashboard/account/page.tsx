@@ -15,6 +15,15 @@ const { Title } = Typography;
 //   ? "https://sopra-fs25-group-39-client.vercel.app"
 //   : "http://localhost:8080";
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  token: string;
+  userAccountType: string;
+  profilePicturePath?: string;
+}
+
 const AccountPage = () => {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -40,7 +49,7 @@ const AccountPage = () => {
         },
       })
       .then((res) => {
-        const user = res.data;
+        const user = res.data as User;
         console.log(user);
         setUserData({
           ...user,
@@ -52,7 +61,7 @@ const AccountPage = () => {
       .catch((err) => {
         setError(err.message);
       })
-      .finally(() => {
+      .then(() => {
         setLoading(false);
       });
   }, []);

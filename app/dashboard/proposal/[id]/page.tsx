@@ -9,7 +9,7 @@ import FinalizedProposal from "../Components/FinalizedProposal";
 import ViewProposal from "../Components/ViewProposal";
 
 const Page = () => {
-  const { id } = useParams(); // Use 'id' instead of 'userId'
+  const { id } = useParams();
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
 
