@@ -4,7 +4,7 @@ import React from "react";
 import styles from "./OfferCard.module.css";
 import { UserOutlined } from "@ant-design/icons";
 import { Rate } from "antd";
-import Link from "next/link"; 
+import Link from "next/link";
 
 interface OfferCardProps {
   //title: string;

@@ -54,7 +54,7 @@ const ProposalsOverview = () => {
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
 
-      // Fetch username
+    // Fetch username
     getName(id, token).then((username) => {
       if (username) {
         setUsername(username);
@@ -72,25 +72,27 @@ const ProposalsOverview = () => {
     return "Good evening";
   };
   const getName = async (id: string, token: string): Promise<string | null> => {
-      try {
-        const response = await axios.get(`http://localhost:5001/api/v1/users/${id}`, {
+    try {
+      const response = await axios.get(
+        `http://localhost:5001/api/v1/users/${id}`,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
-  
-        console.log("User API Response:", response.data);
-    
-        if (response.status === 200) {
-          return response.data.user.username; // Assuming the API returns a `name` field
-        }
-      } catch (error) {
-        console.error("Error fetching user name:", error);
+        },
+      );
+
+      console.log("User API Response:", response.data);
+
+      if (response.status === 200) {
+        return response.data.user.username; // Assuming the API returns a `name` field
       }
-    
-      return null; // Return null if the request fails
-    };
-  
+    } catch (error) {
+      console.error("Error fetching user name:", error);
+    }
+
+    return null; // Return null if the request fails
+  };
 
   if (loading) {
     return (
@@ -104,7 +106,7 @@ const ProposalsOverview = () => {
     <div className={styles.page}>
       <div className={styles.greeting}>
         <h1>
-        {getGreeting()}, {username || "User"} 👋
+          {getGreeting()}, {username || "User"} 👋
         </h1>
         <p>Here’s a quick overview of your move requests</p>
       </div>

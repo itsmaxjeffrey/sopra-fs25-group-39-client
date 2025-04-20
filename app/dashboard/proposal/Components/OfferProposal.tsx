@@ -142,11 +142,11 @@ const OfferProposal = ({ id }: Props) => {
       console.error("Error confirming selection:", error);
       Modal.error({
         title: "Error",
-        content: "An error occurred while accepting the offer. Please try again.",
+        content:
+          "An error occurred while accepting the offer. Please try again.",
       });
     }
   };
-
 
   useEffect(() => {
     fetchContract();
@@ -387,7 +387,7 @@ const OfferProposal = ({ id }: Props) => {
                   driverId={offer.driverId}
                   price={offer.price}
                   rating={Math.floor(offer.averageRating)}
-                  isSelected={selectedOfferId === offer.offerId} 
+                  isSelected={selectedOfferId === offer.offerId}
                   onClick={() => handleCardClick(offer.offerId)}
                 />
               ))
@@ -397,7 +397,7 @@ const OfferProposal = ({ id }: Props) => {
 
         <Form.Item>
           <Row justify="start" gutter={16}>
-          <Col>
+            <Col>
               <Button
                 type="primary"
                 onClick={handleConfirmSelection}

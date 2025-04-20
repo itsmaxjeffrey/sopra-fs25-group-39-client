@@ -30,8 +30,7 @@ interface Proposal {
 const ProposalsOverview = () => {
   const [contracts, setContracts] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState<string | null>(null); 
-
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     const id = localStorage.getItem("id");
@@ -56,7 +55,7 @@ const ProposalsOverview = () => {
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
 
-      // Fetch username
+    // Fetch username
     getName(id, token).then((username) => {
       if (username) {
         setUsername(username);
@@ -76,24 +75,26 @@ const ProposalsOverview = () => {
 
   const getName = async (id: string, token: string): Promise<string | null> => {
     try {
-      const response = await axios.get(`http://localhost:5001/api/v1/users/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await axios.get(
+        `http://localhost:5001/api/v1/users/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       console.log("User API Response:", response.data);
-  
+
       if (response.status === 200) {
         return response.data.user.username; // Assuming the API returns a `name` field
       }
     } catch (error) {
       console.error("Error fetching user name:", error);
     }
-  
+
     return null; // Return null if the request fails
   };
-
 
   if (loading) {
     return (
