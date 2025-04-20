@@ -41,6 +41,10 @@ const OfferProposal = ({ proposalId }: Props) => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
 
+  const BASE_URL = process.env.NODE_ENV === "production"
+  ? "https://sopra-fs25-group-39-client.vercel.app"
+  : "http://localhost:8080";
+  
   interface Offer {
     proposalId: string;
     //title: string;
@@ -51,45 +55,22 @@ const OfferProposal = ({ proposalId }: Props) => {
     averageRating: number; // Added averageRating property
   }
 
-  interface ContractData {
-    contractId: number;
-    title: string;
-    contractDescription: string;
-    moveDateTime: string;
-    fromLocation?: {
-      address: string;
-      latitude: number;
-      longitude: number;
-    };
-    toLocation?: {
-      address: string;
-      latitude: number;
-      longitude: number;
-    };
-    length: number;
-    width: number;
-    height: number;
-    mass: number;
-    fragile: boolean;
-    coolingRequired: boolean;
-    rideAlong: boolean;
-    manPower: number;
-    price: number;
-    imagePath1?: string;
-    imagePath2?: string;
-    imagePath3?: string;
-  }
-
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loadingOffers, setLoadingOffers] = useState(true);
   const [errorOffers, setErrorOffers] = useState(false);
 
   const fetchContract = async () => {
     try {
-      const res = await axios.get<ContractData>(
-        `http://localhost:8080/api/v1/contracts/${proposalId}`,
+      const res = await axios.get<{ contract: any }>(
+        `${BASE_URL}/api/v1/contracts/${proposalId}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token") || "",
+            "userId": localStorage.getItem("userId") || "",
+          },
+        },
       );
-      const data = res.data;
+      const data = res.data.contract;
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
@@ -119,9 +100,7 @@ const OfferProposal = ({ proposalId }: Props) => {
         lat: data.toLocation?.latitude,
         lng: data.toLocation?.longitude,
       });
-      setImagePaths(
-        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean),
-      );
+      setImagePaths(data.contractPhotos || []);
       setError(false);
       setModalVisible(false);
     } catch {

@@ -135,7 +135,7 @@ const Driver = () => {
           ...formStepOneData,
           profilePicturePath,
           driverLicensePath: driverLicenseFilePath,
-          insuranceProofPath: insuranceProofFilePath,
+          driverInsurancePath: insuranceProofFilePath,
           preferredRange: preferredRange ?? undefined,
         },
         car: {
@@ -302,15 +302,12 @@ const Driver = () => {
                       const file = fileList[0]?.originFileObj;
                       if (file) {
                         const filePath = await uploadFile(file, "profile");
-                        // setProfilePictureFile(file);
                         setUploadedFilePath(filePath);
                       } else {
-                        // setProfilePictureFile(null);
                         setUploadedFilePath(null);
                       }
                     }}
                     onRemove={() => {
-                      // setProfilePictureFile(null);
                       setUploadedFilePath(null);
                     }}
                   >
@@ -335,7 +332,7 @@ const Driver = () => {
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item
-                  label="Vehicle Make & Model"
+                  label="Vehicle Model"
                   name="vehicleModel"
                   rules={[{ required: true }]}
                 >

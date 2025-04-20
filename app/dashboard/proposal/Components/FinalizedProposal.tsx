@@ -22,36 +22,12 @@ import { Autocomplete } from "@react-google-maps/api";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+const BASE_URL = process.env.NODE_ENV === "production"
+  ? "https://sopra-fs25-group-39-client.vercel.app"
+  : "http://localhost:8080";
+
 interface Props {
   proposalId: string;
-}
-interface ContractData {
-  contractId: number;
-  title: string;
-  contractDescription: string;
-  moveDateTime: string;
-  fromLocation?: {
-    address: string;
-    latitude: number;
-    longitude: number;
-  };
-  toLocation?: {
-    address: string;
-    latitude: number;
-    longitude: number;
-  };
-  length: number;
-  width: number;
-  height: number;
-  mass: number;
-  fragile: boolean;
-  coolingRequired: boolean;
-  rideAlong: boolean;
-  manPower: number;
-  price: number;
-  imagePath1?: string;
-  imagePath2?: string;
-  imagePath3?: string;
 }
 
 const FinalizedProposal = ({ proposalId }: Props) => {
@@ -69,10 +45,16 @@ const FinalizedProposal = ({ proposalId }: Props) => {
 
   const fetchContract = async () => {
     try {
-      const res = await axios.get<ContractData>(
-        `http://localhost:8080/api/v1/contracts/${proposalId}`,
+      const res = await axios.get<{ contract: any }>(
+        `${BASE_URL}/api/v1/contracts/${proposalId}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token") || "",
+            "userId": localStorage.getItem("userId") || "",
+          },
+        },
       );
-      const data = res.data;
+      const data = res.data.contract;
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
@@ -102,9 +84,7 @@ const FinalizedProposal = ({ proposalId }: Props) => {
         lat: data.toLocation?.latitude,
         lng: data.toLocation?.longitude,
       });
-      setImagePaths(
-        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean),
-      );
+      setImagePaths(data.contractPhotos || []);
       setError(false);
       setModalVisible(false);
     } catch {

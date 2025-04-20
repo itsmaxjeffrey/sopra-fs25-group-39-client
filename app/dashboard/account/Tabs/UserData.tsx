@@ -92,6 +92,7 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
           ...editedData,
           profilePicturePath: data.filePath,
         });
+        setChanged(true);
         setImageKey((prev) => prev + 1); // Force re-render of the image
       } else {
         throw new Error("File path is missing in the response");

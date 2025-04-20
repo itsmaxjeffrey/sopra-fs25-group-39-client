@@ -94,9 +94,8 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
         lat: data.toLocation?.latitude,
         lng: data.toLocation?.longitude,
       });
-      setImagePaths(
-        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean),
-      );
+      setImagePaths(data.contractPhotos || []);
+
 
       // Reset error and modal states
       setError(false);

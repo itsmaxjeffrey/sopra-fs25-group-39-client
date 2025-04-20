@@ -26,36 +26,6 @@ interface Props {
   proposalId: string;
 }
 
-interface Location {
-  address: string;
-  latitude: number;
-  longitude: number;
-}
-
-interface Contract {
-  contractId: number;
-  title: string;
-  contractDescription: string;
-  moveDateTime: string;
-  fromLocation: Location;
-  toLocation: Location;
-  length: number;
-  width: number;
-  height: number;
-  mass: number;
-  fragile: boolean;
-  coolingRequired: boolean;
-  rideAlong: boolean;
-  manPower: boolean;
-  price: number;
-  imagePath1?: string;
-  imagePath2?: string;
-  imagePath3?: string;
-  driverName?: string;
-  driverId?: number;
-  averageRating?: number;
-}
-
 
 const AcceptedProposal = ({ proposalId }: Props) => {
   const router = useRouter();
@@ -72,10 +42,10 @@ const AcceptedProposal = ({ proposalId }: Props) => {
 
   const fetchContract = async () => {
     try {
-      const res = await axios.get<Contract>(
+      const res = await axios.get<{ contract: any }>(
         `http://localhost:8080/api/v1/contracts/${proposalId}`,
       );
-      const data = res.data;
+      const data = res.data.contract;
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
@@ -105,9 +75,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
         lat: data.toLocation?.latitude,
         lng: data.toLocation?.longitude,
       });
-      setImagePaths(
-        [data.imagePath1, data.imagePath2, data.imagePath3].filter((path): path is string => !!path),
-      );
+      setImagePaths(data.contractPhotos || []);
       setError(false);
       setModalVisible(false);
     } catch {
