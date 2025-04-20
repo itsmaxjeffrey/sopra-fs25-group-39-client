@@ -11,9 +11,9 @@ import ActionsTab from "./Tabs/Actions";
 
 const { Title } = Typography;
 
-const BASE_URL = process.env.NODE_ENV === "production"
-  ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:8080";
+// const BASE_URL = process.env.NODE_ENV === "production"
+//   ? "https://sopra-fs25-group-39-client.vercel.app"
+//   : "http://localhost:8080";
 
 const AccountPage = () => {
   const [userData, setUserData] = useState<any>(null);
@@ -25,13 +25,13 @@ const AccountPage = () => {
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
-  
+
     if (!userId || !token) {
       setError("No user ID or token found");
       setLoading(false);
       return;
     }
-  
+
     axios
       .get(`http://localhost:8080/api/v1/users/${userId}`, {
         headers: {

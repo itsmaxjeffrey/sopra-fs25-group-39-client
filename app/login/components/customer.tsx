@@ -30,9 +30,9 @@ import styles from "../login.module.css";
 const { Title } = Typography;
 
 const Customer = () => {
-  const [fromData, setFormData] = useState<any>({}); // later add "formData" to use it
+  // const [fromData, setFormData] = useState<any>({}); // later add "formData" to use it
 
-  const [profilePictureFile, setProfilePictureFile] = useState<File | null>( null, );
+  // const [profilePictureFile, setProfilePictureFile] = useState<File | null>( null, );
   const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -45,23 +45,23 @@ const Customer = () => {
     const formData = new FormData();
     formData.append("file", file); // Attach the file
     formData.append("type", type); // Specify the file type (e.g., "profile")
-  
+
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/v1/files/upload`, 
+        `${BASE_URL}/api/v1/files/upload`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       const filePath = response.data.filePath;
       if (!filePath) {
         throw new Error("File path is missing in the response");
       }
-  
+
       return filePath;
     } catch (error) {
       console.error("File upload failed:", error);
@@ -71,46 +71,46 @@ const Customer = () => {
 
   return (
     <div className={styles.driverContainer}>
-  <Form
-  layout="vertical"
-  onFinish={async (values) => {
-    const {
-      firstName,
-      lastName,
-      birthDate,
-      email,
-      phoneNumber,
-      username,
-      password,
-    } = values;
+      <Form
+        layout="vertical"
+        onFinish={async (values) => {
+          const {
+            firstName,
+            lastName,
+            birthDate,
+            email,
+            phoneNumber,
+            username,
+            password,
+          } = values;
 
-    setModalVisible(true);
-    setModalState("loading");
+          setModalVisible(true);
+          setModalState("loading");
 
-    try {
-      const profilePicturePath = uploadedFilePath;
+          try {
+            const profilePicturePath = uploadedFilePath;
 
-      await axios.post(`${BASE_URL}/api/v1/auth/register`, {
-        user: {
-          userAccountType: "REQUESTER",
-          firstName,
-          lastName,
-          birthDate: birthDate ? birthDate.format("YYYY-MM-DD") : null,
-          email,
-          phoneNumber,
-          username,
-          password,
-          profilePicturePath,
-        },
-      });
+            await axios.post(`${BASE_URL}/api/v1/auth/register`, {
+              user: {
+                userAccountType: "REQUESTER",
+                firstName,
+                lastName,
+                birthDate: birthDate ? birthDate.format("YYYY-MM-DD") : null,
+                email,
+                phoneNumber,
+                username,
+                password,
+                profilePicturePath,
+              },
+            });
 
-      setModalState("success");
-    } catch (err: any) {
-      setErrorMessage(err.message);
-      setModalState("error");
-    }
-  }}
->
+            setModalState("success");
+          } catch (err: any) {
+            setErrorMessage(err.message);
+            setModalState("error");
+          }
+        }}
+      >
         <div className={styles.formSection}>
           <div>
             <Title level={5}>Personal Information</Title>
@@ -244,34 +244,34 @@ const Customer = () => {
                 </Form.Item>
               </Col>
               <Col span={12}>
-              <Form.Item label="Profile Picture" name="profilePicture">
-                <Upload
-                  listType="picture"
-                  maxCount={1}
-                  beforeUpload={() => false} // Prevent automatic upload by Ant Design
-                  onChange={async ({ fileList }) => {
-                    const file = fileList[0]?.originFileObj;
-                    if (file) {
-                      try {
-                        const filePath = await uploadFile(file, "profile"); // Upload the file immediately
-                        setProfilePictureFile(file); // Store the file locally
-                        setUploadedFilePath(filePath); // Store the file path returned by the backend
-                      } catch (error) {
-                        console.error("File upload failed:", error);
+                <Form.Item label="Profile Picture" name="profilePicture">
+                  <Upload
+                    listType="picture"
+                    maxCount={1}
+                    beforeUpload={() => false} // Prevent automatic upload by Ant Design
+                    onChange={async ({ fileList }) => {
+                      const file = fileList[0]?.originFileObj;
+                      if (file) {
+                        try {
+                          const filePath = await uploadFile(file, "profile"); // Upload the file immediately
+                          setProfilePictureFile(file); // Store the file locally
+                          setUploadedFilePath(filePath);
+                        } catch (error) {
+                          console.error("File upload failed:", error);
+                        }
+                      } else {
+                        setProfilePictureFile(null);
+                        setUploadedFilePath(null);
                       }
-                    } else {
+                    }}
+                    onRemove={() => {
                       setProfilePictureFile(null);
                       setUploadedFilePath(null);
-                    }
-                  }}
-                  onRemove={() => {
-                    setProfilePictureFile(null);
-                    setUploadedFilePath(null);
-                  }}
-                >
-                  <Button>Upload Profile Picture</Button>
-                </Upload>
-              </Form.Item>
+                    }}
+                  >
+                    <Button>Upload Profile Picture</Button>
+                  </Upload>
+                </Form.Item>
               </Col>
             </Row>
           </div>

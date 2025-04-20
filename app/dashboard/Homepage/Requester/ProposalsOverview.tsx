@@ -44,12 +44,23 @@ const ProposalsOverview = () => {
       })
       .then((res) => {
         console.log("API Response:", res.data); // Debugging the API response
-        const sorted = res.data.sort(
-          (a: Proposal, b: Proposal) =>
-            new Date(a.creationDateTime).getTime() -
-            new Date(b.creationDateTime).getTime(),
-        );
-        setContracts(sorted);
+
+        // Deconstruct the contracts array from the response
+        const { contracts } = res.data;
+
+        if (Array.isArray(contracts)) {
+          // Sort the contracts by creationDateTime
+          const sorted = contracts.sort(
+            (a: Proposal, b: Proposal) =>
+              new Date(a.creationDateTime).getTime() -
+              new Date(b.creationDateTime).getTime(),
+          );
+          setContracts(sorted);
+        } else {
+          console.error(
+            "Unexpected response format: contracts is not an array",
+          );
+        }
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));

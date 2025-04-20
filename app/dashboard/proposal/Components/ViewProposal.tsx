@@ -19,6 +19,11 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import dayjs from "dayjs";
 import { Autocomplete } from "@react-google-maps/api";
+import { useParams } from "next/navigation";
+
+const BASE_URL = process.env.NODE_ENV === "production"
+  ? "https://sopra-fs25-group-39-client.vercel.app"
+  : "http://localhost:8080";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -27,6 +32,7 @@ interface Props {
 }
 
 const ViewProposal = ({ userId }: Props) => {
+  const { id } = useParams(); // Retrieve the proposal ID from the URL
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -40,6 +46,11 @@ const ViewProposal = ({ userId }: Props) => {
 
   const fetchContract = async () => {
     try {
+      console.log(`userId: ${userId}`);
+      console.log(`proposalId: ${id}`);
+      if (!id) {
+        throw new Error("Proposal ID is missing");
+      }
       const res = await axios.get(
         `http://localhost:8080/api/v1/contracts/${userId}`,
       );
@@ -132,11 +143,9 @@ const ViewProposal = ({ userId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    src={process.env.NODE_ENV === "production"
-                      ? `https://sopra-fs25-group-39-client.vercel.app${
-                        imagePaths[idx]
-                      }`
-                      : `http://localhost:8080${imagePaths[idx]}`}
+                    src={`${BASE_URL}/api/v1/files/download?filePath=${
+                      imagePaths[idx]
+                    }`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",
@@ -346,7 +355,10 @@ const ViewProposal = ({ userId }: Props) => {
             ? (
               <div className={styles.registerError}>
                 <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-                <p>UUUUUUPPPPPPSSSS</p>
+                <p>
+                  ViewProposal: Something went wrong while fetching the proposal
+                  details.
+                </p>
                 <Row justify="center" gutter={16}>
                   <Col></Col>
                   <Col>

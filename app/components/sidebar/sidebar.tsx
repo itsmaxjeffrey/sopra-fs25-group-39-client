@@ -7,7 +7,9 @@ import axios from "axios"; // Import axios
 
 import styles from "./sidebar.module.css";
 
-const Sidebar = ({ accountType: initialAccountType }: { accountType: string | null }) => {
+const Sidebar = (
+  { accountType: initialAccountType }: { accountType: string | null },
+) => {
   const router = useRouter();
   const pathname = usePathname();
   const [showConfirm, setShowConfirm] = React.useState(false);
@@ -38,26 +40,26 @@ const Sidebar = ({ accountType: initialAccountType }: { accountType: string | nu
   const handleLogout = async () => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-  
+
     if (!token || !userId) {
-     localStorage.removeItem("token");
+      localStorage.removeItem("token");
       localStorage.removeItem("userId");
       router.push("/");
       return;
     }
-  
+
     try {
       await axios.post(
         "http://localhost:8080/api/v1/auth/logout",
-        {}, 
+        {},
         {
           headers: {
             UserId: userId,
             Authorization: `${token}`,
           },
-        }
+        },
       );
-  
+
       console.log("Successfully logged out");
     } catch (error) {
       console.error("Failed to log out:", error);
@@ -73,7 +75,9 @@ const Sidebar = ({ accountType: initialAccountType }: { accountType: string | nu
       <nav>
         <ul className={styles.navList}>
           <li
-            className={`${styles.navItem} ${pathname === "/dashboard" ? styles.active : ""}`}
+            className={`${styles.navItem} ${
+              pathname === "/dashboard" ? styles.active : ""
+            }`}
           >
             <Link href="/dashboard">Home</Link>
           </li>
@@ -82,10 +86,14 @@ const Sidebar = ({ accountType: initialAccountType }: { accountType: string | nu
             <>
               <li
                 className={`${styles.navItem} ${
-                  pathname === "/dashboard/contract-overview" ? styles.active : ""
+                  pathname === "/dashboard/contract-overview"
+                    ? styles.active
+                    : ""
                 }`}
               >
-                <Link href="/dashboard/contract-overview">Contract Overview</Link>
+                <Link href="/dashboard/contract-overview">
+                  Contract Overview
+                </Link>
               </li>
             </>
           )}

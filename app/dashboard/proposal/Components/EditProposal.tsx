@@ -20,13 +20,17 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { Autocomplete } from "@react-google-maps/api";
 
+const BASE_URL = process.env.NODE_ENV === "production"
+  ? "https://sopra-fs25-group-39-client.vercel.app"
+  : "http://localhost:8080";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  userId: string;
+  proposalId: string;
 }
 
-const EditProposalFormPage = ({ userId }: Props) => {
+const EditProposalFormPage = ({ proposalId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [changed, setChanged] = useState(false);
@@ -42,13 +46,26 @@ const EditProposalFormPage = ({ userId }: Props) => {
 
   const fetchContract = async () => {
     try {
+      if (!proposalId) {
+        throw new Error("Proposal ID is missing");
+      }
       const res = await axios.get(
-        `http://localhost:8080/api/v1/contracts/${userId}`,
+        `http://localhost:8080/api/v1/contracts/${proposalId}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token") || "",
+            "userId": localStorage.getItem("userId") || "",
+          },
+        },
       );
-      const data = res.data;
+
+      // Access the contract object from the response
+      const data = res.data.contract;
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
+
+      // Populate the form with the contract data
       form.setFieldsValue({
         title: data.title,
         description: data.contractDescription,
@@ -65,6 +82,8 @@ const EditProposalFormPage = ({ userId }: Props) => {
         price: data.price,
         mass: data.mass,
       });
+
+      // Update state with additional data
       setFromCoords({
         address: data.fromLocation?.address,
         lat: data.fromLocation?.latitude,
@@ -78,10 +97,13 @@ const EditProposalFormPage = ({ userId }: Props) => {
       setImagePaths(
         [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean),
       );
+
+      // Reset error and modal states
       setError(false);
       setModalVisible(false);
       setChanged(false);
-    } catch {
+    } catch (error) {
+      console.error("Error fetching contract:", error);
       setError(true);
     } finally {
       setLoading(false);
@@ -90,7 +112,9 @@ const EditProposalFormPage = ({ userId }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/contracts/${userId}`);
+      await axios.delete(
+        `http://localhost:8080/api/v1/contracts/${proposalId}`,
+      );
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
@@ -100,7 +124,7 @@ const EditProposalFormPage = ({ userId }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, userId]);
+  }, [form, proposalId]);
 
   const onFinish = async (values: any) => {
     const payload = {
@@ -132,7 +156,7 @@ const EditProposalFormPage = ({ userId }: Props) => {
 
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/v1/contracts/${userId}`,
+        `http://localhost:8080/api/v1/contracts/${proposalId}`,
         payload,
       );
       console.log("PUT response:", response.data);
@@ -152,11 +176,9 @@ const EditProposalFormPage = ({ userId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    src={process.env.NODE_ENV === "production"
-                      ? `https://sopra-fs25-group-39-client.vercel.app${
-                        imagePaths[idx]
-                      }`
-                      : `http://localhost:8080${imagePaths[idx]}`}
+                    src={`${BASE_URL}/api/v1/files/download?filePath=${
+                      imagePaths[idx]
+                    }`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",
@@ -374,7 +396,10 @@ const EditProposalFormPage = ({ userId }: Props) => {
             ? (
               <div className={styles.registerError}>
                 <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-                <p>UUUUUUPPPPPPSSSS</p>
+                <p>
+                  EditProposal: Something went wrong while fetching the proposal
+                  details.
+                </p>
                 <Row justify="center" gutter={16}>
                   <Col>
                     <Button

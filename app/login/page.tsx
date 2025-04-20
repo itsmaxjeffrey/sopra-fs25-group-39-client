@@ -7,7 +7,6 @@ import Login from "./components/login";
 import Driver from "./components/driver";
 import styles from "./login.module.css";
 import Customer from "./components/customer";
-import axios from "axios";
 
 // const BASE_URL = process.env.NODE_ENV === "production"
 //   ? "https://sopra-fs25-group-39-client.vercel.app"
@@ -24,7 +23,7 @@ const AuthPage = () => {
     const refreshAuthToken = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
-  
+
       try {
         const res = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
           method: "POST",
@@ -33,18 +32,17 @@ const AuthPage = () => {
           },
           body: JSON.stringify({ token }),
         });
-  
+
         if (!res.ok) {
           throw new Error("Failed to refresh token");
         }
-  
-        const data = await res.json();
+
         router.push("/dashboard");
       } catch (error) {
         localStorage.removeItem("token");
       }
     };
-  
+
     refreshAuthToken();
   }, [router]);
 

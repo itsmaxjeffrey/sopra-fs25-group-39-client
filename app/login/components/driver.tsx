@@ -9,7 +9,6 @@ import {
   Modal,
   Row,
   Spin,
-  Typography,
   Upload,
 } from "antd";
 import {
@@ -18,154 +17,160 @@ import {
   LoadingOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { Autocomplete, LoadScript } from "@react-google-maps/api";
-import styles from "../login.module.css";
 import axios from "axios";
+import styles from "../login.module.css";
+import { Autocomplete, LoadScript } from "@react-google-maps/api";
 
-const { Title } = Typography;
+// const { Title } = Typography;
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+interface StepOneData {
+  firstName: string;
+  lastName: string;
+  username: string;
+  birthDate: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirm: string;
+}
+
+interface StepTwoData {
+  vehicleModel: string;
+  licensePlate: string;
+  weightCapacity: string;
+  volumeCapacity: string;
+  preferredRange: number;
+}
+
+interface Location {
+  latitude: number;
+  longitude: number;
+  formattedAddress: string;
+}
+const BASE_URL = process.env.NODE_ENV === "production"
+  ? "https://sopra-fs25-group-39-client.vercel.app"
+  : "http://localhost:8080";
 
 const Driver = () => {
-  const [formStepOneData, setFormStepOneData] = useState<any>({});
+  const [driverLicenseFilePath, setDriverLicenseFilePath] = useState<string | null>(null);
+  const [insuranceProofFilePath, setInsuranceProofFilePath] = useState<
+    string | null
+  >(null);
+
+  const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
+  const [formStepOneData, setFormStepOneData] = useState<StepOneData | null>(
+    null,
+  );
   const [step, setStep] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
     "loading",
   );
   const [errorMessage, setErrorMessage] = useState("");
-  const [preferredRange, setPreferredRange] = useState("");
-  const [location, setLocation] = useState({
-    latitude: null,
-    longitude: null,
-    formattedAddress: "",
-  });
-  const autoRef = useRef<any>(null);
-  const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
-    null,
-  );
+
+  const [preferredRange, setPreferredRange] = useState<number | null>(null);
   const [driverLicenseFile, setDriverLicenseFile] = useState<File | null>(null);
+  const [insuranceProofFile, setInsuranceProofFile] = useState<File | null>(null);
+  const [location, setLocation] = useState<Location | null>(null);
+  const autoRef = useRef<google.maps.places.Autocomplete | null>(null);
 
-  const [insuranceProofFile, setInsuranceProofFile] = useState<File | null>(
-    null,
-  );
+  const uploadFile = async (file: File, type: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", type);
 
-  const handleStepOneFinish = (values: any) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/v1/files/upload`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
+
+      const filePath = response.data.filePath;
+      if (!filePath) {
+        throw new Error("File path is missing in the response");
+      }
+
+      return filePath;
+    } catch (error) {
+      console.error("File upload failed:", error);
+      throw new Error("Failed to upload file. Please try again.");
+    }
+  };
+
+  const handleStepOneFinish = (values: StepOneData) => {
     setFormStepOneData(values);
     setStep(2);
   };
 
-  const handleStepTwoFinish = async (values: any) => {
-    const { vehicleModel, licensePlate, weightCapacity, volumeCapacity } =
-      values;
-  };
+  const handleStepTwoFinish = async (values: StepTwoData) => {
+    const {
+      vehicleModel,
+      licensePlate,
+      weightCapacity,
+      volumeCapacity,
+    } = values;
 
-  const [licenseFilePath, setLicenseFilePath] = useState<string | null>(null);
-  const [insuranceFilePath, setInsuranceFilePath] = useState<string | null>(null);
-
-  const handleFileUpload = async (file: File, fileType: string) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("type", fileType);
+    setModalVisible(true);
+    setModalState("loading");
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/files/upload",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      interface UploadResponse {
-        filePath: string;
+      const profilePicturePath = uploadedFilePath;
+      let driverLicensePath = null;
+      let driverInsurancePath = null;
+
+      if (driverLicenseFile) {
+        driverLicensePath = await uploadFile(driverLicenseFile, "license");
       }
-      const data = response.data as UploadResponse;
-      return data.filePath; // Return the file path from the response
-    } catch (error) {
-      throw new Error("File upload failed");
+
+      if (insuranceProofFile) {
+        driverInsurancePath = await uploadFile(insuranceProofFile, "insurance");
+      }
+
+      await axios.post(`${BASE_URL}/api/v1/auth/register`, {
+        user: {
+          userAccountType: "DRIVER",
+          ...formStepOneData,
+          profilePicturePath,
+          driverLicensePath: driverLicenseFilePath,
+          insuranceProofPath: insuranceProofFilePath,
+          preferredRange: preferredRange ?? undefined,
+        },
+        car: {
+          carModel: vehicleModel,
+          volumeCapacity: volumeCapacity,
+          weightCapacity: weightCapacity,
+          licensePlate,
+        },
+        location,
+        driverLicensePath,
+        driverInsurancePath,
+      });
+
+      setModalState("success");
+    } catch (err: any) {
+      setErrorMessage(err.message);
+      setModalState("error");
     }
   };
 
   return (
     <div className={styles.driverContainer}>
-    <Form
-      layout="vertical"
-      onFinish={(values) => {
-        const {
-          firstName,
-          lastName,
-          birthDate,
-          email,
-          phoneNumber,
-          username,
-          password,
-          vehicleModel,
-          licensePlate,
-          weightCapacity,
-          volumeCapacity,
-        } = values;
-
-        setModalVisible(true);
-        setModalState("loading");
-
-        fetch("http://localhost:8080/api/v1/auth/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user: {
-              userAccountType: "DRIVER",
-              birthDate: birthDate ? birthDate.format("YYYY-MM-DD") : null, // Format birthDate
-              email,
-              firstName,
-              lastName,
-              password,
-              phoneNumber,
-              username,
-            },
-            car: {
-              carModel: vehicleModel,
-              space: volumeCapacity,
-              supportedWeight: weightCapacity,
-              licensePlate,
-            },             
-            files: {
-              driversLicense: licenseFilePath,
-              insuranceProof: insuranceFilePath,
-            },
-          }),
-        })
-          .then((res) => {
-            if (!res.ok) {
-              return res.json().then((data) => {
-                throw new Error(data.message || "Registration failed");
-              });
-            }
-            return res.json();
-          })
-          .then(() => {
-            setModalState("success");
-          })
-          .catch((err) => {
-            setErrorMessage(err.message);
-            setModalState("error");
-          });
-      }}
-      >
-        <div className={styles.formSection}>
-          <div>
-            <Title level={5}>Personal Information</Title>
+      {/* Step One Form */}
+      {step === 1 && (
+        <Form layout="vertical" onFinish={handleStepOneFinish}>
+          <div className={styles.formSection}>
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item
                   label="First Name"
                   name="firstName"
-                  rules={[
-                    { required: true, message: "Please enter your first name" },
-                  ]}
+                  rules={[{
+                    required: true,
+                    message: "Please enter your first name",
+                  }]}
                 >
                   <Input placeholder="Anna" />
                 </Form.Item>
@@ -174,9 +179,10 @@ const Driver = () => {
                 <Form.Item
                   label="Last Name"
                   name="lastName"
-                  rules={[
-                    { required: true, message: "Please enter your last name" },
-                  ]}
+                  rules={[{
+                    required: true,
+                    message: "Please enter your last name",
+                  }]}
                 >
                   <Input placeholder="Miller" />
                 </Form.Item>
@@ -185,9 +191,10 @@ const Driver = () => {
                 <Form.Item
                   label="Username"
                   name="username"
-                  rules={[
-                    { required: true, message: "Please enter a username" },
-                  ]}
+                  rules={[{
+                    required: true,
+                    message: "Please enter a username",
+                  }]}
                 >
                   <Input placeholder="Anna" />
                 </Form.Item>
@@ -195,10 +202,11 @@ const Driver = () => {
               <Col span={12}>
                 <Form.Item
                   label="Birthdate"
-                  name="birthdate"
-                  rules={[
-                    { required: true, message: "Please select your birthdate" },
-                  ]}
+                  name="birthDate"
+                  rules={[{
+                    required: true,
+                    message: "Please select your birthdate",
+                  }]}
                 >
                   <DatePicker style={{ width: "100%" }} />
                 </Form.Item>
@@ -232,12 +240,11 @@ const Driver = () => {
                     },
                     {
                       pattern: /^\+?[0-9\s\-]{7,20}$/,
-                      message:
-                        "Please enter a valid phone number (e.g. +41 79 123 45 67)",
+                      message: "Invalid phone number",
                     },
                   ]}
                 >
-                  <Input placeholder="e.g. +41 79 123 45 67" />
+                  <Input placeholder="+41 79 123 45 67" />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -245,15 +252,12 @@ const Driver = () => {
                   label="Password"
                   name="password"
                   rules={[
-                    {
-                      required: true,
-                      message: "Please enter a password",
-                    },
+                    { required: true, message: "Please enter a password" },
                     {
                       pattern:
                         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
                       message:
-                        "At least 8 characters, uppercase & lowercase letters, a number and a special character",
+                        "Must include uppercase, lowercase, number, and special char",
                     },
                   ]}
                   hasFeedback
@@ -268,10 +272,7 @@ const Driver = () => {
                   dependencies={["password"]}
                   hasFeedback
                   rules={[
-                    {
-                      required: true,
-                      message: "Please confirm your password",
-                    },
+                    { required: true, message: "Please confirm your password" },
                     ({ getFieldValue }) => ({
                       validator(_, value) {
                         if (!value || getFieldValue("password") === value) {
@@ -287,173 +288,183 @@ const Driver = () => {
                   <Input.Password />
                 </Form.Item>
               </Col>
+              <Col span={12}>
+                <Form.Item label="Profile Picture" name="profilePicture">
+                  <Upload
+                    listType="picture"
+                    maxCount={1}
+                    beforeUpload={() => false}
+                    onChange={async ({ fileList }) => {
+                      const file = fileList[0]?.originFileObj;
+                      if (file) {
+                        const filePath = await uploadFile(file, "profile");
+                        setProfilePictureFile(file);
+                        setUploadedFilePath(filePath);
+                      } else {
+                        setProfilePictureFile(null);
+                        setUploadedFilePath(null);
+                      }
+                    }}
+                    onRemove={() => {
+                      setProfilePictureFile(null);
+                      setUploadedFilePath(null);
+                    }}
+                  >
+                    <Button icon={<UploadOutlined />}>
+                      Upload Profile Picture
+                    </Button>
+                  </Upload>
+                </Form.Item>
+              </Col>
             </Row>
           </div>
-        </div>
-
           <Form.Item className={styles.stepControls}>
-            <Button type="primary" htmlType="submit">
-              Next
-            </Button>
+            <Button type="primary" htmlType="submit">Next</Button>
           </Form.Item>
         </Form>
-      }
+      )}
 
+      {/* Step Two Form */}
       {step === 2 && (
         <Form layout="vertical" onFinish={handleStepTwoFinish}>
           <div className={styles.formSection}>
-            <div>
-              <Title level={5}>Vehicle Information</Title>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    label="Vehicle Make & Model"
-                    name="vehicleModel"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter your vehicle model",
-                      },
-                    ]}
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Vehicle Make & Model"
+                  name="vehicleModel"
+                  rules={[{ required: true }]}
+                >
+                  <Input placeholder="Honda Civic 2.0" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="License Plate"
+                  name="licensePlate"
+                  rules={[{ required: true }]}
+                >
+                  <Input placeholder="ZH 123 456" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Weight Capacity"
+                  name="weightCapacity"
+                  rules={[{ required: true }]}
+                >
+                  <Input placeholder="5 Tons" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Volume Capacity"
+                  name="volumeCapacity"
+                  rules={[{ required: true }]}
+                >
+                  <Input placeholder="15 Cubic" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Preferred Range (in km)"
+                  name="preferredRange"
+                  rules={[{ required: true }]}
+                >
+                  <Input
+                    type="number"
+                    onChange={(e) => setPreferredRange(Number(e.target.value))}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item label="Location" name="address">
+                  <LoadScript
+                    googleMapsApiKey={process.env
+                      .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
+                    libraries={["places"]}
                   >
-                    <Input placeholder="Honda Civic 2.0" />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="License Plate"
-                    name="licensePlate"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter your license plate",
-                      },
-                    ]}
-                  >
-                    <Input placeholder="ZH 123 456" />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="Weight Capacity"
-                    name="weightCapacity"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the weight capacity",
-                      },
-                    ]}
-                  >
-                    <Input placeholder="5 Tons" />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="Volume Capacity"
-                    name="volumeCapacity"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the volume capacity",
-                      },
-                    ]}
-                  >
-                    <Input placeholder="15 Cubic" />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="Preferred Range (in km)"
-                    name="preferredRange"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter preferred range",
-                      },
-                    ]}
-                  >
-                    <Input
-                      type="number"
-                      placeholder="e.g. 50"
-                      onChange={(e) => setPreferredRange(e.target.value)}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={24}>
-                  <Form.Item label="Location" name="address">
-                    <LoadScript
-                      googleMapsApiKey={process.env
-                        .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
-                      libraries={["places"]}
-                    >
-                      <Autocomplete
-                        onLoad={(ref) => (autoRef.current = ref)}
-                        onPlaceChanged={() => {
-                          const place = autoRef.current?.getPlace();
-                          if (
-                            place &&
-                            place.geometry &&
-                            place.formatted_address
-                          ) {
-                            setLocation({
-                              latitude: place.geometry.location.lat(),
-                              longitude: place.geometry.location.lng(),
-                              formattedAddress: place.formatted_address,
-                            });
-                          }
-                        }}
-                      >
-                        <Input placeholder="Enter your address" />
-                      </Autocomplete>
-                    </LoadScript>
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label="Driver’s License" name="driversLicense">
-                    <Upload
-                      listType="picture"
-                      maxCount={1}
-                      beforeUpload={() => false}
-                      onChange={({ fileList }) => {
-                        const file = fileList[0]?.originFileObj;
-                        if (file) {
-                          setDriverLicenseFile(file);
-                        } else {
-                          setDriverLicenseFile(null);
+                    <Autocomplete
+                      onLoad={(ref) => (autoRef.current = ref)}
+                      onPlaceChanged={() => {
+                        const place = autoRef.current?.getPlace();
+                        if (
+                          place && place.geometry && place.formatted_address
+                        ) {
+                          setLocation({
+                            latitude: place.geometry.location.lat(),
+                            longitude: place.geometry.location.lng(),
+                            formattedAddress: place.formatted_address,
+                          });
                         }
                       }}
-                      onRemove={() => setDriverLicenseFile(null)}
                     >
-                      <Button icon={<UploadOutlined />}>
-                        Upload Picture (optional)
-                      </Button>
-                    </Upload>
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label="Proof of Insurance" name="insuranceProof">
-                    <Upload
-                      listType="picture"
-                      maxCount={1}
-                      beforeUpload={() => false}
-                      onChange={({ fileList }) => {
-                        const file = fileList[0]?.originFileObj;
-                        if (file) {
-                          setInsuranceProofFile(file);
-                        } else {
-                          setInsuranceProofFile(null);
+                      <Input placeholder="Enter your address" />
+                    </Autocomplete>
+                  </LoadScript>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Driver’s License" name="driversLicense">
+                  <Upload
+                    listType="picture"
+                    maxCount={1}
+                    beforeUpload={() => false}
+                    onChange={async ({ fileList }) => {
+                      const file = fileList[0]?.originFileObj;
+                      if (file) {
+                        try {
+                          const filePath = await uploadFile(file, "license");
+                          setDriverLicenseFilePath(filePath);
+                        } catch (error) {
+                          console.error(
+                            "Driver's license upload failed:",
+                            error,
+                          );
                         }
-                      }}
-                      onRemove={() => setInsuranceProofFile(null)}
-                    >
-                      <Button icon={<UploadOutlined />}>
-                        Upload Picture (optional)
-                      </Button>
-                    </Upload>
-                  </Form.Item>
-                </Col>
-              </Row>
-            </div>
+                      } else {
+                        setDriverLicenseFilePath(null);
+                      }
+                    }}
+                    onRemove={() => setDriverLicenseFilePath(null)}
+                  >
+                    <Button icon={<UploadOutlined />}>
+                      Upload Picture (optional)
+                    </Button>
+                  </Upload>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Proof of Insurance" name="insuranceProof">
+                  <Upload
+                    listType="picture"
+                    maxCount={1}
+                    beforeUpload={() => false}
+                    onChange={async ({ fileList }) => {
+                      const file = fileList[0]?.originFileObj;
+                      if (file) {
+                        try {
+                          const filePath = await uploadFile(file, "insurance");
+                          setInsuranceProofFilePath(filePath);
+                        } catch (error) {
+                          console.error(
+                            "Insurance proof upload failed:",
+                            error,
+                          );
+                        }
+                      } else {
+                        setInsuranceProofFilePath(null);
+                      }
+                    }}
+                    onRemove={() => setInsuranceProofFilePath(null)}
+                  >
+                    <Button icon={<UploadOutlined />}>
+                      Upload Picture (optional)
+                    </Button>
+                  </Upload>
+                </Form.Item>
+              </Col>
+            </Row>
           </div>
 
           <Form.Item className={styles.stepControls}>
@@ -471,6 +482,7 @@ const Driver = () => {
         </Form>
       )}
 
+      {/* Modal */}
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>
           {modalState === "loading" && (
@@ -479,7 +491,6 @@ const Driver = () => {
               className={styles.registerSpinner}
             />
           )}
-
           {modalState === "success" && (
             <div className={styles.registerSuccess}>
               <CheckCircleOutlined style={{ fontSize: 48, color: "green" }} />
@@ -489,7 +500,6 @@ const Driver = () => {
               </Button>
             </div>
           )}
-
           {modalState === "error" && (
             <div className={styles.registerError}>
               <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />

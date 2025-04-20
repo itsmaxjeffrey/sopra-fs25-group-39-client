@@ -2,11 +2,10 @@
 import React, { useState } from "react";
 import { Alert, Button, Input } from "antd";
 import styles from "../login.module.css";
-import axios from "axios";
 
-const BASE_URL = process.env.NODE_ENV === "production"
-  ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:8080";
+// const BASE_URL = process.env.NODE_ENV === "production"
+//   ? "https://sopra-fs25-group-39-client.vercel.app"
+//   : "http://localhost:8080";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -19,7 +18,7 @@ const Login = () => {
   const handleLogin = async () => {
     setError("");
     setLoading(true);
-  
+
     try {
       const res = await fetch("http://localhost:8080/api/v1/auth/login", {
         method: "POST",
@@ -28,14 +27,14 @@ const Login = () => {
         },
         body: JSON.stringify({ username, password }),
       });
-  
+
       // Parse the response JSON
       const data = await res.json();
-  
+
       if (res.status !== 200) {
         throw new Error(data.message || "Login failed");
       }
-  
+
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.userId);
       window.location.href = "/dashboard";

@@ -49,16 +49,28 @@ export default function DriverProfilePage() {
 
   useEffect(() => {
     if (!userId || typeof userId !== "string") return;
-  
+
     console.log("Driver ID:", userId, typeof userId); // Debugging the ID
-  
+
     const fetchDriver = async () => {
       try {
-        const res = await axios.get<{ userId: number; username: string; profilePicturePath: string; carDTO?: { carModel?: string; licensePlate?: string; weightCapacity?: number; volumeCapacity?: number } }>(`http://localhost:8080/api/v1/users/${userId}`);
+        const res = await axios.get<
+          {
+            userId: number;
+            username: string;
+            profilePicturePath: string;
+            carDTO?: {
+              carModel?: string;
+              licensePlate?: string;
+              weightCapacity?: number;
+              volumeCapacity?: number;
+            };
+          }
+        >(`http://localhost:8080/api/v1/users/${userId}`);
         if (!res.data || !res.data.userId) {
           throw new Error("Invalid driver data");
         }
-  
+
         // Map backend response to match frontend expectations
         const driverData: Driver = {
           userId: res.data.userId,
@@ -67,14 +79,16 @@ export default function DriverProfilePage() {
           ratings: [], // Assuming ratings are not provided in the backend response
           car: res.data.carDTO
             ? {
-                makeModel: res.data.carDTO.carModel || "Unknown Model",
-                licensePlate: res.data.carDTO.licensePlate || "Unknown Plate",
-                weightCapacity: (res.data.carDTO.weightCapacity?.toString() ?? "0.0"),
-                volumeCapacity: (res.data.carDTO.volumeCapacity?.toString() ?? "0.0"),
-              }
+              makeModel: res.data.carDTO.carModel || "Unknown Model",
+              licensePlate: res.data.carDTO.licensePlate || "Unknown Plate",
+              weightCapacity:
+                (res.data.carDTO.weightCapacity?.toString() ?? "0.0"),
+              volumeCapacity:
+                (res.data.carDTO.volumeCapacity?.toString() ?? "0.0"),
+            }
             : null,
         };
-  
+
         setDriver(driverData);
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -88,7 +102,7 @@ export default function DriverProfilePage() {
         setLoading(false);
       }
     };
-  
+
     fetchDriver();
   }, [userId]);
 

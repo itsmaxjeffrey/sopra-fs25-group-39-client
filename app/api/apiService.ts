@@ -9,25 +9,28 @@ export class ApiService {
   private authToken: string | null = null;
   private userId: string | null = null;
 
-  setAuthToken(token: string) { this.authToken = token;}
-  setUserId(userId: string) { this.userId = userId; }
+  setAuthToken(token: string) {
+    this.authToken = token;
+  }
+  setUserId(userId: string) {
+    this.userId = userId;
+  }
 
   private getHeaders(): HeadersInit {
     const headers: Record<string, string> = {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     };
 
-    if (this.authToken){
+    if (this.authToken) {
       console.log("Using auth token for request:", this.authToken);
       headers["Authorization"] = this.authToken;
     }
     if (this.userId) {
       headers["User-Id"] = this.userId;
     }
-    
+
     return headers;
   }
-
 
   constructor() {
     this.baseURL = getApiDomain();

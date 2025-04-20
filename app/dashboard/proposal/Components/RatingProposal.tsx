@@ -296,7 +296,10 @@ const RatingProposal = ({ userId }: Props) => {
             ? (
               <div className={styles.registerError}>
                 <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-                <p>UUUUUUPPPPPPSSSS</p>
+                <p>
+                  RatingProposal: Something went wrong while fetching the
+                  proposal details.
+                </p>
                 <Row justify="center" gutter={16}>
                   <Col>
                     <Button

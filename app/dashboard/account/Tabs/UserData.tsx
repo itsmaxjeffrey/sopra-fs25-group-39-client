@@ -11,15 +11,31 @@ const BASE_URL = process.env.NODE_ENV === "production"
 
 const { Title } = Typography;
 
-const UserDataTab = ({
+interface UserData {
+  firstName: string;
+  lastName: string;
+  username: string;
+  birthDate: string | null;
+  email: string;
+  phoneNumber: string;
+  profilePicturePath?: string;
+}
+
+interface UserDataTabProps {
+  editedData: UserData;
+  userData: UserData;
+  setEditedData: React.Dispatch<React.SetStateAction<UserData>>;
+  changed: boolean;
+  setChanged: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const UserDataTab: React.FC<UserDataTabProps> = ({
   editedData,
   userData,
   setEditedData,
   changed,
   setChanged,
-}: any) => {
-  const [imageKey, setImageKey] = React.useState(0);
-
+}) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
@@ -35,47 +51,52 @@ const UserDataTab = ({
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Fetched user instance from backend:", data); 
+        console.log("Fetched user instance from backend:", data);
         setEditedData(data);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
-  }, []);
+  }, [setEditedData]);
 
-  const handleUpload = (file: any) => {
+  const handleUpload = async (file: File) => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("type", "profile");
 
     if (!token || !userId) return;
 
-    fetch(
-      `${BASE_URL}/api/v1/files/update/profile/${
-        editedData.profilePicturePath.split("/").pop()
-      }`,
-      {
-        method: "PUT",
+    try {
+      const response = await fetch(`${BASE_URL}/api/v1/files/upload`, {
+        method: "POST",
         headers: {
           UserId: `${userId}`,
           Authorization: `${token}`,
         },
         body: formData,
-      },
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload file");
+      }
+
+      const data = await response.json();
+      console.log("Upload response:", data);
+
+      if (data.filePath) {
         setEditedData({
           ...editedData,
-          profilePicturePath: data.profilePicturePath,
+          profilePicturePath: data.filePath,
         });
-        setImageKey((prev) => prev + 1); // Trigger re-render of image
-      })
-      .catch((error) => {
-        console.error("Error uploading file:", error);
-      });
+        setImageKey((prev) => prev + 1); // Force re-render of the image
+      } else {
+        throw new Error("File path is missing in the response");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
 
     return false; // Prevent default upload behavior
   };
@@ -109,24 +130,27 @@ const UserDataTab = ({
     <div className={styles.tabContent}>
       <Title level={5}>Personal Information</Title>
       <div className={styles.profilePicSection}>
-        {editedData?.profilePicturePath ? (
-          <Image
-            width={100}
-            height={100}
-            src={`${BASE_URL}/api/v1/files/download?filePath=${editedData.profilePicturePath}`}
-            // src={`${BASE_URL}/api/v1/files/download`}
-            alt="Profile"
-            style={{ borderRadius: "50%", objectFit: "cover" }}
-            // fallback="/placeholder-profile.png"
-          />
-        ) : (
-          <div className={styles.profilePicPlaceholder}>
-            <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-          </div>
-        )}
+        {editedData?.profilePicturePath
+          ? (
+            <Image
+              width={100}
+              height={100}
+              src={`${BASE_URL}/api/v1/files/download?filePath=${editedData.profilePicturePath}`}
+              alt="Profile"
+              style={{ borderRadius: "50%", objectFit: "cover" }}
+              // fallback="/placeholder-profile.png"
+            />
+          )
+          : (
+            <div className={styles.profilePicPlaceholder}>
+              <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
+            </div>
+          )}
         <Upload showUploadList={false} beforeUpload={handleUpload}>
           <Button icon={<UploadOutlined />}>
-            {editedData?.profilePicturePath ? "Replace Picture" : "Upload Picture"}
+            {editedData?.profilePicturePath
+              ? "Replace Picture"
+              : "Upload Picture"}
           </Button>
         </Upload>
       </div>
@@ -220,20 +244,6 @@ const UserDataTab = ({
             Reset
           </Button>
         )}
-      </div>
-
-      {/* Debug Section */}
-      <div style={{ marginTop: "20px" }}>
-        <Title level={5}>Debug: User Instance</Title>
-        <pre
-          style={{
-            backgroundColor: "#f5f5f5",
-            padding: "10px",
-            borderRadius: "5px",
-          }}
-        >
-          {JSON.stringify(editedData, null, 2)}
-        </pre>
       </div>
     </div>
   );

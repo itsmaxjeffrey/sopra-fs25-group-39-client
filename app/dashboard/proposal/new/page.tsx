@@ -25,6 +25,10 @@ import { Autocomplete } from "@react-google-maps/api";
 import styles from "./New.module.css";
 import dayjs from "dayjs";
 
+const BASE_URL = process.env.NODE_ENV === "production"
+  ? "https://sopra-fs25-group-39-client.vercel.app"
+  : "http://localhost:8080";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const NewProposalFormPage = () => {
@@ -39,11 +43,52 @@ const NewProposalFormPage = () => {
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
-  const [imageFiles, setImageFiles] = useState<(File | null)[]>([
+  const [uploadedPaths, setUploadedPaths] = useState<(string | null)[]>([
     null,
     null,
     null,
   ]);
+
+  const handleUpload = async (file: File, idx: number) => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", "proposal");
+
+    if (!token || !userId) return;
+
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/v1/files/upload",
+        {
+          method: "POST",
+          headers: {
+            UserId: `${userId}`,
+            Authorization: `${token}`,
+          },
+          body: formData,
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to upload file");
+      }
+
+      const data = await response.json();
+      console.log("Upload response:", data);
+
+      if (data.filePath) {
+        const newPaths = [...uploadedPaths];
+        newPaths[idx] = data.filePath;
+        setUploadedPaths(newPaths);
+      } else {
+        throw new Error("File path is missing in the response");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
 
   const handleFinish = async (values: any) => {
     console.log("Submitting values:", values);
@@ -51,33 +96,12 @@ const NewProposalFormPage = () => {
     setModalVisible(true);
 
     const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
 
     const length = Number(values.length);
     const width = Number(values.width);
     const height = Number(values.height);
     const volume = length * width * height;
-
-    const uploadedPaths: (string | null)[] = [null, null, null];
-
-    for (let i = 0; i < imageFiles.length; i++) {
-      const file = imageFiles[i];
-      if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("type", "proposal");
-
-        try {
-          const res = await axios.post(
-            "http://localhost:8080/api/v1/files/upload/proposal",
-            formData,
-          );
-          uploadedPaths[i] = res.data.filePath;
-        } catch (err) {
-          console.error("Image upload failed for index", i, err);
-          uploadedPaths[i] = null;
-        }
-      }
-    }
 
     const payload = {
       title: values.title,
@@ -110,21 +134,25 @@ const NewProposalFormPage = () => {
       imagePath3: uploadedPaths[2],
     };
 
-    setTimeout(async () => {
-      try {
-        console.log("WOULD SEND:", JSON.stringify(payload, null, 2));
-        await axios.post("http://localhost:8080/api/v1/contracts", payload);
-        setModalState("success");
-      } catch (err: any) {
-        console.error("Creation failed", err);
-        setModalState("error");
-        setErrorMessage("Something went wrong while creating your proposal.");
-      }
-    }, 1000);
+    try {
+      console.log("WOULD SEND:", JSON.stringify(payload, null, 2));
+      await axios.post("http://localhost:8080/api/v1/contracts", payload, {
+        headers: {
+          UserId: `${userId}`,
+          Authorization: `${token}`,
+        },
+      });
+      setModalState("success");
+    } catch (err: any) {
+      console.error("Creation failed", err);
+      setModalState("error");
+      setErrorMessage("Something went wrong while creating your proposal.");
+    }
   };
 
   return (
     <div className={styles.wrapper}>
+      {/* Image Upload Section */}
       <div className={styles.imageUpload}>
         <div className={styles.imageRow}>
           {[0, 1, 2].map((idx) => (
@@ -132,24 +160,23 @@ const NewProposalFormPage = () => {
               <Upload
                 listType="picture-card"
                 maxCount={1}
-                beforeUpload={() => false}
-                onChange={({ fileList }) => {
-                  const file = fileList[0]?.originFileObj || null;
-                  const newFiles = [...imageFiles];
-                  newFiles[idx] = file;
-                  setImageFiles(newFiles);
+                beforeUpload={(file) => {
+                  handleUpload(file, idx);
+                  return false;
                 }}
                 onRemove={() => {
-                  const newFiles = [...imageFiles];
-                  newFiles[idx] = null;
-                  setImageFiles(newFiles);
+                  const newPaths = [...uploadedPaths];
+                  newPaths[idx] = null;
+                  setUploadedPaths(newPaths);
                 }}
                 showUploadList={false}
               >
-                {imageFiles[idx]
+                {uploadedPaths[idx]
                   ? (
                     <Image
-                      src={URL.createObjectURL(imageFiles[idx]!)}
+                      src={`${BASE_URL}/api/v1/files/download?filePath=${
+                        uploadedPaths[idx]
+                      }`}
                       alt={`upload-${idx}`}
                       style={{
                         width: "100%",
@@ -392,6 +419,7 @@ const NewProposalFormPage = () => {
           </Button>
         </Form.Item>
       </Form>
+      {/* Modal */}
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>
           {modalState === "loading" && (
@@ -399,21 +427,17 @@ const NewProposalFormPage = () => {
               <Spin size="large" />
             </div>
           )}
-
           {modalState === "success" && (
             <div className={styles.registerSuccess}>
               <CheckCircleOutlined
                 style={{ fontSize: 48, color: "green", marginBottom: "20px" }}
               />
-              <br />
               <p>Proposal successfully created!</p>
-              <br />
               <Button type="primary" onClick={() => router.push("/dashboard")}>
                 Great!
               </Button>
             </div>
           )}
-
           {modalState === "error" && (
             <div className={styles.registerError}>
               <CloseCircleOutlined
@@ -423,7 +447,6 @@ const NewProposalFormPage = () => {
                 {errorMessage ||
                   "Something went wrong while creating your proposal."}
               </p>
-              <br />
               <Button onClick={() => setModalVisible(false)}>OK</Button>
             </div>
           )}

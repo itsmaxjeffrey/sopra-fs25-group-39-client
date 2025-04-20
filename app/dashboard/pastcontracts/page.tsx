@@ -24,7 +24,7 @@ const PastContracts = () => {
               UserId: `${userId}`,
               Authorization: `${token}`,
             },
-          }
+          },
         );
         const now = dayjs().startOf("day");
 
