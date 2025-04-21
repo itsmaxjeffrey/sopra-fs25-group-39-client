@@ -30,7 +30,6 @@ interface Props {
   proposalId: string;
 }
 
-
 const ViewProposal = ({ proposalId }: Props) => {
   const { id } = useParams(); // Retrieve the proposal ID from the URL
   const router = useRouter();
@@ -115,24 +114,50 @@ const ViewProposal = ({ proposalId }: Props) => {
       if (!driverId) {
         throw new Error("Driver ID not found in local storage.");
       }
-      const response = await axios.post(`${BASE_URL}/api/v1/offers`, {
-        contractId: proposalId,
-        driverId: driverId,
+      // Log the values being sent
+      console.log("Submitting offer with:", {
+        contractId: Number(proposalId),
+        driverId: Number(driverId),
       });
+      const response = await axios.post(
+        `${BASE_URL}/api/v1/offers`,
+        {
+          contractId: Number(proposalId), // Convert proposalId to number
+          driverId: Number(driverId),     // Convert driverId to number
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token") || "",
+            "UserId": driverId, // Use the retrieved driverId string here
+          },
+        },
+      );
 
       if (response.status === 201) {
-        console.log("Proposal accepted successfully!", response.data);
+        console.log("Offer created successfully!", response.data); // Changed log message
         Modal.success({
           title: "Success",
-          content: "The proposal has been accepted successfully!",
+          content: "Your offer has been submitted successfully!", // Changed success message
           onOk: () => router.push("/dashboard"), // Redirect to overview
         });
       }
     } catch (error) {
-      console.error("Error accepting proposal:", error);
+      console.error("Error submitting offer:", error); // Changed log message
+      let errorMessage = "An unexpected error occurred. Please try again later.";
+      if (axios.isAxiosError(error) && error.response) {
+        // Log the full response for debugging
+        console.error("Server Response Data:", error.response.data);
+        console.error("Server Response Status:", error.response.status);
+        console.error("Server Response Headers:", error.response.headers);
+
+        // Check if the server provided a specific error message
+        errorMessage = error.response.data?.message || `Request failed with status code ${error.response.status}. Possible reasons: Offer already exists, or the contract is not available.`;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
       Modal.error({
         title: "Error",
-        content: "An unexpected error occurred. Please try again later.",
+        content: errorMessage, // Display more specific error
       });
     } finally {
       setLoading(false); // Hide loading spinner

@@ -44,14 +44,22 @@ const OfferProposal = ({ proposalId }: Props) => {
 
   const BASE_URL = getApiDomain();
   
+  // Updated Offer interface to match API response (OfferGetDTO)
   interface Offer {
-    proposalId: string;
-    //title: string;
-    driverName: string;
-    driverId: string;
-    price: number;
-    rating: number;
-    averageRating: number; // Added averageRating property
+    offerId: number;
+    contract: {
+      price: number;
+      // Add other relevant contract fields if needed
+    };
+    driver: {
+      userId: number;
+      firstName: string;
+      lastName: string;
+      // Add other relevant driver fields if needed
+    };
+    // averageRating seems missing from OfferGetDTO, handle accordingly
+    // offerStatus?: string; // Add if needed
+    // creationDateTime?: string; // Add if needed
   }
 
   const [offers, setOffers] = useState<Offer[]>([]);
@@ -122,12 +130,25 @@ const OfferProposal = ({ proposalId }: Props) => {
     fetchContract();
     const fetchOffers = async () => {
       try {
-        const res = await axios.get<Offer[]>(
+        // Explicitly type the expected response structure based on OfferGetDTO
+        const res = await axios.get<{ offers: Offer[] }>( 
           `${BASE_URL}/api/v1/contracts/${proposalId}/offers`,
+          {
+            headers: {
+              Authorization: localStorage.getItem("token") || "",
+              "UserId": localStorage.getItem("userId") || "",
+            },
+          },
         );
 
         console.log("Offers API Response:", res.data); // Debugging the API response
-        setOffers(res.data); // Store the offers in state
+        // Ensure res.data.offers is an array before setting state
+        if (Array.isArray(res.data.offers)) {
+          setOffers(res.data.offers); // Store the offers array in state
+        } else {
+          console.error("API response for offers is not an array:", res.data);
+          setOffers([]); // Set to empty array if response is not as expected
+        }
         setErrorOffers(false);
       } catch (error) {
         console.error("Error fetching offers:", error);
@@ -346,12 +367,11 @@ const OfferProposal = ({ proposalId }: Props) => {
             : (
               offers.map((offer) => (
                 <OfferCard
-                  key={offer.proposalId} // Use a unique key for each OfferCard
-                  //title={offer.title || "No Title"} // Fallback if title is missing
-                  driverName={offer.driverName}
-                  driverId={offer.driverId}
-                  price={offer.price}
-                  rating={Math.floor(offer.averageRating)}
+                  key={offer.offerId} // Use unique offerId for the key
+                  driverName={`${offer.driver.firstName} ${offer.driver.lastName}`} // Construct driver name
+                  driverId={String(offer.driver.userId)} // Pass driverId as string
+                  price={offer.contract.price} // Get price from nested contract object
+                  rating={0} // Pass 0 for rating as averageRating is missing
                 />
               ))
             )}
