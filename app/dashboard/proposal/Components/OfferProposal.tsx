@@ -81,8 +81,8 @@ const OfferProposal = ({ proposalId }: Props) => {
         title: data.title,
         description: data.contractDescription,
         moveDate: dayjs(data.moveDateTime),
-        from: data.fromLocation?.address,
-        to: data.toLocation?.address,
+        from: data.fromLocation?.formattedAddress,
+        to: data.toLocation?.formattedAddress,
         length: data.length,
         width: data.width,
         height: data.height,
@@ -94,12 +94,12 @@ const OfferProposal = ({ proposalId }: Props) => {
         mass: data.mass,
       });
       setFromCoords({
-        address: data.fromLocation?.address,
+        address: data.fromLocation?.formattedAddress || "",
         lat: data.fromLocation?.latitude,
         lng: data.fromLocation?.longitude,
       });
       setToCoords({
-        address: data.toLocation?.address,
+        address: data.toLocation?.formattedAddress || "",
         lat: data.toLocation?.latitude,
         lng: data.toLocation?.longitude,
       });
@@ -214,7 +214,7 @@ const OfferProposal = ({ proposalId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    src={`${BASE_URL}${imagePaths[idx]}`}
+                    src={`${BASE_URL}/api/v1/files/download?filePath=${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",
