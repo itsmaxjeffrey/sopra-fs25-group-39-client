@@ -167,7 +167,8 @@ export default function DriverProfilePage() {
         <Col xs={24} sm={24} md={8} lg={6} style={{ textAlign: 'center' }}>
           <Avatar
             size={150}
-            src={driver.profilePicture && !driver.profilePicture.startsWith('http') ? `${BASE_URL}${driver.profilePicture}` : driver.profilePicture} 
+            // Construct the correct download URL
+            src={driver.profilePicture ? `${BASE_URL}/api/v1/files/download?filePath=${driver.profilePicture}` : undefined}
             icon={!driver.profilePicture ? <UserOutlined /> : undefined}
             alt={`${driver.username}'s profile picture`}
             style={{ marginBottom: '16px', border: '4px solid #f0f0f0' }}
@@ -203,7 +204,7 @@ export default function DriverProfilePage() {
                     <Card
                       type="inner"
                       title={`Rated by: ${rating.fromUser?.username || 'Anonymous'}`} 
-                      extra={<Rate value={rating.ratingValue} disabled size="small" />}
+                      extra={<Rate value={rating.ratingValue} disabled />}
                       style={{ margin: '0 auto', width: '95%' }}
                     >
                       <Typography.Paragraph 
