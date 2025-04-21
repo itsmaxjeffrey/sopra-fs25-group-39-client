@@ -20,8 +20,8 @@ interface Proposal {
   moveDateTime: string;
   creationDateTime: string;
   contractStatus: "REQUESTED" | "OFFERED" | "ACCEPTED";
-  fromLocation: { address: string };
-  toLocation: { address: string };
+  fromLocation: { formattedAddress: string; latitude: number; longitude: number };
+  toLocation: { formattedAddress: string; latitude: number; longitude: number };
   price: number;
   fragile?: boolean;
   coolingRequired?: boolean;
@@ -133,8 +133,8 @@ const ProposalsOverview = () => {
                         {new Date(c.moveDateTime).toLocaleString()}
                       </p>
                       <p>
-                        <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
-                        {c.toLocation.address}
+                        <EnvironmentOutlined /> {c.fromLocation?.formattedAddress || "No location"} ➝{" "}
+                        {c.toLocation?.formattedAddress || "No location"}
                       </p>
                     </div>
                   </Link>
@@ -170,8 +170,8 @@ const ProposalsOverview = () => {
                         {new Date(c.moveDateTime).toLocaleString()}
                       </p>
                       <p>
-                        <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
-                        {c.toLocation.address}
+                        <EnvironmentOutlined /> {c.fromLocation?.formattedAddress || "No location"} ➝{" "}
+                        {c.toLocation?.formattedAddress || "No location"}
                       </p>
                     </div>
                   </Link>
@@ -207,8 +207,8 @@ const ProposalsOverview = () => {
                         {new Date(c.moveDateTime).toLocaleString()}
                       </p>
                       <p>
-                        <EnvironmentOutlined /> {c.fromLocation.address} ➝{" "}
-                        {c.toLocation.address}
+                        <EnvironmentOutlined /> {c.fromLocation?.formattedAddress || "No location"} ➝{" "}
+                        {c.toLocation?.formattedAddress || "No location"}
                       </p>
                     </div>
                   </Link>
