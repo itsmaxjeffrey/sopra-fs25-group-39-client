@@ -78,7 +78,7 @@ const NewProposalFormPage = () => {
   };
 
   const handleFinish = async (values: any) => {
-    console.log("Submitting values:", values);
+    console.log("Submitting values:", values); // Log the raw form values
     setModalState("loading");
     setModalVisible(true);
 
@@ -90,6 +90,10 @@ const NewProposalFormPage = () => {
     const height = Number(values.height);
     const volume = length * width * height;
 
+    // *** Log the specific values being used for address ***
+    console.log("Address from values.from:", values.from);
+    console.log("Address from values.to:", values.to);
+
     const payload = {
       title: values.title,
       contractDescription: values.description,
@@ -97,12 +101,12 @@ const NewProposalFormPage = () => {
       fromLocation: {
         latitude: fromCoords.lat,
         longitude: fromCoords.lng,
-        address: fromCoords.address,
+        formattedAddress: values.from, // Using form value
       },
       toLocation: {
         latitude: toCoords.lat,
         longitude: toCoords.lng,
-        address: toCoords.address,
+        formattedAddress: values.to,   // Using form value
       },
       volume,
       length: Number(values.length),
@@ -112,7 +116,8 @@ const NewProposalFormPage = () => {
       fragile: values.fragile,
       coolingRequired: values.cooling,
       rideAlong: values.rideAlong,
-      manPower: parseInt(values.manPower),
+      // Add fallback for parseInt in case manPower is empty/undefined
+      manPower: parseInt(values.manPower) || 0, 
       price: parseFloat(values.price),
       contractStatus: "REQUESTED",
       requesterId: userId ? parseInt(userId) : null,
@@ -122,6 +127,8 @@ const NewProposalFormPage = () => {
     };
 
     try {
+      console.log("Payload From Address:", payload.fromLocation.formattedAddress);
+      console.log("Payload To Address:", payload.toLocation.formattedAddress);
       console.log("WOULD SEND:", JSON.stringify(payload, null, 2));
       await axios.post(`${BASE_URL}/api/v1/contracts`, payload, {
         headers: {
@@ -134,7 +141,9 @@ const NewProposalFormPage = () => {
     } catch (err: any) {
       console.error("Creation failed", err);
       setModalState("error");
-      setErrorMessage("Something went wrong while creating your proposal.");
+      // Extract more specific error message if available
+      const backendMessage = err.response?.data?.message || err.message;
+      setErrorMessage(backendMessage || "Something went wrong while creating your proposal.");
     }
   };
 

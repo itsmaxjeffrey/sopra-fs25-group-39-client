@@ -132,6 +132,7 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
     <div className={styles.tabContent}>
       <Title level={5}>Personal Information</Title>
       <div className={styles.profilePicSection}>
+       
         {editedData?.profilePicturePath
           ? (
             <Image
@@ -140,7 +141,6 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
               src={`${BASE_URL}/api/v1/files/download?filePath=${editedData.profilePicturePath}`}
               alt="Profile"
               style={{ borderRadius: "50%", objectFit: "cover" }}
-              // fallback="/placeholder-profile.png"
             />
           )
           : (

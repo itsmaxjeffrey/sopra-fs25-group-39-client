@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Form, Input, Modal, Typography } from "antd";
+import { Button, Form, Input, Modal, Typography, message } from "antd";
 import styles from "../Account.module.css";
+import { useApi } from "@/hooks/useApi";
+import { getApiDomain } from "@/utils/domain"; // Corrected function name
 
 const { Title } = Typography;
 
@@ -10,15 +12,36 @@ const ActionsTab = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [form] = Form.useForm();
   const [deleteForm] = Form.useForm();
+  const apiService = useApi(); // Get the full service instance
+  const [loading, setLoading] = useState(false);
 
   const handleOk = () => {
     form
       .validateFields()
-      .then((values) => {
-        console.log("Submitted password change:", values);
+      .then(async (values) => {
+        setLoading(true);
+        console.log("Submitting password change:", values);
 
-        setIsModalOpen(false);
-        form.resetFields();
+        try {
+          const endpoint = `/api/v1/auth/change-password`;
+          const body = {
+            currentPassword: values.currentPassword,
+            newPassword: values.newPassword,
+          };
+
+          // Call put on the apiService instance
+          await apiService.put(endpoint, body);
+
+          message.success("Password changed successfully!");
+          setIsModalOpen(false);
+          form.resetFields();
+        } catch (error: any) {
+          console.error("Password change failed:", error);
+          const errorMessage = error?.response?.data?.message || error?.message || "Failed to change password. Please try again.";
+          message.error(errorMessage);
+        } finally {
+          setLoading(false);
+        }
       })
       .catch((info) => {
         console.log("Validation failed:", info);
@@ -30,7 +53,6 @@ const ActionsTab = () => {
       .validateFields()
       .then((values) => {
         console.log("Confirmed account deletion for:", values.email);
-
         setDeleteModalOpen(false);
         deleteForm.resetFields();
       })
@@ -68,6 +90,7 @@ const ActionsTab = () => {
         okText="Save"
         cancelText="Cancel"
         centered
+        confirmLoading={loading}
       >
         <Form form={form} layout="vertical">
           <Form.Item

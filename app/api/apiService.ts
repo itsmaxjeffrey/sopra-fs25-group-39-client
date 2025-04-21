@@ -26,7 +26,7 @@ export class ApiService {
       headers["Authorization"] = this.authToken;
     }
     if (this.userId) {
-      headers["User-Id"] = this.userId;
+      headers["UserId"] = this.userId; // Corrected header name to UserId (no hyphen)
     }
 
     return headers;

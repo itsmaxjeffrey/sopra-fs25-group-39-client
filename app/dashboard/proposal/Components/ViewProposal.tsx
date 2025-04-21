@@ -61,6 +61,9 @@ const ViewProposal = ({ proposalId }: Props) => {
         },
       );
       const data = res.data.contract;
+      // *** Log the entire received contract object ***
+      console.log("Received Contract Data:", JSON.stringify(data, null, 2)); 
+
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
@@ -69,8 +72,8 @@ const ViewProposal = ({ proposalId }: Props) => {
         title: data.title,
         description: data.contractDescription,
         moveDate: dayjs(data.moveDateTime),
-        from: data.fromLocation?.address,
-        to: data.toLocation?.address,
+        from: data.fromLocation?.formattedAddress, // Use formattedAddress from the DTO for form field
+        to: data.toLocation?.formattedAddress, // Use formattedAddress from the DTO for form field
         length: data.length,
         width: data.width,
         height: data.height,
@@ -82,17 +85,24 @@ const ViewProposal = ({ proposalId }: Props) => {
         price: data.price,
       });
       setFromCoords({
-        address: data.fromLocation?.address,
+        address: data.fromLocation?.formattedAddress || "", // Use formattedAddress from the DTO for state
         lat: data.fromLocation?.latitude,
         lng: data.fromLocation?.longitude,
       });
       setToCoords({
-        address: data.toLocation?.address,
+        address: data.toLocation?.formattedAddress || "", // Use formattedAddress from the DTO for state
         lat: data.toLocation?.latitude,
         lng: data.toLocation?.longitude,
       });
+      // Update logging to check the correct field
+      console.log("Fetched From Address:", data.fromLocation?.formattedAddress);
+      console.log("Set From Coords State:", { address: data.fromLocation?.formattedAddress || "", lat: data.fromLocation?.latitude, lng: data.fromLocation?.longitude });
+      console.log("Fetched To Address:", data.toLocation?.formattedAddress);
+      console.log("Set To Coords State:", { address: data.toLocation?.formattedAddress || "", lat: data.toLocation?.latitude, lng: data.toLocation?.longitude });
+
       setImagePaths(
-        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean),
+        // Use contractPhotos which is populated by the backend
+        data.contractPhotos || [],
       );
       setError(false);
       setModalVisible(false);
@@ -198,9 +208,8 @@ const ViewProposal = ({ proposalId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    src={`${BASE_URL}/api/v1/files/download?filePath=${
-                      imagePaths[idx]
-                    }`}
+                    // Use the download endpoint with the correct filePath parameter
+                    src={`${BASE_URL}/api/v1/files/download?filePath=${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",
@@ -246,62 +255,22 @@ const ViewProposal = ({ proposalId }: Props) => {
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="From" name="from">
-              <Autocomplete
-                onLoad={(auto) => (fromRef.current = auto)}
-                onPlaceChanged={() => {
-                  const place = fromRef.current?.getPlace();
-                  if (place && place.geometry) {
-                    const address = place.formatted_address;
-                    const lat = place.geometry.location.lat();
-                    const lng = place.geometry.location.lng();
-                    form.setFieldsValue({ from: address });
-                    setFromCoords({ address, lat, lng });
-                  }
-                }}
-              >
-                <Input
-                  placeholder="Select where your belongings should be picked up"
-                  value={fromCoords.address}
-                  onChange={(e) => {
-                    setFromCoords((prev) => ({
-                      ...prev,
-                      address: e.target.value,
-                    }));
-                  }}
-                  disabled
-                />
-              </Autocomplete>
-            </Form.Item>
+            {/* Manually add label and use standalone Input */}
+            <label style={{ display: 'block', marginBottom: '8px' }}>From</label>
+            <Input
+              placeholder="From address"
+              value={fromCoords.address} // Bind directly to state
+              disabled
+            />
           </Col>
           <Col span={8}>
-            <Form.Item label="To" name="to">
-              <Autocomplete
-                onLoad={(auto) => (toRef.current = auto)}
-                onPlaceChanged={() => {
-                  const place = toRef.current?.getPlace();
-                  if (place && place.geometry) {
-                    const address = place.formatted_address;
-                    const lat = place.geometry.location.lat();
-                    const lng = place.geometry.location.lng();
-                    form.setFieldsValue({ to: address });
-                    setToCoords({ address, lat, lng });
-                  }
-                }}
-              >
-                <Input
-                  placeholder="Select where your belongings should be moved to"
-                  value={toCoords.address}
-                  onChange={(e) => {
-                    setToCoords((prev) => ({
-                      ...prev,
-                      address: e.target.value,
-                    }));
-                  }}
-                  disabled
-                />
-              </Autocomplete>
-            </Form.Item>
+            {/* Manually add label and use standalone Input */}
+            <label style={{ display: 'block', marginBottom: '8px' }}>To</label>
+            <Input
+              placeholder="To address"
+              value={toCoords.address} // Bind directly to state
+              disabled
+            />
           </Col>
         </Row>
 

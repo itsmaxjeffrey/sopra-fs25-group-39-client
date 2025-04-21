@@ -69,8 +69,8 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
         title: data.title,
         description: data.contractDescription,
         moveDate: dayjs(data.moveDateTime),
-        from: data.fromLocation?.address,
-        to: data.toLocation?.address,
+        from: data.fromLocation?.formattedAddress,
+        to: data.toLocation?.formattedAddress,
         length: data.length,
         width: data.width,
         height: data.height,
@@ -84,17 +84,16 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
 
       // Update state with additional data
       setFromCoords({
-        address: data.fromLocation?.address,
+        address: data.fromLocation?.formattedAddress || "",
         lat: data.fromLocation?.latitude,
         lng: data.fromLocation?.longitude,
       });
       setToCoords({
-        address: data.toLocation?.address,
+        address: data.toLocation?.formattedAddress || "",
         lat: data.toLocation?.latitude,
         lng: data.toLocation?.longitude,
       });
       setImagePaths(data.contractPhotos || []);
-
 
       // Reset error and modal states
       setError(false);

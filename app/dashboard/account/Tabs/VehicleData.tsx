@@ -189,6 +189,7 @@ const VehicleDataTab = ({
         <div className={styles.uploadItem}>
           <label>Driver&apos;s License</label>
           <div className={styles.uploadWrapper}>
+         
             {editedData?.driverLicensePath
               ? (
                 <Image
