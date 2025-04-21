@@ -115,10 +115,25 @@ const OfferProposal = ({ proposalId }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`${BASE_URL}/api/v1/contracts/${proposalId}`);
+      const token = localStorage.getItem("token") || "";
+      const userId = localStorage.getItem("userId") || "";
+
+      if (!token || !userId) {
+        console.error("Authentication details missing for cancel.");
+        message.error("Authentication details missing. Please log in again.");
+        return;
+      }
+
+      await axios.delete(`${BASE_URL}/api/v1/contracts/${proposalId}`, {
+        headers: {
+          Authorization: token,
+          UserId: userId,
+        },
+      });
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
+      message.error("Failed to cancel the proposal. Please try again.");
     }
   };
 

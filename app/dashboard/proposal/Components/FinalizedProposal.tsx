@@ -39,7 +39,6 @@ const FinalizedProposal = ({ proposalId }: Props) => {
   const toRef = useRef<any>(null);
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
 
   const fetchContract = async () => {
@@ -90,15 +89,6 @@ const FinalizedProposal = ({ proposalId }: Props) => {
       setError(true);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleCancelProposal = async () => {
-    try {
-      await axios.delete(`${BASE_URL}/api/v1/contracts/${proposalId}`);
-      router.push("/dashboard");
-    } catch (error) {
-      console.error("Cancel failed:", error);
     }
   };
 
@@ -336,19 +326,6 @@ const FinalizedProposal = ({ proposalId }: Props) => {
             )
             : null}
         </div>
-      </Modal>
-      <Modal
-        title="Cancel Proposal"
-        open={isCancelModalOpen}
-        onOk={handleCancelProposal}
-        onCancel={() => setIsCancelModalOpen(false)}
-        okText="Yes, cancel it"
-        cancelText="No"
-        centered
-      >
-        <p>Are you sure you want to cancel this proposal?</p>
-        <p>THis will also delete the proposal!</p>
-        <p>This action cannot be undone.</p>
       </Modal>
     </div>
   );

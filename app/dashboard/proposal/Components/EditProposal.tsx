@@ -109,10 +109,25 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`${BASE_URL}/api/v1/contracts/${proposalId}`);
+      const token = localStorage.getItem("token") || "";
+      const userId = localStorage.getItem("userId") || "";
+
+      if (!token || !userId) {
+        console.error("Authentication details missing for cancel.");
+        // Optionally show an error message to the user
+        return;
+      }
+
+      await axios.delete(`${BASE_URL}/api/v1/contracts/${proposalId}`, {
+        headers: {
+          Authorization: token,
+          UserId: userId, // Add UserId header
+        },
+      });
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
+      // Optionally show an error message to the user
     }
   };
 
