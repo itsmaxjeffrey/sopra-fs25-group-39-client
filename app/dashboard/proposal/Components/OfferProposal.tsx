@@ -130,10 +130,13 @@ const OfferProposal = ({ proposalId }: Props) => {
           UserId: userId,
         },
       });
+      message.success("Proposal cancelled successfully!");
       router.push("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Cancel failed:", error);
-      message.error("Failed to cancel the proposal. Please try again.");
+      const errorMessage = error.response?.data?.message ||
+        "Failed to cancel the proposal. Please try again.";
+      message.error(errorMessage);
     }
   };
 

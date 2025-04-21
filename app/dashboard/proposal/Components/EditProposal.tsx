@@ -12,6 +12,7 @@ import {
   Row,
   Spin,
   Switch,
+  message, // Import message
 } from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styles from "./Edit.module.css";
@@ -114,20 +115,24 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
 
       if (!token || !userId) {
         console.error("Authentication details missing for cancel.");
-        // Optionally show an error message to the user
+        message.error("Authentication details missing. Please log in again."); // Add error message
         return;
       }
 
       await axios.delete(`${BASE_URL}/api/v1/contracts/${proposalId}`, {
         headers: {
           Authorization: token,
-          UserId: userId, // Add UserId header
+          UserId: userId,
         },
       });
+      message.success("Proposal cancelled successfully!"); // Add success message
       router.push("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Cancel failed:", error);
-      // Optionally show an error message to the user
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to cancel the proposal. Please try again.";
+      message.error(errorMessage);
     }
   };
 
