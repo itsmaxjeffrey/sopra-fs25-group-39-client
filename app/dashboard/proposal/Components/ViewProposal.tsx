@@ -170,7 +170,10 @@ const ViewProposal = ({ proposalId }: Props) => {
         Modal.success({
           title: "Success",
           content: "Your offer has been submitted successfully!", // Changed success message
-          onOk: () => router.push("/dashboard"), // Redirect to overview
+          // Keep the modal open until OK is clicked, then redirect
+          onOk() {
+            router.push("/dashboard"); 
+          },
         });
       }
     } catch (error) {
