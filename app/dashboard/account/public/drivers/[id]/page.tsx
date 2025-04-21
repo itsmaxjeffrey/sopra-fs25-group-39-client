@@ -3,9 +3,25 @@
 // pages/driver/[userId].tsx
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Button, Card, Carousel, Input, message, Rate, Spin } from "antd";
+import {
+  Button,
+  Card,
+  Carousel,
+  Input,
+  message,
+  Rate,
+  Spin,
+  Row,
+  Col,
+  Avatar,
+  Typography,
+  Descriptions,
+  Divider,
+  Empty,
+  Result,
+} from "antd";
+import { UserOutlined } from "@ant-design/icons"; // Import UserOutlined for default avatar
 import axios from "axios";
-import Image from "next/image";
 import { getApiDomain } from "@/utils/domain"; // Import the function
 
 const BASE_URL = getApiDomain(); // Define BASE_URL
@@ -45,18 +61,28 @@ interface Driver {
 
 export default function DriverProfilePage() {
   const router = useRouter();
-  const { userId } = useParams();
+  const { id } = useParams();
 
   const [driver, setDriver] = useState<Driver | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userId || typeof userId !== "string") return;
+    if (!id || typeof id !== "string") return;
 
-    console.log("Driver ID:", userId, typeof userId); // Debugging the ID
+    console.log("Driver ID:", id, typeof id); // Debugging the ID
 
     const fetchDriver = async () => {
       try {
+        // Retrieve auth details from localStorage
+        const token = localStorage.getItem("token") || "";
+        const requestingUserId = localStorage.getItem("userId") || "";
+
+        if (!token || !requestingUserId) {
+          message.error("Authentication details missing. Please log in again.");
+          setLoading(false);
+          return;
+        }
+
         const res = await axios.get<
           {
             userId: number;
@@ -69,7 +95,15 @@ export default function DriverProfilePage() {
               volumeCapacity?: number;
             };
           }
-        >(`${BASE_URL}/api/v1/users/${userId}`); // Use BASE_URL
+        >(
+          `${BASE_URL}/api/v1/users/${id}`, // Use BASE_URL
+          {
+            headers: {
+              Authorization: token,
+              UserId: requestingUserId, // Add UserId header
+            },
+          },
+        );
         if (!res.data || !res.data.userId) {
           throw new Error("Invalid driver data");
         }
@@ -102,16 +136,11 @@ export default function DriverProfilePage() {
     };
 
     fetchDriver();
-  }, [userId]);
-
-  const averageRating = driver?.ratings && driver.ratings.length > 0
-    ? driver.ratings.reduce((acc, r) => acc + r.ratingValue, 0) /
-      driver.ratings.length
-    : 0;
+  }, [id]);
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 120px)' }}> 
         <Spin size="large" />
       </div>
     );
@@ -119,121 +148,92 @@ export default function DriverProfilePage() {
 
   if (!driver) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <h1>Driver not found.</h1>
-      </div>
+      <Result
+        status="404"
+        title="404"
+        subTitle="Sorry, the driver you visited does not exist."
+        extra={<Button type="primary" onClick={() => router.back()}>Go Back</Button>}
+      />
     );
   }
 
+  const averageRating = driver.ratings && driver.ratings.length > 0
+    ? driver.ratings.reduce((acc, r) => acc + r.ratingValue, 0) / driver.ratings.length
+    : 0;
+
   return (
-    <div className="flex flex-col h-screen bg-white p-10 gap-10">
-      {/* Header Row */}
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-3xl font-semibold mb-2">
-            {driver.username}&apos;s Driver Profile
-          </h1>
-          <div className="text-lg mb-2">Avg. Rating of Driver:</div>
-          <Rate
-            disabled
-            allowHalf
-            value={averageRating}
-            className="text-yellow-500 text-2xl"
+    <div style={{ padding: '24px', background: '#fff', minHeight: 'calc(100vh - 64px)' }}>
+      <Row gutter={[24, 24]}>
+        <Col xs={24} sm={24} md={8} lg={6} style={{ textAlign: 'center' }}>
+          <Avatar
+            size={150}
+            src={driver.profilePicture && !driver.profilePicture.startsWith('http') ? `${BASE_URL}${driver.profilePicture}` : driver.profilePicture} 
+            icon={!driver.profilePicture ? <UserOutlined /> : undefined}
+            alt={`${driver.username}'s profile picture`}
+            style={{ marginBottom: '16px', border: '4px solid #f0f0f0' }}
           />
+          <Typography.Title level={3} style={{ marginBottom: '4px' }}>{driver.username}</Typography.Title>
+          <Typography.Text type="secondary">Driver</Typography.Text>
+          <Divider />
+          <Typography.Text>Average Rating:</Typography.Text>
+          <br />
+          <Rate disabled allowHalf value={averageRating} style={{ marginTop: '8px', fontSize: '18px' }} />
+          <Typography.Text style={{ marginLeft: '8px' }}> ({driver.ratings?.length || 0} ratings)</Typography.Text>
+        </Col>
 
-          <div>
-            {/* Profile Picture */}
-            {driver.profilePicture
-              ? (
-                <Image
-                  src={driver.profilePicture}
-                  alt="Driver"
-                  width={150}
-                  height={150}
-                  className="rounded-full object-cover border-4 border-white shadow-md"
-                />
-              )
-              : (
-                <div
-                  style={{
-                    width: 150,
-                    height: 150,
-                    borderRadius: "50%",
-                    backgroundColor: "gray",
-                  }}
-                />
-              )}
+        <Col xs={24} sm={24} md={16} lg={18}>
+          <Card title="Vehicle Information" bordered={false} style={{ marginBottom: '24px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.09)' }}>
+            {driver.car ? (
+              <Descriptions bordered column={1} size="small">
+                <Descriptions.Item label="Make & Model">{driver.car.makeModel}</Descriptions.Item>
+                <Descriptions.Item label="License Plate">{driver.car.licensePlate}</Descriptions.Item>
+                <Descriptions.Item label="Weight Capacity (kg)">{driver.car.weightCapacity}</Descriptions.Item>
+                <Descriptions.Item label="Volume Capacity (m³)">{driver.car.volumeCapacity}</Descriptions.Item>
+              </Descriptions>
+            ) : (
+              <Empty description="No vehicle information available." />
+            )}
+          </Card>
 
-            {/* Vehicle Info */}
-            {driver.car
-              ? (
-                <div className="flex flex-col gap-4">
-                  <Input
-                    addonBefore="Vehicle Make & Model"
-                    value={driver.car.makeModel}
-                    disabled
-                  />
-                  <Input
-                    addonBefore="License Plate"
-                    value={driver.car.licensePlate}
-                    disabled
-                  />
-                  <Input
-                    addonBefore="Weight Capacity"
-                    value={driver.car.weightCapacity}
-                    disabled
-                  />
-                  <Input
-                    addonBefore="Volume Capacity"
-                    value={driver.car.volumeCapacity}
-                    disabled
-                  />
-                </div>
-              )
-              : <div>No vehicle information available.</div>}
-          </div>
-
-          {/* Ratings Section */}
-          <div className="mt-4">
-            <h3 className="text-xl font-semibold mb-4">Comments</h3>
-            {driver.ratings && driver.ratings.length > 0
-              ? (
-                <Carousel autoplay>
-                  {driver.ratings.map((rating) => (
+          <Card title="Ratings & Comments" bordered={false} style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.09)' }}>
+            {driver.ratings && driver.ratings.length > 0 ? (
+              <Carousel autoplay dotPosition="bottom">
+                {driver.ratings.map((rating, index) => ( 
+                  <div key={rating.contract?.userId || index} style={{ padding: '10px' }}>
                     <Card
-                      key={rating.contract.userId}
-                      title={`Rated by: ${rating.fromUser.username}`}
-                      extra={<Rate value={rating.ratingValue} disabled />}
-                      style={{
-                        cursor: "pointer",
-                        border: "1px solid #f0f0f0",
-                        borderRadius: "8px",
-                        margin: "0 auto",
-                        width: "80%",
-                      }}
-                      onClick={() =>
-                        router.push(`/ratings/${rating.contract.userId}`)}
+                      type="inner"
+                      title={`Rated by: ${rating.fromUser?.username || 'Anonymous'}`} 
+                      extra={<Rate value={rating.ratingValue} disabled size="small" />}
+                      style={{ margin: '0 auto', width: '95%' }}
                     >
-                      <p>{rating.comment || "No comment provided."}</p>
+                      <Typography.Paragraph 
+                        ellipsis={{ rows: 2, expandable: true, symbol: 'more' }}
+                        style={{ marginBottom: 0 }}
+                      >
+                        {rating.comment || "No comment provided."}
+                      </Typography.Paragraph>
                     </Card>
-                  ))}
-                </Carousel>
-              )
-              : <p>No ratings yet.</p>}
-          </div>
+                  </div>
+                ))}
+              </Carousel>
+            ) : (
+              <Empty description="No ratings yet." />
+            )}
+          </Card>
+        </Col>
+      </Row>
 
-          {/* Return Button */}
-          <div className="flex justify-center mt-4">
-            <Button
-              type="primary"
-              className="bg-black text-white px-8 py-2 text-lg rounded hover:bg-gray-800"
-              onClick={() => router.back()}
-            >
-              Return
-            </Button>
-          </div>
-        </div>
-      </div>
+      <Row justify="center" style={{ marginTop: '32px' }}>
+        <Col>
+          <Button
+            type="default"
+            onClick={() => router.back()}
+            size="large"
+          >
+            Return
+          </Button>
+        </Col>
+      </Row>
     </div>
   );
 }
