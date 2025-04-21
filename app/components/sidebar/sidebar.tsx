@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Modal } from "antd";
+import { message, Modal } from "antd"; // Import message
 import axios from "axios"; // Import axios
 import { getApiDomain } from "@/utils/domain"; // Import the function
 
@@ -55,7 +55,7 @@ const Sidebar = (
 
     try {
       await axios.post(
-        `${BASE_URL}/api/v1/auth/logout`, // Use BASE_URL
+        `${BASE_URL}/api/v1/auth/logout`, 
         {},
         {
           headers: {
@@ -66,12 +66,18 @@ const Sidebar = (
       );
 
       console.log("Successfully logged out");
-    } catch (error) {
+      message.success("Successfully logged out!"); // Add success message
+    } catch (error: any) { // Add type annotation
       console.error("Failed to log out:", error);
+      // Add error message
+      const errorMessage = error.response?.data?.message || "Logout failed. Please try again.";
+      message.error(errorMessage);
     } finally {
+      // Clear storage and redirect regardless of API call success/failure
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
       router.push("/");
+      setShowConfirm(false); // Close the confirmation modal
     }
   };
 

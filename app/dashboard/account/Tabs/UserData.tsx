@@ -1,10 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Button, DatePicker, Image, Input, Typography, Upload } from "antd";
+import { Button, DatePicker, Image, Input, Typography, Upload, message } from "antd"; // Import message
 import { CameraOutlined, UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import styles from "../Account.module.css";
 import { getApiDomain } from "@/utils/domain";
+import { useApi } from "@/hooks/useApi"; // Import useApi
 
 const BASE_URL = getApiDomain();
 
@@ -35,6 +36,7 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
   changed,
   setChanged,
 }) => {
+  const apiService = useApi(); // Use the hook
   const [, setImageKey] = useState(0); // State to force re-render of the image
 
   useEffect(() => {
@@ -103,29 +105,26 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
     return false; // Prevent default upload behavior
   };
 
-  const handleSave = () => {
-    const token = localStorage.getItem("token");
+  const handleSave = async () => { 
     const userId = localStorage.getItem("userId");
 
-    if (!token || !userId) return;
+    if (!userId) {
+      message.error("User ID not found. Cannot save.");
+      return;
+    }
 
-    fetch(`${BASE_URL}/api/v1/users/${userId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        UserId: `${userId}`,
-        Authorization: `${token}`,
-      },
-      body: JSON.stringify(editedData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("User data saved successfully:", data);
-        setChanged(false);
-      })
-      .catch((error) => {
-        console.error("Error saving user data:", error);
-      });
+    try {
+      // Add type assertion for the response
+      const response = await apiService.put(`/api/v1/users/${userId}`, editedData) as { data: any }; 
+      
+      console.log("User data saved successfully:", response.data);
+      setChanged(false);
+      message.success("User data saved successfully!");
+    } catch (error: any) { 
+      console.error("Error saving user data:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error saving user data.";
+      message.error(errorMessage);
+    }
   };
 
   return (

@@ -1,9 +1,9 @@
-"use client";
-import React, { useState } from "react";
-import { Button, Image, Input, Typography, Upload, message } from "antd"; // Import message
+import React, { useState } from "react"; // Ensure useState is imported
+import { Button, Image, Input, Typography, Upload, message } from "antd"; // Ensure message is imported
 import { FileImageOutlined, UploadOutlined } from "@ant-design/icons";
 import styles from "../Account.module.css";
 import { getApiDomain } from "@/utils/domain";
+import { useApi } from "@/hooks/useApi"; // Import useApi
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -11,27 +11,42 @@ const { Title, Text } = Typography;
 
 const BASE_URL = getApiDomain();
 
-const VehicleDataTab = ({
-  editedData,
+// Define props interface for clarity
+interface VehicleDataTabProps {
+  editedData: any; // Use a more specific type if available
+  userData: any;   // Use a more specific type if available
+  setEditedData: React.Dispatch<React.SetStateAction<any>>;
+  changed: boolean;
+  setChanged: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const VehicleDataTab: React.FC<VehicleDataTabProps> = ({
+  editedData, // Destructure props correctly
   userData,
   setEditedData,
   changed,
   setChanged,
-}: any) => {
+}) => {
+  const apiService = useApi();
   const [licenseKey, setLicenseKey] = useState(0);
   const [insuranceKey, setInsuranceKey] = useState(0);
 
+  // *** Restore the handleUpload function ***
   const handleUpload = async (file: File, type: "license" | "insurance") => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
 
-    if (!token || !userId) return false;
+    if (!token || !userId) {
+      message.error("Authentication details missing. Cannot upload file.");
+      return false;
+    }
 
     const formData = new FormData();
     formData.append("file", file);
     formData.append("type", type);
 
     try {
+      // Using fetch here as it was originally, could be refactored to useApi if needed
       const response = await fetch(`${BASE_URL}/api/v1/files/upload`, {
         method: "POST",
         headers: {
@@ -42,7 +57,12 @@ const VehicleDataTab = ({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to upload file");
+        let errorMsg = `Failed to upload ${type} file.`;
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || errorMsg;
+        } catch (e) { /* Ignore */ }
+        throw new Error(errorMsg);
       }
 
       const data = await response.json();
@@ -62,59 +82,39 @@ const VehicleDataTab = ({
           });
           setInsuranceKey((prev) => prev + 1);
         }
-
         setChanged(true);
+        message.success(`${type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully!`);
       } else {
         throw new Error("File path missing in response");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error uploading ${type}:`, error);
+      message.error(error.message || `Error uploading ${type}.`);
     }
 
     return false; // Prevent default Upload behavior
   };
 
-  const handleSave = () => {
-    const token = localStorage.getItem("token");
+  const handleSave = async () => {
     const userId = localStorage.getItem("userId");
 
-    if (!token || !userId) {
-      message.error("Authentication details missing. Cannot save."); // Add error message
+    if (!userId) {
+      message.error("User ID not found. Cannot save.");
       return;
     }
 
-    fetch(`${BASE_URL}/api/v1/users/${userId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        UserId: `${userId}`,
-        Authorization: `${token}`,
-      },
-      body: JSON.stringify(editedData),
-    })
-      .then(async (response) => { // Make async to await response.json()
-        if (!response.ok) {
-          // Try to parse error message from backend
-          let errorMsg = "Failed to save vehicle data.";
-          try {
-            const errorData = await response.json();
-            errorMsg = errorData.message || errorMsg;
-          } catch (parseError) {
-            // Ignore if response body is not JSON or empty
-          }
-          throw new Error(errorMsg);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Vehicle data saved successfully:", data);
-        setChanged(false);
-        message.success("Vehicle data saved successfully!"); // Add success message
-      })
-      .catch((error) => {
-        console.error("Error saving vehicle data:", error);
-        message.error(error.message || "Error saving vehicle data."); // Add error message
-      });
+    try {
+      // Assume response has a .data property like Axios
+      const response = await apiService.put(`/api/v1/users/${userId}`, editedData) as { data: any }; 
+
+      console.log("Vehicle data saved successfully:", response.data);
+      setChanged(false);
+      message.success("Vehicle data saved successfully!");
+    } catch (error: any) {
+      console.error("Error saving vehicle data:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error saving vehicle data.";
+      message.error(errorMessage);
+    }
   };
 
   return (

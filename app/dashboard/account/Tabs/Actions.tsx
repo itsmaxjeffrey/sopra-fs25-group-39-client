@@ -4,6 +4,8 @@ import { Button, Form, Input, Modal, Typography, message } from "antd";
 import styles from "../Account.module.css";
 import { useApi } from "@/hooks/useApi";
 import { getApiDomain } from "@/utils/domain"; // Corrected function name
+import { useRouter } from "next/navigation"; // Import useRouter
+
 
 const { Title } = Typography;
 
@@ -14,6 +16,7 @@ const ActionsTab = () => {
   const [deleteForm] = Form.useForm();
   const apiService = useApi(); // Get the full service instance
   const [loading, setLoading] = useState(false);
+  const router = useRouter(); // Initialize router
 
   const handleOk = () => {
     form
@@ -51,13 +54,45 @@ const ActionsTab = () => {
   const handleDelete = () => {
     deleteForm
       .validateFields()
-      .then((values) => {
-        console.log("Confirmed account deletion for:", values.email);
-        setDeleteModalOpen(false);
-        deleteForm.resetFields();
+      .then(async (values) => {
+        setLoading(true); // Add loading state
+        const userId = localStorage.getItem("userId");
+        const token = localStorage.getItem("token");
+        const userEmail = localStorage.getItem("userEmail"); // Assuming email is stored
+
+        if (!token || !userId) {
+          message.error("Authentication details missing.");
+          setLoading(false);
+          return;
+        }
+
+        // Basic check if entered email matches stored email (optional, backend should verify)
+        if (values.email !== userEmail) {
+          message.error("Entered email does not match account email.");
+          setLoading(false);
+          return;
+        }
+
+        try {
+          await apiService.delete(`/api/v1/users/${userId}`);
+          message.success("Account deleted successfully.");
+          // Clear local storage and redirect to login
+          localStorage.clear();
+          router.push("/login");
+          setDeleteModalOpen(false);
+          deleteForm.resetFields();
+        } catch (error: any) {
+          console.error("Account deletion failed:", error);
+          const errorMessage = error?.response?.data?.message || error?.message || "Failed to delete account. Please try again.";
+          message.error(errorMessage);
+        } finally {
+          setLoading(false);
+        }
       })
       .catch((info) => {
         console.log("Delete validation failed:", info);
+        // Optionally add a message here if validation fails
+        // message.warning("Please correct the errors before submitting.");
       });
   };
 
@@ -151,10 +186,11 @@ const ActionsTab = () => {
           setDeleteModalOpen(false);
           deleteForm.resetFields();
         }}
-        okText="Delete"
+        okText="Delete Account"
         okType="danger"
         cancelText="Cancel"
         centered
+        confirmLoading={loading} // Add confirmLoading to delete modal
       >
         <p>
           To confirm, please enter your email address associated with this

@@ -1,3 +1,4 @@
+import '@ant-design/v5-patch-for-react-19';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ConfigProvider } from "antd";
@@ -27,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ConfigProvider>
+        <ConfigProvider wave={{ disabled: true }}>
           <AntdRegistry>{children}</AntdRegistry>
         </ConfigProvider>
       </body>

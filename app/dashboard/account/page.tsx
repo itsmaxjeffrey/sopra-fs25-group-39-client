@@ -7,6 +7,7 @@ import UserDataTab from "./Tabs/UserData";
 import VehicleDataTab from "./Tabs/VehicleData";
 import ActionsTab from "./Tabs/Actions";
 import { getApiDomain } from "@/utils/domain"; // Import the function
+import '@ant-design/v5-patch-for-react-19';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

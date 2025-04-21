@@ -173,11 +173,21 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       const response = await axios.put(
         `${BASE_URL}/api/v1/contracts/${proposalId}`,
         payload,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token") || "",
+            UserId: localStorage.getItem("userId") || "",
+          },
+        }
       );
       console.log("PUT response:", response.data);
       setChanged(false);
+      message.success("Proposal updated successfully!"); // Add success message
     } catch (err: any) {
       console.error("PUT failed:", err.response?.data || err.message);
+      // Add error message
+      const errorMessage = err.response?.data?.message || "Failed to update proposal.";
+      message.error(errorMessage);
     }
   };
 
