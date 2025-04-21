@@ -42,6 +42,7 @@ const ViewProposal = ({ proposalId }: Props) => {
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [imagePaths, setImagePaths] = useState<string[]>([]);
+  const [contractStatus, setContractStatus] = useState<string | null>(null); // Add state for contract status
 
   const fetchContract = async () => {
     try {
@@ -63,6 +64,7 @@ const ViewProposal = ({ proposalId }: Props) => {
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
+      setContractStatus(data.contractStatus); // Store the contract status
       form.setFieldsValue({
         title: data.title,
         description: data.contractDescription,
@@ -114,11 +116,31 @@ const ViewProposal = ({ proposalId }: Props) => {
       if (!driverId) {
         throw new Error("Driver ID not found in local storage.");
       }
+
+      // Get the current contract status before creating an offer
+      const contractResponse = await axios.get(
+        `${BASE_URL}/api/v1/contracts/${proposalId}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token") || "",
+            "UserId": driverId,
+          },
+        }
+      );
+      
+      const contractStatus = contractResponse.data.contract.contractStatus;
+      
+      // Only allow creating offers for REQUESTED contracts
+      if (contractStatus !== "REQUESTED") {
+        throw new Error(`Cannot create offer for a contract that is in ${contractStatus} state.`);
+      }
+      
       // Log the values being sent
       console.log("Submitting offer with:", {
         contractId: Number(proposalId),
         driverId: Number(driverId),
       });
+      
       const response = await axios.post(
         `${BASE_URL}/api/v1/offers`,
         {
@@ -130,7 +152,7 @@ const ViewProposal = ({ proposalId }: Props) => {
             Authorization: localStorage.getItem("token") || "",
             "UserId": driverId, // Use the retrieved driverId string here
           },
-        },
+        }
       );
 
       if (response.status === 201) {
@@ -151,7 +173,9 @@ const ViewProposal = ({ proposalId }: Props) => {
         console.error("Server Response Headers:", error.response.headers);
 
         // Check if the server provided a specific error message
-        errorMessage = error.response.data?.message || `Request failed with status code ${error.response.status}. Possible reasons: Offer already exists, or the contract is not available.`;
+        errorMessage = error.response.data?.message || 
+          (error.response.status === 409 ? "You have already made an offer for this proposal." :
+           `Request failed with status code ${error.response.status}. Possible reasons: Offer already exists, or the contract is not available.`);
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }
@@ -367,8 +391,10 @@ const ViewProposal = ({ proposalId }: Props) => {
                 htmlType="button"
                 onClick={acceptProposal}
                 style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
+                disabled={contractStatus !== "REQUESTED"} // Disable button if status is not REQUESTED
+                title={contractStatus !== "REQUESTED" ? `Cannot accept proposal in ${contractStatus} state` : ""} // Add tooltip
               >
-                Accept Proposal
+                {contractStatus === "REQUESTED" ? "Accept Proposal" : `Proposal is ${contractStatus}`} {/* Change button text */}
               </Button>
             </Col>
           </Row>

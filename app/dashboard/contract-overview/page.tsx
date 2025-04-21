@@ -48,12 +48,30 @@ const ProposalsOverview = () => {
         },
       })
       .then((res) => {
-        const sorted = res.data.sort(
-          (a: Proposal, b: Proposal) =>
-            new Date(a.creationDateTime).getTime() -
-            new Date(b.creationDateTime).getTime(),
-        );
-        setContracts(sorted);
+        let proposals: Proposal[] = [];
+        // Check if res.data is an array directly
+        if (Array.isArray(res.data)) {
+          proposals = res.data;
+        } 
+        // Check if res.data is an object with a 'contracts' array property
+        else if (res.data && Array.isArray((res.data as any).contracts)) {
+          proposals = (res.data as any).contracts;
+        } else {
+          // Log an error if the structure is unexpected
+          console.error("Unexpected API response structure:", res.data);
+        }
+
+        // Only sort if we have an array of proposals
+        if (proposals.length > 0) {
+          const sorted = proposals.sort(
+            (a: Proposal, b: Proposal) =>
+              new Date(a.creationDateTime).getTime() -
+              new Date(b.creationDateTime).getTime(),
+          );
+          setContracts(sorted);
+        } else {
+          setContracts([]); // Set to empty array if no valid data found
+        }
       })
       .catch((err) => console.error(err))
       .then(() => setLoading(false));
@@ -127,12 +145,12 @@ const ProposalsOverview = () => {
 
       <div className={styles.section}>
         <h2>
-          <LockOutlined /> Locked-In Contracts
+          <ClockCircleOutlined /> Pending Offers
         </h2>
         <div className={styles.cardRow}>
           {contracts.filter((c) => c.contractStatus === "OFFERED").length ===
               0
-            ? <p className={styles.emptySection}>Nothing pending</p>
+            ? <p className={styles.emptySection}>No pending offers</p>
             : (
               contracts
                 .filter((c) => c.contractStatus === "OFFERED")
@@ -164,7 +182,7 @@ const ProposalsOverview = () => {
 
       <div className={styles.section}>
         <h2>
-          <CheckOutlined /> Fulfilled Contracts
+          <LockOutlined /> Confirmed Moves
         </h2>
         <div className={styles.cardRow}>
           {contracts.filter((c) => c.contractStatus === "ACCEPTED").length ===
@@ -181,7 +199,7 @@ const ProposalsOverview = () => {
                   >
                     <div className={styles.card}>
                       <div className={styles.icon}>
-                        <LockOutlined />
+                        <CheckOutlined />
                       </div>
                       <h3>{c.title}</h3>
                       <p>

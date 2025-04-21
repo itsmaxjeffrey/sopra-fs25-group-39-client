@@ -7,10 +7,9 @@ import { getApiDomain } from "@/utils/domain";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const BASE_URL = getApiDomain();
-
 
 const VehicleDataTab = ({
   editedData,
@@ -204,6 +203,7 @@ const VehicleDataTab = ({
               : (
                 <div className={styles.uploadPlaceholder}>
                   <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
+                  <Text type="secondary" style={{ marginTop: 8 }}>No License Uploaded</Text>
                 </div>
               )}
             <Upload
@@ -235,6 +235,7 @@ const VehicleDataTab = ({
               : (
                 <div className={styles.uploadPlaceholder}>
                   <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
+                  <Text type="secondary" style={{ marginTop: 8 }}>No Insurance Uploaded</Text>
                 </div>
               )}
             <Upload
