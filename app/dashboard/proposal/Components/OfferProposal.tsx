@@ -21,6 +21,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { Autocomplete } from "@react-google-maps/api";
 import OfferCard from "./OfferCard";
+import { getApiDomain } from "@/utils/domain";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -41,9 +42,7 @@ const OfferProposal = ({ proposalId }: Props) => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
 
-  const BASE_URL = process.env.NODE_ENV === "production"
-  ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:8080";
+  const BASE_URL = getApiDomain();
   
   interface Offer {
     proposalId: string;
@@ -112,7 +111,7 @@ const OfferProposal = ({ proposalId }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/contracts/${proposalId}`);
+      await axios.delete(`${BASE_URL}/api/v1/contracts/${proposalId}`);
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
@@ -124,7 +123,7 @@ const OfferProposal = ({ proposalId }: Props) => {
     const fetchOffers = async () => {
       try {
         const res = await axios.get<Offer[]>(
-          `http://localhost:8080/api/v1/contracts/${proposalId}/offers`,
+          `${BASE_URL}/api/v1/contracts/${proposalId}/offers`,
         );
 
         console.log("Offers API Response:", res.data); // Debugging the API response
@@ -152,11 +151,7 @@ const OfferProposal = ({ proposalId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    src={process.env.NODE_ENV === "production"
-                      ? `https://sopra-fs25-group-39-client.vercel.app${
-                        imagePaths[idx]
-                      }`
-                      : `http://localhost:8080${imagePaths[idx]}`}
+                    src={`${BASE_URL}${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",

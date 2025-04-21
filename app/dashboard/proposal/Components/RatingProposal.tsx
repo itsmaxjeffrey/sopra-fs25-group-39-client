@@ -134,11 +134,7 @@ const RatingProposal = ({ proposalId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    src={process.env.NODE_ENV === "production"
-                      ? `https://sopra-fs25-group-39-client.vercel.app${
-                        imagePaths[idx]
-                      }`
-                      : `${BASE_URL}${imagePaths[idx]}`}
+                    src={`${BASE_URL}${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",

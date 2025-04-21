@@ -11,6 +11,8 @@ import {
   Marker,
 } from "@react-google-maps/api";
 
+import { getApiDomain } from "@/utils/domain";
+
 // Define MAP_LIBRARIES outside the component to avoid redefinition on every render
 
 const MAP_LIBRARIES: Libraries = ["places"];
@@ -54,9 +56,7 @@ const DriverMap: React.FC<DriverMapProps> = (
 
   const isLoadingRef = useRef(false);
 
-  const BASE_URL = process.env.NODE_ENV === "production"
-    ? "https://sopra-fs25-group-39-client.vercel.app/" // Production API URL
-    : "http://localhost:8080"; // Development API URL, change to 3000 as soon as the backend has implemented the get contracts endpoint
+  const BASE_URL = getApiDomain();
 
   const fetchContracts = useCallback(
     async () => {

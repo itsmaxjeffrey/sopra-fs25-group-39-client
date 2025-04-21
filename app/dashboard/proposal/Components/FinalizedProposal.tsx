@@ -19,12 +19,11 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import dayjs from "dayjs";
 import { Autocomplete } from "@react-google-maps/api";
+import { getApiDomain } from "@/utils/domain";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const BASE_URL = process.env.NODE_ENV === "production"
-  ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:8080";
+const BASE_URL = getApiDomain();
 
 interface Props {
   proposalId: string;
@@ -96,7 +95,7 @@ const FinalizedProposal = ({ proposalId }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/contracts/${proposalId}`);
+      await axios.delete(`${BASE_URL}/api/v1/contracts/${proposalId}`);
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
@@ -118,11 +117,7 @@ const FinalizedProposal = ({ proposalId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    src={process.env.NODE_ENV === "production"
-                      ? `https://sopra-fs25-group-39-client.vercel.app${
-                        imagePaths[idx]
-                      }`
-                      : `http://localhost:8080${imagePaths[idx]}`}
+                    src={`${BASE_URL}${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",

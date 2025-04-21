@@ -12,6 +12,7 @@ import {
   FileTextOutlined,
   LockOutlined,
 } from "@ant-design/icons";
+import { getApiDomain } from "@/utils/domain";
 
 interface Proposal {
   contractId: number;
@@ -27,6 +28,8 @@ interface Proposal {
   rideAlong?: boolean;
 }
 
+const BASE_URL = getApiDomain(); // Define BASE_URL
+
 const ProposalsOverview = () => {
   const [contracts, setContracts] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +41,7 @@ const ProposalsOverview = () => {
     if (!userId || !token) return;
 
     axios
-      .get<Proposal[]>(`http://localhost:8080/api/v1/users/${userId}/contracts`, {
+      .get<Proposal[]>(`${BASE_URL}/api/v1/users/${userId}/contracts`, {
         headers: {
           UserId: `${userId}`,
           Authorization: `${token}`,

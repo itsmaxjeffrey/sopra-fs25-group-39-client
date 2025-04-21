@@ -10,6 +10,9 @@ import {
   FileTextOutlined,
   LockOutlined,
 } from "@ant-design/icons";
+import { getApiDomain } from "@/utils/domain";
+
+const BASE_URL = getApiDomain();
 
 interface Proposal {
   contractId: number;
@@ -38,7 +41,7 @@ const ProposalsOverview = () => {
     const fetchContracts = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/v1/users/${userId}/contracts`,
+          `${BASE_URL}/api/v1/users/${userId}/contracts`,
           {
             headers: {
               UserId: `${userId}`,

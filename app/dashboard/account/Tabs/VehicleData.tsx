@@ -3,14 +3,14 @@ import React, { useState } from "react";
 import { Button, Image, Input, Typography, Upload } from "antd";
 import { FileImageOutlined, UploadOutlined } from "@ant-design/icons";
 import styles from "../Account.module.css";
+import { getApiDomain } from "@/utils/domain";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const { Title } = Typography;
 
-const BASE_URL = process.env.NODE_ENV === "production"
-  ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:8080";
+const BASE_URL = getApiDomain();
+
 
 const VehicleDataTab = ({
   editedData,

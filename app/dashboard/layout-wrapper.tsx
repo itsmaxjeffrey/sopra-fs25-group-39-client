@@ -2,6 +2,10 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { getApiDomain } from "@/utils/domain";
+
+
+const BASE_URL = getApiDomain(); // Define BASE_URL
 
 const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
@@ -13,7 +17,7 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
       if (!token) return router.push("/login");
 
       // try {
-      //   const res = await fetch("http://localhost:8080/api/v1/auth/refresh", {
+      //   const res = await fetch("${BASE_URL}/api/v1/auth/refresh", {
       //     method: "POST",
       //     headers: { "Content-Type": "application/json" },
       //     body: JSON.stringify({ token }),

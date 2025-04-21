@@ -19,13 +19,13 @@ import dayjs from "dayjs";
 import { Autocomplete } from "@react-google-maps/api";
 import OfferCard from "./OfferCard";
 import Title from "antd/es/typography/Title";
+import { getApiDomain } from "@/utils/domain";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
   proposalId: string;
 }
-
 
 const AcceptedProposal = ({ proposalId }: Props) => {
   const router = useRouter();
@@ -39,11 +39,12 @@ const AcceptedProposal = ({ proposalId }: Props) => {
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
+  const BASE_URL = getApiDomain();
 
   const fetchContract = async () => {
     try {
       const res = await axios.get<{ contract: any }>(
-        `http://localhost:8080/api/v1/contracts/${proposalId}`,
+        `${BASE_URL}/api/v1/contracts/${proposalId}`,
       );
       const data = res.data.contract;
       if (!data || !data.contractId) {
@@ -87,7 +88,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
 
   const handleCancelProposal = async () => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/contracts/${proposalId}`);
+      await axios.delete(`${BASE_URL}/api/v1/contracts/${proposalId}`);
       router.push("/dashboard");
     } catch (error) {
       console.error("Cancel failed:", error);
@@ -109,11 +110,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    src={process.env.NODE_ENV === "production"
-                      ? `https://sopra-fs25-group-39-client.vercel.app${
-                        imagePaths[idx]
-                      }`
-                      : `http://localhost:8080${imagePaths[idx]}`}
+                    src={`${BASE_URL}${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",

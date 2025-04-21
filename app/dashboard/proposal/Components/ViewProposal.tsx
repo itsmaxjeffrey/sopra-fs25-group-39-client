@@ -20,16 +20,16 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { Autocomplete } from "@react-google-maps/api";
 import { useParams } from "next/navigation";
+import { getApiDomain } from "@/utils/domain";
 
-const BASE_URL = process.env.NODE_ENV === "production"
-  ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:8080";
+const BASE_URL = getApiDomain();
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
   proposalId: string;
 }
+
 
 const ViewProposal = ({ proposalId }: Props) => {
   const { id } = useParams(); // Retrieve the proposal ID from the URL
@@ -115,7 +115,7 @@ const ViewProposal = ({ proposalId }: Props) => {
       if (!driverId) {
         throw new Error("Driver ID not found in local storage.");
       }
-      const response = await axios.post("http://localhost:8080/api/v1/offers", {
+      const response = await axios.post(`${BASE_URL}/api/v1/offers`, {
         contractId: proposalId,
         driverId: driverId,
       });
