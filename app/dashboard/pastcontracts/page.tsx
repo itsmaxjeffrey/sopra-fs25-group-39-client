@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Spin, Table } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import { getApiDomain } from "@/utils/domain"; // Import the function
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -11,6 +12,8 @@ interface Contract {
   moveDateTime: string;
   fromLocation: { latitude: number; longitude: number };
 }
+
+const BASE_URL = getApiDomain(); // Define BASE_URL
 
 const PastContracts = () => {
   const [contracts, setContracts] = useState<any[]>([]);
@@ -24,7 +27,7 @@ const PastContracts = () => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get<Contract[]>(
-          `http://localhost:8080/api/v1/users/${userId}/contracts`,
+          `${BASE_URL}/api/v1/users/${userId}/contracts`, // Use BASE_URL
           {
             headers: {
               UserId: `${userId}`,

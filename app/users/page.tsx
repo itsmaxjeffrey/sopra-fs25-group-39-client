@@ -4,12 +4,17 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios"; // Import axios
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import { Button, Card, Table } from "antd";
 import type { TableProps } from "antd"; // antd component library allows imports of types
+import { getApiDomain } from "@/utils/domain"; // Import the function
+
 // Optionally, you can import a CSS module or file for additional styling:
 // import "@/styles/views/Dashboard.scss";
+
+const BASE_URL = getApiDomain(); // Define BASE_URL
 
 // Columns for the antd table of User objects
 const columns: TableProps<User>["columns"] = [
@@ -56,7 +61,7 @@ const Dashboard: React.FC = () => {
 
     try {
       await axios.post(
-        "http://localhost:8080/api/v1/auth/logout",
+        `${BASE_URL}/api/v1/auth/logout`, // Use BASE_URL
         {},
         {
           headers: {

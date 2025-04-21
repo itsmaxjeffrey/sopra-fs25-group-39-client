@@ -4,8 +4,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Modal } from "antd";
 import axios from "axios"; // Import axios
+import { getApiDomain } from "@/utils/domain"; // Import the function
 
 import styles from "./sidebar.module.css";
+
+const BASE_URL = getApiDomain(); // Define BASE_URL
 
 const Sidebar = (
   { accountType: initialAccountType }: { accountType: string | null },
@@ -16,26 +19,27 @@ const Sidebar = (
   const [accountType, setAccountType] = React.useState(initialAccountType);
 
   React.useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-    console.log("UserId:", userId, "Token:", token);
-    if (userId && token) {
-      axios
-        .get(`http://localhost:8080/api/v1/users/${userId}`, {
-          headers: {
-            UserId: `${userId}`,
-            Authorization: `${token}`,
-          },
-        })
-        .then((res) => {
-          const data = res.data as { userAccountType: string }; 
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+      console.log("UserId:", userId, "Token:", token);
+      if (userId && token) {
+        try {
+          const response = await axios.get(`${BASE_URL}/api/v1/users/${userId}`, { // Use BASE_URL
+            headers: {
+              UserId: `${userId}`,
+              Authorization: `${token}`,
+            },
+          });
+          const data = response.data as { userAccountType: string };
           setAccountType(data.userAccountType);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch user:", err);
+        } catch (error) {
+          console.error("Failed to fetch user:", error);
           setAccountType(null);
-        });
-    }
+        }
+      }
+    };
+    fetchUserData();
   }, []);
 
   const handleLogout = async () => {
@@ -51,7 +55,7 @@ const Sidebar = (
 
     try {
       await axios.post(
-        "http://localhost:8080/api/v1/auth/logout",
+        `${BASE_URL}/api/v1/auth/logout`, // Use BASE_URL
         {},
         {
           headers: {

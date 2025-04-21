@@ -7,12 +7,9 @@ import Login from "./components/login";
 import Driver from "./components/driver";
 import styles from "./login.module.css";
 import Customer from "./components/customer";
+import { getApiDomain } from "@/utils/domain"; // Import the function
 
-// const BASE_URL = process.env.NODE_ENV === "production"
-//   ? "https://sopra-fs25-group-39-client.vercel.app"
-//   : "http://localhost:8080";
-
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = getApiDomain(); // Define BASE_URL
 
 const { Title } = Typography;
 

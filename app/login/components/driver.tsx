@@ -20,8 +20,7 @@ import {
 import axios from "axios";
 import styles from "../login.module.css";
 import { Autocomplete, LoadScript } from "@react-google-maps/api";
-
-// const { Title } = Typography;
+import { getApiDomain } from "@/utils/domain";
 
 interface StepOneData {
   firstName: string;
@@ -47,9 +46,8 @@ interface Location {
   longitude: number;
   formattedAddress: string;
 }
-const BASE_URL = process.env.NODE_ENV === "production"
-  ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:8080";
+
+const BASE_URL = getApiDomain();
 
 const Driver = () => {
   const [driverLicenseFilePath, setDriverLicenseFilePath] = useState<string | null>(null);

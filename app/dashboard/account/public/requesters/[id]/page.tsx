@@ -3,6 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Image } from "antd";
+import { getApiDomain } from "@/utils/domain"; // Import the function
+
+const BASE_URL = getApiDomain(); // Define BASE_URL
 
 interface Requester {
   username: string;
@@ -20,7 +23,7 @@ const RequesterProfilePage: React.FC = () => {
     const fetchRequesterProfile = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/users/${userId}`,
+          `${BASE_URL}/api/v1/users/${userId}`, // Use BASE_URL
         );
         if (response.ok) {
           const data = await response.json();

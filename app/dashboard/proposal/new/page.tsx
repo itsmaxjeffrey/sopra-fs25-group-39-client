@@ -24,10 +24,9 @@ import axios from "axios";
 import { Autocomplete } from "@react-google-maps/api";
 import styles from "./New.module.css";
 import dayjs from "dayjs";
+import { getApiDomain } from "@/utils/domain";
 
-const BASE_URL = process.env.NODE_ENV === "production"
-  ? "https://sopra-fs25-group-39-client.vercel.app"
-  : "http://localhost:8080";
+const BASE_URL = getApiDomain();
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -59,32 +58,20 @@ const NewProposalFormPage = () => {
     if (!token || !userId) return;
 
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/v1/files/upload",
-        {
-          method: "POST",
-          headers: {
-            UserId: `${userId}`,
-            Authorization: `${token}`,
-          },
-          body: formData,
+      const response = await axios.post(`${BASE_URL}/api/v1/files/upload`, formData, {
+        headers: {
+          UserId: `${userId}`,
+          Authorization: `${token}`,
         },
-      );
+      });
 
-      if (!response.ok) {
-        throw new Error("Failed to upload file");
-      }
-
-      const data = await response.json();
-      console.log("Upload response:", data);
-
-      if (data.filePath) {
-        const newPaths = [...uploadedPaths];
-        newPaths[idx] = data.filePath;
-        setUploadedPaths(newPaths);
-      } else {
+      if (!response.data.filePath) {
         throw new Error("File path is missing in the response");
       }
+
+      const newPaths = [...uploadedPaths];
+      newPaths[idx] = response.data.filePath;
+      setUploadedPaths(newPaths);
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -136,11 +123,12 @@ const NewProposalFormPage = () => {
 
     try {
       console.log("WOULD SEND:", JSON.stringify(payload, null, 2));
-      await axios.post("http://localhost:8080/api/v1/contracts", payload, {
+      await axios.post(`${BASE_URL}/api/v1/contracts`, payload, {
         headers: {
           UserId: `${userId}`,
           Authorization: `${token}`,
         },
+        withCredentials: true,
       });
       setModalState("success");
     } catch (err: any) {

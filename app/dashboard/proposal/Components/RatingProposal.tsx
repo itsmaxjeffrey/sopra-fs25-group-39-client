@@ -21,6 +21,9 @@ import dayjs from "dayjs";
 import { Autocomplete } from "@react-google-maps/api";
 import Title from "antd/es/typography/Title";
 import { Rate } from "antd";
+import { getApiDomain } from "@/utils/domain";
+
+const BASE_URL = getApiDomain();
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -72,7 +75,7 @@ const RatingProposal = ({ proposalId }: Props) => {
   const fetchContract = async () => {
     try {
       const res = await axios.get<ContractData>(
-        `http://localhost:8080/api/v1/contracts/${proposalId}`,
+        `${BASE_URL}/api/v1/contracts/${proposalId}`,
       );
       const data = res.data;
       if (!data || !data.contractId) {
@@ -135,7 +138,7 @@ const RatingProposal = ({ proposalId }: Props) => {
                       ? `https://sopra-fs25-group-39-client.vercel.app${
                         imagePaths[idx]
                       }`
-                      : `http://localhost:8080${imagePaths[idx]}`}
+                      : `${BASE_URL}${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",
@@ -253,7 +256,7 @@ const RatingProposal = ({ proposalId }: Props) => {
                 issueDetails: values.issues ? values.issueDetails || "" : "",
               };
               await axios.post(
-                `http://localhost:8080/api/v1/contracts/${proposalId}/driver-rating`,
+                `${BASE_URL}/api/v1/contracts/${proposalId}/driver-rating`,
                 payload,
               );
               Modal.success({

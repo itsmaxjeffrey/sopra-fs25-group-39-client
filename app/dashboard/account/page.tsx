@@ -6,14 +6,13 @@ import styles from "./Account.module.css";
 import UserDataTab from "./Tabs/UserData";
 import VehicleDataTab from "./Tabs/VehicleData";
 import ActionsTab from "./Tabs/Actions";
+import { getApiDomain } from "@/utils/domain"; // Import the function
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const { Title } = Typography;
 
-// const BASE_URL = process.env.NODE_ENV === "production"
-//   ? "https://sopra-fs25-group-39-client.vercel.app"
-//   : "http://localhost:8080";
+const BASE_URL = getApiDomain(); // Define BASE_URL
 
 interface User {
   id: string;
@@ -32,24 +31,24 @@ const AccountPage = () => {
   const [changed, setChanged] = useState(false);
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    const token = localStorage.getItem("token");
+    const fetchUserData = async () => {
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
 
-    if (!userId || !token) {
-      setError("No user ID or token found");
-      setLoading(false);
-      return;
-    }
+      if (!userId || !token) {
+        setError("No user ID or token found");
+        setLoading(false);
+        return;
+      }
 
-    axios
-      .get(`http://localhost:8080/api/v1/users/${userId}`, {
-        headers: {
-          UserId: `${userId}`,
-          Authorization: `${token}`,
-        },
-      })
-      .then((res) => {
-        const user = res.data as User;
+      try {
+        const response = await axios.get(`${BASE_URL}/api/v1/users/${userId}`, {
+          headers: {
+            UserId: `${userId}`,
+            Authorization: `${token}`,
+          },
+        });
+        const user = response.data as User;
         console.log(user);
         setUserData({
           ...user,
@@ -57,13 +56,14 @@ const AccountPage = () => {
         });
         setEditedData(user);
         localStorage.setItem("token", user.token);
-      })
-      .catch((err) => {
+      } catch (err) {
         setError(err.message);
-      })
-      .then(() => {
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   useEffect(() => {

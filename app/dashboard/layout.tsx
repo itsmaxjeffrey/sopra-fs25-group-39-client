@@ -7,8 +7,10 @@ import Sidebar from "@/components/sidebar/sidebar";
 import LayoutWrapper from "./layout-wrapper";
 import AccountTypeContext from "./AccountTypeContext";
 import { Libraries, LoadScript } from "@react-google-maps/api";
+import { getApiDomain } from "@/utils/domain"; // Import the function
 
 const MAP_LIBRARIES: Libraries = ["places"];
+const BASE_URL = getApiDomain(); // Define BASE_URL
 
 interface User {
   id: string;
@@ -28,29 +30,32 @@ export default function DashboardLayout({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    const token = localStorage.getItem("token");
+    const fetchUserAccountType = async () => {
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
 
-    console.log("UserId:", userId, "Token:", token); // Debugging log
+      console.log("UserId:", userId, "Token:", token); // Debugging log
 
-    if (!userId || !token) return;
+      if (!userId || !token) return;
 
-    axios
-      .get<User>(`http://localhost:8080/api/v1/users/${userId}`, {
-        headers: {
-          UserId: `${userId}`,
-          Authorization: `${token}`,
-        },
-      })
-      .then((res) => {
-        console.log("API Response:", res.data);
-        setAccountType(res.data.userAccountType);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch user in layout:", err);
-      })
-      .then(() => setLoading(false))
-      .catch(() => setLoading(false));
+      try {
+        const response = await axios.get<User>(`${BASE_URL}/api/v1/users/${userId}`, {
+          headers: {
+            UserId: `${userId}`,
+            Authorization: `${token}`,
+          },
+          withCredentials: true,
+        });
+        console.log("API Response:", response.data);
+        setAccountType(response.data.userAccountType);
+      } catch (error) {
+        console.error("Failed to fetch user in layout:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserAccountType();
   }, []);
 
   if (loading || !accountType) {

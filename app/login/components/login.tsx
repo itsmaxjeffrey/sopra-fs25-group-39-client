@@ -2,10 +2,9 @@
 import React, { useState } from "react";
 import { Alert, Button, Input } from "antd";
 import styles from "../login.module.css";
+import { getApiDomain } from "@/utils/domain"; // Import the function
 
-// const BASE_URL = process.env.NODE_ENV === "production"
-//   ? "https://sopra-fs25-group-39-client.vercel.app"
-//   : "http://localhost:8080";
+const BASE_URL = getApiDomain(); // Define BASE_URL
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -20,7 +19,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/api/v1/auth/login", {
+      const res = await fetch(`${BASE_URL}/api/v1/auth/login`, { // Use BASE_URL
         method: "POST",
         headers: {
           "Content-Type": "application/json",

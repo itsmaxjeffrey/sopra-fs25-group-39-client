@@ -6,6 +6,9 @@ import { useParams, useRouter } from "next/navigation";
 import { Button, Card, Carousel, Input, message, Rate, Spin } from "antd";
 import axios from "axios";
 import Image from "next/image";
+import { getApiDomain } from "@/utils/domain"; // Import the function
+
+const BASE_URL = getApiDomain(); // Define BASE_URL
 
 interface User {
   username: string;
@@ -66,7 +69,7 @@ export default function DriverProfilePage() {
               volumeCapacity?: number;
             };
           }
-        >(`http://localhost:8080/api/v1/users/${userId}`);
+        >(`${BASE_URL}/api/v1/users/${userId}`); // Use BASE_URL
         if (!res.data || !res.data.userId) {
           throw new Error("Invalid driver data");
         }
