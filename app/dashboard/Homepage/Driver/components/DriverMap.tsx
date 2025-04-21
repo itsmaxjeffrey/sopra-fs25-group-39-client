@@ -11,8 +11,6 @@ import {
   Marker,
 } from "@react-google-maps/api";
 
-import { getApiDomain } from "@/utils/domain";
-
 // Define MAP_LIBRARIES outside the component to avoid redefinition on every render
 
 const MAP_LIBRARIES: Libraries = ["places"];
@@ -56,104 +54,86 @@ const DriverMap: React.FC<DriverMapProps> = (
 
   const isLoadingRef = useRef(false);
 
-  const BASE_URL = getApiDomain();
+  const BASE_URL = process.env.NODE_ENV === "production"
+    ? "https://sopra-fs25-group-39-client.vercel.app/" // Production API URL
+    : "http://localhost:8080"; // Development API URL, change to 3000 as soon as the backend has implemented the get contracts endpoint
 
-  const fetchContracts = useCallback(
-    async () => {
-      if (isLoadingRef.current) return; // Prevent fetch if already loading
-
-      isLoadingRef.current = true;
-
-      try {
-        const query: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
-
-        if (filters.lat !== null) query.lat = selectedLocation.lat;
-
-        if (filters.lng !== null) query.lng = selectedLocation.lng;
-
-        const filterParams: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
-
-        if (filters.radius !== null) filterParams.radius = filters.radius;
-
-        if (filters.price !== null) filterParams.price = filters.price;
-
-        if (filters.weight !== null) filterParams.weight = filters.weight;
-
-        if (filters.volume !== null) filterParams.volume = filters.volume;
-
-        if (filters.requiredPeople !== null) {
-          filterParams.requiredPeople = filters.requiredPeople;
-        }
-
-        if (filters.fragile !== null) filterParams.fragile = filters.fragile;
-
-        if (filters.coolingRequired !== null) {
-          filterParams.coolingRequired = filters.coolingRequired;
-        }
-
-        if (filters.rideAlong !== null) {
-          filterParams.rideAlong = filters.rideAlong;
-        }
-
-        if (filters.moveDateTime !== null) {
-          filterParams.moveDateTime = filters.moveDateTime.format(
-            "YYYY-MM-DDTHH:mm:ss",
-          );
-        }
-
-        if (Object.keys(filterParams).length > 0) {
-          query.filters = JSON.stringify(filterParams);
-        }
-
-        console.log("Filters passed to the API call:", query);
-
-        const response = await fetch(
-          `${BASE_URL}/api/v1/map/contracts?lat=${selectedLocation.lat}&lng=${selectedLocation.lng}&filters=${
-            encodeURIComponent(query.filters)
-          }`,
-        );
-
-        const data = await response.json();
-
-        if (Array.isArray(data)) {
-          setallContracts(data);
-
-          // Filter contracts immediately after fetching
-          if (mapInstance) {
-            const bounds = mapInstance.getBounds();
-
-            if (bounds) {
-              const filtered = data.filter(
-                (
-                  contract: {
-                    fromLocation: { latitude: number; longitude: number };
-                  },
-                ) => {
-                  const contractLat = contract.fromLocation.latitude;
-                  const contractLng = contract.fromLocation.longitude;
-
-                  return bounds.contains(
-                    new google.maps.LatLng(contractLat, contractLng),
-                  );
-                },
-              );
-
-              setfilteredContracts(filtered);
-            }
+    const fetchContracts = useCallback(
+      async () => {
+        if (isLoadingRef.current) return;
+    
+        isLoadingRef.current = true;
+    
+        try {
+          const query: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
+    
+          if (filters.lat !== null) query.lat = selectedLocation.lat;
+          if (filters.lng !== null) query.lng = selectedLocation.lng;
+    
+          const filterParams: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
+    
+          if (filters.radius !== null) filterParams.radius = filters.radius;
+          if (filters.price !== null) filterParams.price = filters.price;
+          if (filters.weight !== null) filterParams.weight = filters.weight;
+          if (filters.volume !== null) filterParams.volume = filters.volume;
+          if (filters.requiredPeople !== null) filterParams.requiredPeople = filters.requiredPeople;
+          if (filters.fragile !== null) filterParams.fragile = filters.fragile;
+          if (filters.coolingRequired !== null) filterParams.coolingRequired = filters.coolingRequired;
+          if (filters.rideAlong !== null) filterParams.rideAlong = filters.rideAlong;
+          if (filters.moveDateTime !== null) {
+            filterParams.moveDate = filters.moveDateTime.format("YYYY-MM-DD"); // Match Java controller
           }
-        } else {
-          console.warn("Unexpected response format:", data);
-          setallContracts([]);
-          setfilteredContracts([]);
+    
+          const encodedFilters = encodeURIComponent(JSON.stringify(filterParams));
+    
+          const token = localStorage.getItem("token");
+          const userId = localStorage.getItem("userId");
+    
+          const response = await fetch(
+            `${BASE_URL}/api/v1/contracts?lat=${selectedLocation.lat}&lng=${selectedLocation.lng}&filters=${encodedFilters}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "UserId": userId,
+                "Authorization": token,
+              },
+            }
+          );
+    
+          const data = await response.json();
+    
+          if (Array.isArray(data.contracts)) {
+            setallContracts(data.contracts);
+          
+            if (mapInstance) {
+              const bounds = mapInstance.getBounds();
+              if (bounds) {
+                const filtered = data.contracts.filter((contract) => {
+                  const lat = contract.fromLocation?.latitude;
+                  const lng = contract.fromLocation?.longitude;
+                  return (
+                    typeof lat === "number" &&
+                    typeof lng === "number" &&
+                    bounds.contains(new google.maps.LatLng(lat, lng))
+                  );
+                });
+          
+                setfilteredContracts(filtered);
+              }
+            }
+          } else {
+            console.warn("Unexpected response format:", data);
+            setallContracts([]);
+            setfilteredContracts([]);
+          }          
+        } catch (error) {
+          console.error("Error fetching contracts:", error);
+        } finally {
+          isLoadingRef.current = false;
         }
-      } catch (error) {
-        console.error("Error fetching contracts:", error);
-      } finally {
-        isLoadingRef.current = false;
-      }
-    },
-    [selectedLocation, filters, mapInstance, BASE_URL],
-  );
+      },
+      [selectedLocation, filters, mapInstance, BASE_URL],
+    );
 
   const filtercontractsByBounds = useCallback(() => {
     if (!mapInstance) {
