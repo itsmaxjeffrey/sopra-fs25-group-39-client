@@ -13,6 +13,7 @@ import {
   Row,
   Spin,
   Switch,
+  message,
 } from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styles from "./Edit.module.css";
@@ -41,25 +42,20 @@ const OfferProposal = ({ proposalId }: Props) => {
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
+  const [acceptingOffer, setAcceptingOffer] = useState<number | null>(null);
 
   const BASE_URL = getApiDomain();
-  
-  // Updated Offer interface to match API response (OfferGetDTO)
+
   interface Offer {
     offerId: number;
     contract: {
       price: number;
-      // Add other relevant contract fields if needed
     };
     driver: {
       userId: number;
       firstName: string;
       lastName: string;
-      // Add other relevant driver fields if needed
     };
-    // averageRating seems missing from OfferGetDTO, handle accordingly
-    // offerStatus?: string; // Add if needed
-    // creationDateTime?: string; // Add if needed
   }
 
   const [offers, setOffers] = useState<Offer[]>([]);
@@ -126,12 +122,46 @@ const OfferProposal = ({ proposalId }: Props) => {
     }
   };
 
+  const handleAcceptOffer = async (offerId: number) => {
+    setAcceptingOffer(offerId);
+    try {
+      const token = localStorage.getItem("token") || "";
+      const userId = localStorage.getItem("userId") || "";
+
+      if (!token || !userId) {
+        message.error("Authentication details missing. Please log in again.");
+        setAcceptingOffer(null);
+        return;
+      }
+
+      await axios.put(
+        `${BASE_URL}/api/v1/offers/${offerId}/status?status=ACCEPTED`,
+        {},
+        {
+          headers: {
+            Authorization: token,
+            UserId: userId,
+          },
+        },
+      );
+
+      message.success("Offer accepted successfully!");
+      router.push("/dashboard");
+    } catch (err: any) {
+      console.error("Error accepting offer:", err);
+      const errorMessage = err.response?.data?.message ||
+        "Failed to accept the offer. Please try again.";
+      message.error(errorMessage);
+    } finally {
+      setAcceptingOffer(null);
+    }
+  };
+
   useEffect(() => {
     fetchContract();
     const fetchOffers = async () => {
       try {
-        // Explicitly type the expected response structure based on OfferGetDTO
-        const res = await axios.get<{ offers: Offer[] }>( 
+        const res = await axios.get<{ offers: Offer[] }>(
           `${BASE_URL}/api/v1/contracts/${proposalId}/offers`,
           {
             headers: {
@@ -141,13 +171,12 @@ const OfferProposal = ({ proposalId }: Props) => {
           },
         );
 
-        console.log("Offers API Response:", res.data); // Debugging the API response
-        // Ensure res.data.offers is an array before setting state
+        console.log("Offers API Response:", res.data);
         if (Array.isArray(res.data.offers)) {
-          setOffers(res.data.offers); // Store the offers array in state
+          setOffers(res.data.offers);
         } else {
           console.error("API response for offers is not an array:", res.data);
-          setOffers([]); // Set to empty array if response is not as expected
+          setOffers([]);
         }
         setErrorOffers(false);
       } catch (error) {
@@ -159,12 +188,10 @@ const OfferProposal = ({ proposalId }: Props) => {
     };
 
     fetchOffers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, proposalId]);
 
   return (
     <div className={styles.wrapper}>
-      {/* Bild Upload */}
       <div className={styles.imageUpload}>
         <div className={styles.imageRow}>
           {[0, 1, 2].map((idx) => (
@@ -191,7 +218,6 @@ const OfferProposal = ({ proposalId }: Props) => {
         </div>
       </div>
 
-      {/* Formular */}
       <Form layout="vertical" className={styles.form} form={form}>
         <Form.Item label="Title" name="title">
           <Input placeholder="Give your proposal a fitting name" disabled />
@@ -367,11 +393,13 @@ const OfferProposal = ({ proposalId }: Props) => {
             : (
               offers.map((offer) => (
                 <OfferCard
-                  key={offer.offerId} // Use unique offerId for the key
-                  driverName={`${offer.driver.firstName} ${offer.driver.lastName}`} // Construct driver name
-                  driverId={String(offer.driver.userId)} // Pass driverId as string
-                  price={offer.contract.price} // Get price from nested contract object
-                  rating={0} // Pass 0 for rating as averageRating is missing
+                  key={offer.offerId}
+                  offerId={offer.offerId}
+                  driverName={`${offer.driver.firstName} ${offer.driver.lastName}`}
+                  driverId={String(offer.driver.userId)}
+                  price={offer.contract.price}
+                  rating={0}
+                  onAccept={handleAcceptOffer}
                 />
               ))
             )}

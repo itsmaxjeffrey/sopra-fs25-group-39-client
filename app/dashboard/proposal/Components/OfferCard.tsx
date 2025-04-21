@@ -3,19 +3,20 @@
 import React from "react";
 import styles from "./OfferCard.module.css";
 import { UserOutlined } from "@ant-design/icons";
-import { Rate } from "antd";
+import { Rate, Button } from "antd"; // Import Button
 import Link from "next/link"; // Import Link from next/link
 
 interface OfferCardProps {
-  //title: string;
+  offerId: number;
   driverName: string;
   driverId: string;
   price: number;
   rating: number;
+  onAccept?: (offerId: number) => void; // Make onAccept optional
 }
 
 const OfferCard: React.FC<OfferCardProps> = (
-  { driverName, driverId, price, rating },
+  { offerId, driverName, driverId, price, rating, onAccept }, // Destructure new props
 ) => {
   return (
     <div className={styles.card}>
@@ -42,6 +43,14 @@ const OfferCard: React.FC<OfferCardProps> = (
           <Rate disabled defaultValue={rating} />
         </span>
       </div>
+      {/* Conditionally render Accept Button */}
+      {onAccept && (
+        <div className={`${styles.row} ${styles.acceptButtonRow}`}>
+          <Button type="primary" onClick={() => onAccept(offerId)}>
+            Accept Offer
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

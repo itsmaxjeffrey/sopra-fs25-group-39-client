@@ -23,6 +23,14 @@ import { getApiDomain } from "@/utils/domain";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+// Define an interface for the driver data
+interface DriverInfo {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  // Add other relevant driver fields if available, e.g., averageRating
+}
+
 interface Props {
   proposalId: string;
 }
@@ -39,12 +47,32 @@ const AcceptedProposal = ({ proposalId }: Props) => {
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
+  const [driverInfo, setDriverInfo] = useState<DriverInfo | null>(null); // State for driver info
+  const [loadingDriver, setLoadingDriver] = useState(true); // Loading state for driver
+  const [errorDriver, setErrorDriver] = useState(false); // Error state for driver
   const BASE_URL = getApiDomain();
 
   const fetchContract = async () => {
     try {
+      const token = localStorage.getItem("token") || "";
+      const userId = localStorage.getItem("userId") || "";
+
+      if (!token || !userId) {
+        setError(true);
+        setLoading(false);
+        console.error("Authentication details missing.");
+        // Optionally show a message to the user
+        return;
+      }
+
       const res = await axios.get<{ contract: any }>(
         `${BASE_URL}/api/v1/contracts/${proposalId}`,
+        {
+          headers: {
+            Authorization: token,
+            UserId: userId, // Use UserId (capital U, capital I, lowercase d)
+          },
+        },
       );
       const data = res.data.contract;
       if (!data || !data.contractId) {
@@ -86,6 +114,40 @@ const AcceptedProposal = ({ proposalId }: Props) => {
     }
   };
 
+  // Function to fetch driver info
+  const fetchDriverInfo = async () => {
+    setLoadingDriver(true);
+    setErrorDriver(false);
+    try {
+      const token = localStorage.getItem("token") || "";
+      const userId = localStorage.getItem("userId") || "";
+
+      if (!token || !userId) {
+        throw new Error("Authentication details missing.");
+      }
+
+      const res = await axios.get<{ driver: DriverInfo }>(
+        `${BASE_URL}/api/v1/contracts/${proposalId}/driver`,
+        {
+          headers: {
+            Authorization: token,
+            UserId: userId,
+          },
+        },
+      );
+      if (res.data && res.data.driver) {
+        setDriverInfo(res.data.driver);
+      } else {
+        throw new Error("Driver data not found in response");
+      }
+    } catch (err) {
+      console.error("Error fetching driver info:", err);
+      setErrorDriver(true);
+    } finally {
+      setLoadingDriver(false);
+    }
+  };
+
   const handleCancelProposal = async () => {
     try {
       await axios.delete(`${BASE_URL}/api/v1/contracts/${proposalId}`);
@@ -96,9 +158,16 @@ const AcceptedProposal = ({ proposalId }: Props) => {
   };
 
   useEffect(() => {
-    fetchContract();
+    const loadData = async () => {
+      await fetchContract();
+      // Fetch driver info only after contract is fetched successfully (or based on your logic)
+      if (!error) {
+        await fetchDriverInfo();
+      }
+    };
+    loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, proposalId]);
+  }, [proposalId]);
 
   return (
     <div className={styles.wrapper}>
@@ -218,16 +287,22 @@ const AcceptedProposal = ({ proposalId }: Props) => {
         <Title level={2}>Your driver:</Title>
 
         <div className={styles.scrollContainer}>
-          {!loading && !error && fromCoords.address && toCoords.address
+          {loadingDriver
+            ? <p>Loading driver information...</p>
+            : errorDriver
+            ? <p>Error loading driver information.</p>
+            : driverInfo
             ? (
               <OfferCard
-                driverName={form.getFieldValue("driverName")}
-                driverId={form.getFieldValue("driverId")}
-                price={form.getFieldValue("price")}
-                rating={Math.round(form.getFieldValue("averageRating") || 0)} // Ensure rating is an integer
+                offerId={-1} // Dummy offerId as it's not needed here
+                driverName={`${driverInfo.firstName} ${driverInfo.lastName}`}
+                driverId={String(driverInfo.userId)}
+                price={form.getFieldValue("price")} // Price comes from the contract
+                rating={0} // Placeholder rating, fetch/calculate if needed
+                // No onAccept needed here
               />
             )
-            : <p>Loading driver information...</p>}
+            : <p>No driver assigned or found.</p>}
         </div>
         <br />
 
