@@ -8,7 +8,6 @@ import {
   Autocomplete,
   GoogleMap,
   Libraries,
-  LoadScriptNext,
   Marker,
 } from "@react-google-maps/api";
 import { getApiDomain } from "@/utils/domain";
@@ -315,70 +314,63 @@ const DriverMap: React.FC<DriverMapProps> = (
   console.log("GOOGLE_MAPS_API_KEY:", GOOGLE_MAPS_API_KEY);
 
   return (
-    <LoadScriptNext
-      googleMapsApiKey={GOOGLE_MAPS_API_KEY}
-      libraries={MAP_LIBRARIES}
-      onLoad={() => console.log("Google Maps script loaded successfully.")}
-      onError={handleMapError}
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={selectedLocation}
+      zoom={12}
+      options={{ fullscreenControl: false, streetViewControl: false }}
+      onLoad={handleMapLoad}
+      onDragEnd={handleMapDragEnd}
+      onZoomChanged={handleMapZoom}
     >
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={selectedLocation}
-        zoom={12}
-        options={{ fullscreenControl: false, streetViewControl: false }}
-        onLoad={handleMapLoad}
-        onDragEnd={handleMapDragEnd}
-        onZoomChanged={handleMapZoom}
-      >
-        <div style={{ background: "red", height: "50px" }}>MAP CONTENT</div>
+      <div style={{ background: "red", height: "50px" }}>MAP CONTENT</div>
 
-        {/* Search Input */}
+      {/* Search Input */}
 
-        <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
-          <Autocomplete
-            onLoad={(auto) => (autocompleteRef.current = auto)}
-            onPlaceChanged={handlePlaceChanged}
-          >
-            <input
-              type="text"
-              placeholder="Search location..."
-              style={{
-                width: "250px",
+      <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
+        <Autocomplete
+          onLoad={(auto) => (autocompleteRef.current = auto)}
+          onPlaceChanged={handlePlaceChanged}
+        >
+          <input
+            type="text"
+            placeholder="Search location..."
+            style={{
+              width: "250px",
 
-                padding: "10px",
+              padding: "10px",
 
-                fontSize: "16px",
+              fontSize: "16px",
 
-                border: "1px solid #ccc",
+              border: "1px solid #ccc",
 
-                borderRadius: "4px",
-              }}
-            />
-          </Autocomplete>
-        </div>
-
-        {filteredContracts.map((
-          contract: {
-            contractId: string;
-
-            fromLocation: { latitude: number; longitude: number };
-          },
-        ) => (
-          <Marker
-            key={contract.contractId}
-            position={{
-              lat: contract.fromLocation.latitude,
-
-              lng: contract.fromLocation.longitude,
-            }}
-            onClick={() => {
-              window.location.href =
-                `/dashboard/proposal/${contract.contractId}?type=VIEW`;
+              borderRadius: "4px",
             }}
           />
-        ))}
-      </GoogleMap>
-    </LoadScriptNext>
+        </Autocomplete>
+      </div>
+
+      {filteredContracts.map((
+        contract: {
+          contractId: string;
+
+          fromLocation: { latitude: number; longitude: number };
+        },
+      ) => (
+        <Marker
+          key={contract.contractId}
+          position={{
+            lat: contract.fromLocation.latitude,
+
+            lng: contract.fromLocation.longitude,
+          }}
+          onClick={() => {
+            window.location.href =
+              `/dashboard/proposal/${contract.contractId}?type=VIEW`;
+          }}
+        />
+      ))}
+    </GoogleMap>
   );
 };
 
