@@ -150,7 +150,7 @@ export default function DriverProfilePage() {
           message.error(`Driver details might be available, but ratings could not be found.`);
           // Log specific 404 case
           console.warn('404 Error fetching ratings, driver data might be partial.'); 
-          // eslint-disable-next-line react-hooks/exhaustive-deps -- driver state is intentionally checked here without adding it as a dependency to avoid infinite loops
+          // Check if driver exists but ratings are empty (due to 404 on ratings fetch)
           if (driver && !driver.ratings.length) {
             // Keep existing driver data if ratings fetch failed but driver exists
           } else {
@@ -167,7 +167,8 @@ export default function DriverProfilePage() {
     };
 
     fetchDriverAndRatings();
-  }, [id]); // Keep only 'id' as dependency
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]); // Keep only 'id' as dependency, disable warning for driver dependency
 
   if (loading) {
     return (

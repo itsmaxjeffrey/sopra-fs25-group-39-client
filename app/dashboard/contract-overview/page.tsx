@@ -44,6 +44,14 @@ interface Offer {
   creationDateTime: string;
 }
 
+interface AcceptedContractsResponse {
+  contracts: Proposal[];
+}
+
+interface RequesterContractsResponse {
+  contracts: Proposal[];
+}
+
 const BASE_URL = getApiDomain();
 
 const ProposalsOverview = () => {
@@ -108,9 +116,10 @@ const ProposalsOverview = () => {
         } else if (
           acceptedResponseData &&
           typeof acceptedResponseData === "object" &&
-          Array.isArray((acceptedResponseData as any).contracts)
+          "contracts" in acceptedResponseData &&
+          Array.isArray((acceptedResponseData as AcceptedContractsResponse).contracts)
         ) {
-          acceptedContracts = (acceptedResponseData as any).contracts;
+          acceptedContracts = (acceptedResponseData as AcceptedContractsResponse).contracts;
         } else {
           console.warn("Unexpected API response structure for driver's accepted contracts:", acceptedResponseData);
         }
@@ -146,10 +155,11 @@ const ProposalsOverview = () => {
         } else if (
           responseData &&
           typeof responseData === "object" &&
-          Array.isArray((responseData as any).contracts)
+          "contracts" in responseData &&
+          Array.isArray((responseData as RequesterContractsResponse).contracts)
         ) {
           console.log("Found 'contracts' array in response object (Requester).");
-          proposals = (responseData as any).contracts;
+          proposals = (responseData as RequesterContractsResponse).contracts;
         } else {
           console.error("Unexpected API response structure for requester:", responseData);
         }
@@ -270,7 +280,7 @@ const ProposalsOverview = () => {
             (isDriver ? driverPendingOfferContracts : requesterOfferedContracts).map((c) => (
               <Link
                 key={c.contractId}
-                href={`/dashboard/proposal/${c.contractId}?type=${isDriver ? "VIEW" : c.contractStatus}`}
+                href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
                 className={styles.link}
               >
                 <div className={styles.card}>

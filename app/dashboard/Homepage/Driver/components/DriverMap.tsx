@@ -3,6 +3,7 @@ import '@ant-design/v5-patch-for-react-19';
 // component responsible for rendering the Google Map
 // from Commit 89667df
 import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import Image from "next/image";
 
 import {
   Autocomplete,
@@ -54,6 +55,23 @@ interface Contract {
   contractPhotos?: string[];
 }
 
+interface ContractQuery {
+  lat?: number;
+  lng?: number;
+}
+
+interface FilterParams {
+  radius?: number;
+  price?: number;
+  weight?: number;
+  volume?: number;
+  requiredPeople?: number;
+  fragile?: boolean;
+  coolingRequired?: boolean;
+  rideAlong?: boolean;
+  moveDate?: string;
+}
+
 const DriverMap: React.FC<DriverMapProps> = (
   { containerStyle, filters, onCenterChanged },
 ) => {
@@ -98,11 +116,11 @@ const DriverMap: React.FC<DriverMapProps> = (
       isLoadingRef.current = true;
 
       try {
-        const query: any = {};
+        const query: ContractQuery = {};
         if (filters.lat !== null) query.lat = selectedLocation.lat;
         if (filters.lng !== null) query.lng = selectedLocation.lng;
 
-        const filterParams: any = {};
+        const filterParams: FilterParams = {};
         if (filters.radius !== null) filterParams.radius = filters.radius;
         if (filters.price !== null) filterParams.price = filters.price;
         if (filters.weight !== null) filterParams.weight = filters.weight;
@@ -204,7 +222,7 @@ const DriverMap: React.FC<DriverMapProps> = (
     if (onCenterChanged) {
       onCenterChanged(center.lat, center.lng);
     }
-  }, []);
+  }, [fetchContracts, onCenterChanged]);
 
   useEffect(() => {
     fetchContracts();
@@ -347,12 +365,15 @@ const DriverMap: React.FC<DriverMapProps> = (
                   )}
                   <div className={styles.infoWindowImages}>
                     {(contract.contractPhotos || []).slice(0, 3).map((photoPath, index) => (
-                      <img
+                      <Image
                         key={index}
                         src={`${BASE_URL}/api/v1/files/download?filePath=${encodeURIComponent(photoPath)}`}
                         alt={`Contract photo ${index + 1}`}
                         className={styles.infoWindowImage}
+                        width={50}
+                        height={50}
                         onError={(e) => (e.currentTarget.style.display = 'none')}
+                        style={{ objectFit: 'cover' }}
                       />
                     ))}
                   </div>
