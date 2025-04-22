@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button, Form, Input, Modal, Typography, message } from "antd";
 import styles from "../Account.module.css";
 import { useApi } from "@/hooks/useApi";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation";
 
 const { Title } = Typography;
 
@@ -11,10 +11,9 @@ const ActionsTab = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [form] = Form.useForm();
-  const [deleteForm] = Form.useForm();
-  const apiService = useApi(); // Get the full service instance
+  const apiService = useApi();
   const [loading, setLoading] = useState(false);
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
 
   const handleOk = () => {
     form
@@ -30,15 +29,13 @@ const ActionsTab = () => {
             newPassword: values.newPassword,
           };
 
-          // Call put on the apiService instance
           await apiService.put(endpoint, body);
 
           message.success("Password changed successfully!");
           setIsModalOpen(false);
           form.resetFields();
-        } catch (error: unknown) { // Use unknown for caught errors
+        } catch (error: unknown) {
           console.error("Password change failed:", error);
-          // Add type check for error properties
           const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error instanceof Error ? error.message : "Failed to change password. Please try again.");
           message.error(errorMessage);
         } finally {
@@ -51,49 +48,31 @@ const ActionsTab = () => {
   };
 
   const handleDelete = () => {
-    deleteForm
-      .validateFields()
-      .then(async (values) => {
-        setLoading(true); // Add loading state
-        const userId = localStorage.getItem("userId");
-        const token = localStorage.getItem("token");
-        const userEmail = localStorage.getItem("userEmail"); // Assuming email is stored
+    setLoading(true);
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
 
-        if (!token || !userId) {
-          message.error("Authentication details missing.");
-          setLoading(false);
-          return;
-        }
+    if (!token || !userId) {
+      message.error("Authentication details missing.");
+      setLoading(false);
+      return;
+    }
 
-        // Basic check if entered email matches stored email (optional, backend should verify)
-        if (values.email !== userEmail) {
-          message.error("Entered email does not match account email.");
-          setLoading(false);
-          return;
-        }
-
-        try {
-          await apiService.delete(`/api/v1/users/${userId}`);
-          message.success("Account deleted successfully.");
-          // Clear local storage and redirect to login
-          localStorage.clear();
-          router.push("/login");
-          setDeleteModalOpen(false);
-          deleteForm.resetFields();
-        } catch (error: unknown) { // Use unknown for caught errors
-          console.error("Account deletion failed:", error);
-          // Add type check for error properties
-          const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error instanceof Error ? error.message : "Failed to delete account. Please try again.");
-          message.error(errorMessage);
-        } finally {
-          setLoading(false);
-        }
-      })
-      .catch((info) => {
-        console.log("Delete validation failed:", info);
-        // Optionally add a message here if validation fails
-        // message.warning("Please correct the errors before submitting.");
-      });
+    (async () => {
+      try {
+        await apiService.delete(`/api/v1/auth/users/${userId}`);
+        message.success("Account deleted successfully.");
+        localStorage.clear();
+        router.push("/login");
+        setDeleteModalOpen(false);
+      } catch (error: unknown) {
+        console.error("Account deletion failed:", error);
+        const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error instanceof Error ? error.message : "Failed to delete account. Please try again.");
+        message.error(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    })();
   };
 
   return (
@@ -184,33 +163,16 @@ const ActionsTab = () => {
         onOk={handleDelete}
         onCancel={() => {
           setDeleteModalOpen(false);
-          deleteForm.resetFields();
         }}
         okText="Delete Account"
         okType="danger"
         cancelText="Cancel"
         centered
-        confirmLoading={loading} // Add confirmLoading to delete modal
+        confirmLoading={loading}
       >
         <p>
-          To confirm, please enter your email address associated with this
-          account:
+          Are you sure you want to delete your account? This action cannot be undone.
         </p>
-        <Form form={deleteForm} layout="vertical">
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[
-              { required: true, message: "Please enter your email" },
-              {
-                type: "email",
-                message: "Please enter a valid email address",
-              },
-            ]}
-          >
-            <Input placeholder="e.g. anna.miller@uzh.ch" />
-          </Form.Item>
-        </Form>
       </Modal>
     </div>
   );

@@ -23,7 +23,6 @@ import {
   CalendarOutlined,
   EnvironmentOutlined,
   CheckOutlined,
-  ClockCircleOutlined,
 } from "@ant-design/icons";
 
 import dayjs from "dayjs";
@@ -89,10 +88,6 @@ const HomePage = () => {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [contractsLoading, setContractsLoading] = useState(true);
   const [contractsError, setContractsError] = useState<string | null>(null);
-
-  const [pendingOffers, setPendingOffers] = useState<Offer[]>([]);
-  const [pendingOffersLoading, setPendingOffersLoading] = useState(true);
-  const [pendingOffersError, setPendingOffersError] = useState<string | null>(null);
 
   // Define a more specific type for the value based on possible filter types
   type FilterValue = typeof filters[keyof typeof filters] | dayjs.Dayjs | boolean | number | string | null | undefined;
