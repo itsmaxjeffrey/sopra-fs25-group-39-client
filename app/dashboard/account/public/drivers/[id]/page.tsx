@@ -26,15 +26,6 @@ import { getApiDomain } from "@/utils/domain"; // Import the function
 
 const BASE_URL = getApiDomain(); // Define BASE_URL
 
-interface User {
-  userId: number;
-  username: string;
-}
-
-interface Contract {
-  contractId: number;
-}
-
 interface Rating {
   ratingId: number;
   fromUserId: number;
@@ -158,7 +149,8 @@ export default function DriverProfilePage() {
         if (err.response?.status === 404) {
           message.error(`Driver details might be available, but ratings could not be found.`);
           // Log specific 404 case
-          console.warn('404 Error fetching ratings, driver data might be partial:', driverRes?.data);
+          console.warn('404 Error fetching ratings, driver data might be partial.'); 
+          // eslint-disable-next-line react-hooks/exhaustive-deps -- driver state is intentionally checked here without adding it as a dependency to avoid infinite loops
           if (driver && !driver.ratings.length) {
             // Keep existing driver data if ratings fetch failed but driver exists
           } else {
@@ -175,7 +167,7 @@ export default function DriverProfilePage() {
     };
 
     fetchDriverAndRatings();
-  }, [id]);
+  }, [id]); // Keep only 'id' as dependency
 
   if (loading) {
     return (

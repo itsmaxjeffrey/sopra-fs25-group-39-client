@@ -8,9 +8,6 @@ import Login from "./components/login";
 import Driver from "./components/driver";
 import styles from "./login.module.css";
 import Requester from "./components/requester";
-import { getApiDomain } from "@/utils/domain"; // Import the function
-
-const BASE_URL = getApiDomain(); // Define BASE_URL
 
 const { Title } = Typography;
 
