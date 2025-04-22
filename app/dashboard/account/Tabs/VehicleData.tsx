@@ -1,10 +1,11 @@
 "use client";
 import '@ant-design/v5-patch-for-react-19';
-import React, { useState } from "react";
-import { Button, Image, Input, Typography, Upload, message } from "antd"; // Import message
+import React, { useState } from "react"; // Ensure useState is imported
+import { Button, Image, Input, Typography, Upload, message } from "antd"; // Ensure message is imported
 import { FileImageOutlined, UploadOutlined } from "@ant-design/icons";
 import styles from "../Account.module.css";
 import { getApiDomain } from "@/utils/domain";
+import { useApi } from "@/hooks/useApi"; // Import useApi
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -12,13 +13,23 @@ const { Title, Text } = Typography;
 
 const BASE_URL = getApiDomain();
 
-const VehicleDataTab = ({
-  editedData,
+// Define props interface for clarity
+interface VehicleDataProps {
+  editedData: any; // Use a more specific type if available
+  userData: any;   // Use a more specific type if available
+  setEditedData: React.Dispatch<React.SetStateAction<any>>;
+  changed: boolean;
+  setChanged: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const VehicleData: React.FC<VehicleDataProps> = ({
+  editedData, // Destructure props correctly
   userData,
   setEditedData,
   changed,
   setChanged,
-}: any) => {
+}) => {
+  const apiService = useApi(); // Initialize useApi
   const [licenseKey, setLicenseKey] = useState(0);
   const [insuranceKey, setInsuranceKey] = useState(0);
 
@@ -26,7 +37,10 @@ const VehicleDataTab = ({
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
 
-    if (!token || !userId) return false;
+    if (!token || !userId) {
+      message.error("Authentication details missing. Cannot upload file.");
+      return false;
+    }
 
     const formData = new FormData();
     formData.append("file", file);
@@ -43,7 +57,12 @@ const VehicleDataTab = ({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to upload file");
+        let errorMsg = `Failed to upload ${type} file.`;
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || errorMsg;
+        } catch (e) { /* Ignore */ }
+        throw new Error(errorMsg);
       }
 
       const data = await response.json();
@@ -51,72 +70,70 @@ const VehicleDataTab = ({
 
       if (data.filePath) {
         if (type === "license") {
-          setEditedData({
-            ...editedData,
+          setEditedData((prevData) => ({
+            ...prevData,
             driverLicensePath: data.filePath,
-          });
+          }));
           setLicenseKey((prev) => prev + 1);
         } else {
-          setEditedData({
-            ...editedData,
+          setEditedData((prevData) => ({
+            ...prevData,
             driverInsurancePath: data.filePath,
-          });
+          }));
           setInsuranceKey((prev) => prev + 1);
         }
-
         setChanged(true);
+        message.success(`${type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully!`);
       } else {
         throw new Error("File path missing in response");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error uploading ${type}:`, error);
+      message.error(error.message || `Error uploading ${type}.`);
     }
 
     return false; // Prevent default Upload behavior
   };
 
-  const handleSave = () => {
-    const token = localStorage.getItem("token");
+  const handleSave = async () => {
     const userId = localStorage.getItem("userId");
 
-    if (!token || !userId) {
-      message.error("Authentication details missing. Cannot save."); // Add error message
+    if (!userId) {
+      message.error("User ID not found. Cannot save.");
       return;
     }
 
-    fetch(`${BASE_URL}/api/v1/users/${userId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        UserId: `${userId}`,
-        Authorization: `${token}`,
-      },
-      body: JSON.stringify(editedData),
-    })
-      .then(async (response) => { // Make async to await response.json()
-        if (!response.ok) {
-          // Try to parse error message from backend
-          let errorMsg = "Failed to save vehicle data.";
-          try {
-            const errorData = await response.json();
-            errorMsg = errorData.message || errorMsg;
-          } catch (parseError) {
-            // Ignore if response body is not JSON or empty
-          }
-          throw new Error(errorMsg);
+    // Ensure data being sent uses 'car' not 'carDTO' and is the final structure
+    const dataToSend = { ...editedData };
+    if (dataToSend.carDTO) {
+        if (!dataToSend.car) { // If car doesn't exist, copy from carDTO
+            dataToSend.car = { ...dataToSend.carDTO };
         }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Vehicle data saved successfully:", data);
-        setChanged(false);
-        message.success("Vehicle data saved successfully!"); // Add success message
-      })
-      .catch((error) => {
-        console.error("Error saving vehicle data:", error);
-        message.error(error.message || "Error saving vehicle data."); // Add error message
-      });
+        delete dataToSend.carDTO; // Always remove carDTO before sending
+    }
+
+    console.log("Data being sent to backend:", JSON.stringify(dataToSend, null, 2));
+
+    try {
+      // Send the dataToSend, which is guaranteed to have 'car' if vehicle data exists
+      const response = await apiService.put(`/api/v1/users/${userId}`, dataToSend) as { data: any }; // Keep response for logging/potential future use
+
+      console.log("Server response after save:", response.data); // Log server response
+      setChanged(false);
+      message.success("Vehicle data saved successfully!");
+
+      // *** FIX: Update the state with the data that was sent, ensuring UI consistency ***
+      setEditedData(dataToSend); // Use the successfully sent data to update the UI state immediately
+
+    } catch (error: any) {
+      console.error("Error saving vehicle data:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error saving vehicle data.";
+      message.error(errorMessage);
+    }
   };
+
+  // Determine initial values, preferring 'car' but falling back to 'carDTO'
+  const initialCarData = editedData?.car ?? editedData?.carDTO;
 
   return (
     <div className={styles.tabContent}>
@@ -126,63 +143,70 @@ const VehicleDataTab = ({
         <div>
           <label>Vehicle Model</label>
           <Input
-            value={editedData?.carDTO?.carModel}
+            value={initialCarData?.carModel ?? ""} // Read from normalized initial data
             onChange={(e) => {
               setChanged(true);
-              setEditedData({
-                ...editedData,
-                carDTO: {
-                  ...editedData.carDTO,
+              setEditedData((prevData) => ({ // Use functional update
+                ...prevData,
+                car: {
+                  ...(prevData.car || prevData.carDTO || {}), // Initialize car from car or carDTO
                   carModel: e.target.value,
                 },
-              });
+                carDTO: undefined, // Ensure carDTO is removed on edit
+              }));
             }}
           />
         </div>
         <div>
           <label>License Plate</label>
           <Input
-            value={editedData?.carDTO?.licensePlate}
+            value={initialCarData?.licensePlate ?? ""} // Read from normalized initial data
             onChange={(e) => {
               setChanged(true);
-              setEditedData({
-                ...editedData,
-                carDTO: {
-                  ...editedData.carDTO,
+              setEditedData((prevData) => ({ // Use functional update
+                ...prevData,
+                car: {
+                  ...(prevData.car || prevData.carDTO || {}), // Initialize car from car or carDTO
                   licensePlate: e.target.value,
                 },
-              });
+                carDTO: undefined, // Ensure carDTO is removed on edit
+              }));
             }}
           />
         </div>
         <div>
           <label>Weight Capacity</label>
           <Input
-            value={editedData?.carDTO?.weightCapacity}
+            type="number" // Ensure type is number for parsing
+            value={initialCarData?.weightCapacity ?? 0} // Read from normalized initial data, provide default
             onChange={(e) => {
               setChanged(true);
-              setEditedData({
-                ...editedData,
-                carDTO: {
-                  ...editedData.carDTO,
+              setEditedData((prevData) => ({ // Use functional update
+                ...prevData,
+                car: {
+                  ...(prevData.car || prevData.carDTO || {}), // Initialize car from car or carDTO
                   weightCapacity: parseFloat(e.target.value) || 0,
                 },
-              });
+                carDTO: undefined, // Ensure carDTO is removed on edit
+              }));
             }}
           />
         </div>
         <div>
+          <label>Volume Capacity</label> {/* Added label for clarity */}
           <Input
-            value={editedData?.carDTO?.volumeCapacity}
+            type="number" // Ensure type is number for parsing
+            value={initialCarData?.volumeCapacity ?? 0} // Read from normalized initial data, provide default
             onChange={(e) => {
               setChanged(true);
-              setEditedData({
-                ...editedData,
-                carDTO: {
-                  ...editedData.carDTO,
+              setEditedData((prevData) => ({ // Use functional update
+                ...prevData,
+                car: {
+                  ...(prevData.car || prevData.carDTO || {}), // Initialize car from car or carDTO
                   volumeCapacity: parseFloat(e.target.value) || 0,
                 },
-              });
+                carDTO: undefined, // Ensure carDTO is removed on edit
+              }));
             }}
           />
         </div>
@@ -191,24 +215,27 @@ const VehicleDataTab = ({
           <label>Preferred Range (km)</label>
           <Input
             type="number"
-            value={editedData?.preferredRange}
+            value={editedData?.preferredRange ?? 0} // Provide default value
             onChange={(e) => {
               setChanged(true);
-              setEditedData({
-                ...editedData,
+              setEditedData((prevData) => ({ // Use functional update
+                ...prevData,
                 preferredRange: parseFloat(e.target.value) || 0,
-              });
+                // Preserve carDTO removal logic if car exists from previous edits
+                carDTO: prevData.car ? undefined : prevData.carDTO,
+              }));
             }}
           />
         </div>
       </div>
 
+      {/* ...existing code for uploads... */}
       <div className={styles.uploadSection}>
         {/* Driver's License Upload */}
         <div className={styles.uploadItem}>
           <label>Driver&apos;s License</label>
           <div className={styles.uploadWrapper}>
-         
+
             {editedData?.driverLicensePath
               ? (
                 <Image
@@ -270,6 +297,7 @@ const VehicleDataTab = ({
         </div>
       </div>
 
+
       <div className={styles.actions}>
         <Button type="primary" disabled={!changed} onClick={handleSave}>
           Save Changes
@@ -277,7 +305,13 @@ const VehicleDataTab = ({
         {changed && (
           <Button
             onClick={() => {
-              setEditedData(userData);
+              // Reset should also handle potential carDTO in original userData
+              const resetData = { ...userData };
+              if (resetData.carDTO) {
+                  resetData.car = resetData.carDTO; // Normalize to 'car'
+                  delete resetData.carDTO;
+              }
+              setEditedData(resetData); // Set the normalized data
               setChanged(false);
             }}
           >
@@ -289,4 +323,4 @@ const VehicleDataTab = ({
   );
 };
 
-export default VehicleDataTab;
+export default VehicleData;
