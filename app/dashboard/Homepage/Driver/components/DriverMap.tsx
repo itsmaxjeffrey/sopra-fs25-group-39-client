@@ -27,10 +27,7 @@ const mapStyles = [
     featureType: "poi", // Target Points of Interest
     elementType: "all", // Apply to all elements (icons, labels)
     stylers: [{ visibility: "simplified" }] // Reduce visibility (less prominent icons/fewer shown)
-    // Alternatively, use "off" to hide them completely:
-    // stylers: [{ visibility: "off" }]
   },
-  // Optional: Keep road labels clear if simplified POIs affect them
   {
     featureType: "road",
     elementType: "labels.text.fill",
@@ -49,7 +46,7 @@ interface Contract {
   title: string;
   fromLocation: { latitude: number; longitude: number };
   contractStatus: "REQUESTED" | "OFFERED" | "ACCEPTED" | "COMPLETED" | "CANCELED" | "DELETED";
-  driverId?: number;
+  driverId?: number; // Changed from string to number based on usage
   price?: number;
   moveDateTime?: string;
   contractPhotos?: string[];
@@ -77,15 +74,14 @@ const DriverMap: React.FC<DriverMapProps> = (
 ) => {
   // Updated icon definitions: Narrower, teardrop shape
   const defaultIcon = useMemo(() => ({
-    // Narrower teardrop path
     path: "M12 2C8.1 2 5 5.1 5 9.3c0 2.3.9 4.4 2.4 6.1.1.1 4.6 6.6 4.6 6.6s4.5-6.5 4.6-6.6c1.5-1.7 2.4-3.8 2.4-6.1C19 5.1 15.9 2 12 2zm0 10.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z",
     fillColor: "#EA4335", // Google Red
     fillOpacity: 1.0,
     strokeColor: "#000000", // Black stroke
-    strokeWeight: 1.2, // Slightly reduced stroke weight
+    strokeWeight: 1.2,
     rotation: 0,
-    scale: 1.5, // Adjusted scale
-    anchor: typeof window !== 'undefined' && window.google ? new google.maps.Point(12, 22) : undefined, // Adjusted anchor
+    scale: 1.5,
+    anchor: typeof window !== 'undefined' && window.google ? new google.maps.Point(12, 22) : undefined,
   }), []);
 
   const acceptedIcon = useMemo(() => ({
@@ -117,12 +113,14 @@ const DriverMap: React.FC<DriverMapProps> = (
 
       try {
         const query: ContractQuery = {};
-        if (filters.lat !== null) query.lat = selectedLocation.lat;
-        if (filters.lng !== null) query.lng = selectedLocation.lng;
+        // Use selectedLocation for fetching based on the current map center
+        query.lat = selectedLocation.lat;
+        query.lng = selectedLocation.lng;
 
         const filterParams: FilterParams = {};
-        if (filters.radius !== null) filterParams.radius = filters.radius;
-        if (filters.price !== null) filterParams.price = filters.price;
+        // Check for null AND undefined before adding to params
+        if (filters.radius !== null && filters.radius !== undefined) filterParams.radius = filters.radius;
+        if (filters.price !== null && filters.price !== undefined) filterParams.price = filters.price;
         if (filters.weight !== null) filterParams.weight = filters.weight;
         if (filters.volume !== null) filterParams.volume = filters.volume;
         if (filters.requiredPeople !== null) filterParams.requiredPeople = filters.requiredPeople;
@@ -130,7 +128,12 @@ const DriverMap: React.FC<DriverMapProps> = (
         if (filters.coolingRequired !== null) filterParams.coolingRequired = filters.coolingRequired;
         if (filters.rideAlong !== null) filterParams.rideAlong = filters.rideAlong;
         if (filters.moveDateTime !== null) {
-          filterParams.moveDate = filters.moveDateTime.format("YYYY-MM-DD");
+          // Ensure moveDateTime has the format method (like dayjs)
+          if (typeof filters.moveDateTime.format === 'function') {
+            filterParams.moveDate = filters.moveDateTime.format("YYYY-MM-DD");
+          } else {
+            console.warn("moveDateTime filter is not a Dayjs object or similar:", filters.moveDateTime);
+          }
         }
 
         const encodedFilters = encodeURIComponent(JSON.stringify(filterParams));
@@ -153,6 +156,7 @@ const DriverMap: React.FC<DriverMapProps> = (
 
         if (Array.isArray(data.contracts)) {
           setAllContracts(data.contracts);
+          // Note: Filtering by bounds will happen in onIdle or handleMapZoom now
         } else {
           console.warn("Unexpected response format:", data);
           setAllContracts([]);
@@ -164,35 +168,42 @@ const DriverMap: React.FC<DriverMapProps> = (
         isLoadingRef.current = false;
       }
     },
-    [selectedLocation, filters, BASE_URL],
+    [selectedLocation, filters, BASE_URL], // Keep dependencies
   );
 
+  // Filter contracts based on status (this can stay)
   useEffect(() => {
     const filtered = allContracts.filter(contract =>
       contract.contractStatus !== "COMPLETED" && contract.contractStatus !== "CANCELED" && contract.contractStatus !== "DELETED"
     );
+    // We set the displayContracts here initially, but filtercontractsByBounds will refine it
     setDisplayContracts(filtered);
   }, [allContracts]);
 
+  // Function to filter contracts based on map bounds
   const filtercontractsByBounds = useCallback(() => {
     if (!mapInstance) {
-      console.error("mapInstance is null or undefined");
-      return;
-    }
-
-    const contractsToFilter = allContracts.filter(contract =>
-      contract.contractStatus !== "COMPLETED" && contract.contractStatus !== "CANCELED" && contract.contractStatus !== "DELETED"
-    );
-
-    if (!Array.isArray(contractsToFilter) || contractsToFilter.length === 0) {
-      setDisplayContracts([]);
+      // console.warn("filtercontractsByBounds called before mapInstance is set."); // Optional: change to warn or remove
       return;
     }
 
     const bounds = mapInstance.getBounds();
     if (!bounds) {
-      console.error("mapInstance.getBounds() returned null or undefined");
+      // This should happen less often now, but keep the check
+      console.warn("mapInstance.getBounds() returned null or undefined during filtering.");
+      // Decide if you want to return or maybe display all contracts if bounds are not ready
+      // For now, let's return to avoid errors, but the map might appear empty briefly.
       return;
+    }
+
+    // Filter from the *status-filtered* list derived from allContracts
+    const contractsToFilter = allContracts.filter(contract =>
+        contract.contractStatus !== "COMPLETED" && contract.contractStatus !== "CANCELED" && contract.contractStatus !== "DELETED"
+    );
+
+    if (!Array.isArray(contractsToFilter)) { // Check if it's an array
+        setDisplayContracts([]);
+        return;
     }
 
     const newlyFiltered = contractsToFilter.filter(
@@ -207,34 +218,45 @@ const DriverMap: React.FC<DriverMapProps> = (
         }
         const contractLat = contract.fromLocation.latitude;
         const contractLng = contract.fromLocation.longitude;
-        return bounds.contains(new google.maps.LatLng(contractLat, contractLng));
+        // Use try-catch for safety, although bounds.contains should be reliable here
+        try {
+            // Ensure google maps is loaded before trying to use LatLng
+            if (typeof window !== 'undefined' && window.google && window.google.maps) {
+                return bounds.contains(new google.maps.LatLng(contractLat, contractLng));
+            }
+            return false; // Cannot check bounds if google maps isn't ready
+        } catch (e) {
+            console.error("Error checking bounds containment:", e, contract);
+            return false;
+        }
       },
     );
     setDisplayContracts(newlyFiltered);
-  }, [allContracts, mapInstance]);
+  }, [allContracts, mapInstance]); // Dependencies are correct
 
+  // Initial setup effect
   useEffect(() => {
     if (!GOOGLE_MAPS_API_KEY) {
       setMapError("Google Maps API key is missing.");
     }
+    // Fetch contracts based on the initial center
     fetchContracts();
 
     if (onCenterChanged) {
       onCenterChanged(center.lat, center.lng);
     }
-  }, [fetchContracts, onCenterChanged]);
+    // Intentionally disable exhaustive-deps for initial setup if fetchContracts/onCenterChanged are stable
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
+  // Refetch contracts when filters change
   useEffect(() => {
     fetchContracts();
-  }, [filters, fetchContracts]);
+  }, [filters, fetchContracts]); // fetchContracts dependency is important here
 
-  useEffect(() => {
-    if (mapInstance && allContracts.length > 0) {
-      filtercontractsByBounds();
-    }
-  }, [mapInstance, allContracts, filtercontractsByBounds]);
+  // --- REMOVED useEffect that called filtercontractsByBounds ---
 
-  const handleMapLoad = (map: google.maps.Map) => {
+  const handleMapLoad = useCallback((map: google.maps.Map) => {
     if (!map || typeof map.getBounds !== "function") {
       console.error("Google Map failed to load properly.");
       setMapError("Map failed to initialize.");
@@ -242,7 +264,8 @@ const DriverMap: React.FC<DriverMapProps> = (
     }
     setMapInstance(map);
     setMapError(null);
-  };
+    // Don't call filtercontractsByBounds here, wait for onIdle
+  }, []); // No dependencies needed if it only sets state
 
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {
@@ -252,7 +275,7 @@ const DriverMap: React.FC<DriverMapProps> = (
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
         };
-        setSelectedLocation(newLocation);
+        setSelectedLocation(newLocation); // This will trigger fetchContracts via useEffect
 
         if (mapInstance) {
           mapInstance.setCenter(new google.maps.LatLng(newLocation.lat, newLocation.lng));
@@ -272,19 +295,31 @@ const DriverMap: React.FC<DriverMapProps> = (
       if (center) {
         const newLat = center.lat();
         const newLng = center.lng();
+        // Update selectedLocation state, which will trigger fetchContracts
         setSelectedLocation({ lat: newLat, lng: newLng });
         if (onCenterChanged) {
           onCenterChanged(newLat, newLng);
         }
+        // filtercontractsByBounds will be called by onIdle after dragging stops
       }
     }
   };
 
-  const handleMapZoom = () => {
-    if (mapInstance) {
-      filtercontractsByBounds();
-    }
+  // Renamed from handleMapZoom to handleZoomChanged for clarity
+  const handleZoomChanged = () => {
+    // filtercontractsByBounds will be called by onIdle after zoom stops
+    // No immediate action needed here, rely on onIdle.
   };
+
+  // --- ADDED THIS HANDLER ---
+  const handleMapIdle = useCallback(() => {
+    // console.log("Map is idle, filtering contracts by bounds."); // Optional debug log
+    if (mapInstance) {
+        filtercontractsByBounds(); // Now it's safer to call this
+    }
+  }, [mapInstance, filtercontractsByBounds]); // Add dependencies
+  // --- END ADDED HANDLER ---
+
 
   if (mapError) {
     return <div style={{ color: "red" }}>{mapError}</div>;
@@ -301,13 +336,14 @@ const DriverMap: React.FC<DriverMapProps> = (
       options={{
         fullscreenControl: false,
         streetViewControl: false,
-        styles: mapStyles // Apply the custom map styles to simplify POIs
+        styles: mapStyles
       }}
       onLoad={handleMapLoad}
       onDragEnd={handleMapDragEnd}
-      onZoomChanged={handleMapZoom}
+      onZoomChanged={handleZoomChanged} // Use the renamed handler
+      onIdle={handleMapIdle} // *** ADDED THIS LINE ***
     >
-      <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
+       <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
         <Autocomplete
           onLoad={(auto) => (autocompleteRef.current = auto)}
           onPlaceChanged={handlePlaceChanged}
@@ -329,11 +365,17 @@ const DriverMap: React.FC<DriverMapProps> = (
       {displayContracts.map((contract: Contract) => {
         const isAcceptedByCurrentUser =
           contract.contractStatus === "ACCEPTED" &&
-          contract.driverId?.toString() === loggedInUserId;
+          contract.driverId?.toString() === loggedInUserId; // Ensure comparison is correct (string vs number)
 
-        const iconToUse = defaultIcon.anchor ? (isAcceptedByCurrentUser ? acceptedIcon : defaultIcon) : undefined;
+        // Ensure anchor point is valid before creating icon object
+        const anchorPoint = typeof window !== 'undefined' && window.google ? new google.maps.Point(12, 22) : undefined;
+        if (!anchorPoint) return null; // Don't render marker if anchor can't be created (SSR safety)
 
-        if (!iconToUse) return null;
+        // Use the memoized icons directly if anchor is valid
+        const currentDefaultIcon = { ...defaultIcon, anchor: anchorPoint };
+        const currentAcceptedIcon = { ...acceptedIcon, anchor: anchorPoint };
+
+        const iconToUse = isAcceptedByCurrentUser ? currentAcceptedIcon : currentDefaultIcon;
 
         return (
           <Marker

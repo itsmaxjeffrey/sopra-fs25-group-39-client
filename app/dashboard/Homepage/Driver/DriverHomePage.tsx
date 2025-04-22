@@ -359,6 +359,7 @@ const HomePage = () => {
                 return isNaN(num) ? 0 : num;
               }}
             />
+            
           </div>
           <div>
             <label>Weight (kg)</label>
