@@ -102,23 +102,6 @@ const DriverMap: React.FC<DriverMapProps> = (
     
           if (Array.isArray(data.contracts)) {
             setallContracts(data.contracts);
-          
-            if (mapInstance) {
-              const bounds = mapInstance.getBounds();
-              if (bounds) {
-                const filtered = data.contracts.filter((contract) => {
-                  const lat = contract.fromLocation?.latitude;
-                  const lng = contract.fromLocation?.longitude;
-                  return (
-                    typeof lat === "number" &&
-                    typeof lng === "number" &&
-                    bounds.contains(new google.maps.LatLng(lat, lng))
-                  );
-                });
-          
-                setfilteredContracts(filtered);
-              }
-            }
           } else {
             console.warn("Unexpected response format:", data);
             setallContracts([]);
@@ -130,7 +113,7 @@ const DriverMap: React.FC<DriverMapProps> = (
           isLoadingRef.current = false;
         }
       },
-      [selectedLocation, filters, mapInstance, BASE_URL],
+      [selectedLocation, filters, BASE_URL],
     );
 
   const filtercontractsByBounds = useCallback(() => {
@@ -323,8 +306,6 @@ const DriverMap: React.FC<DriverMapProps> = (
       onDragEnd={handleMapDragEnd}
       onZoomChanged={handleMapZoom}
     >
-      <div style={{ background: "red", height: "50px" }}>MAP CONTENT</div>
-
       {/* Search Input */}
 
       <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
