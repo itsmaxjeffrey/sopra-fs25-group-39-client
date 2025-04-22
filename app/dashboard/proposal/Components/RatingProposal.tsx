@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
-  DatePicker,
+  Descriptions,
   Divider,
   Form,
   Image,
@@ -12,15 +12,15 @@ import {
   Row,
   Spin,
   Switch,
+  Rate,
+  message,
 } from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
-import styles from "./RatingProposal.module.css";
+import styles from "./Edit.module.css";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import dayjs from "dayjs";
-import { Autocomplete } from "@react-google-maps/api";
 import Title from "antd/es/typography/Title";
-import { Rate } from "antd";
 import { getApiDomain } from "@/utils/domain";
 
 const BASE_URL = getApiDomain();
@@ -65,54 +65,40 @@ const RatingProposal = ({ proposalId }: Props) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [modalVisible, setModalVisible] = useState(true);
-  const fromRef = useRef<any>(null);
-  const toRef = useRef<any>(null);
-  const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
-  const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
+  const [contractData, setContractData] = useState<ContractData | null>(null);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
 
   const fetchContract = async () => {
+    setLoading(true);
+    setError(false);
     try {
-      const res = await axios.get<ContractData>(
+      const res = await axios.get<{ contract: ContractData }>(
         `${BASE_URL}/api/v1/contracts/${proposalId}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token") || "",
+            UserId: localStorage.getItem("userId") || "",
+          },
+        },
       );
-      const data = res.data;
-      if (!data || !data.contractId) {
-        throw new Error("Invalid contract data");
+      const contract = res.data.contract;
+
+      if (!contract || !contract.contractId) {
+        throw new Error("Invalid contract data structure received from API");
       }
-      form.setFieldsValue({
-        title: data.title,
-        description: data.contractDescription,
-        moveDate: dayjs(data.moveDateTime),
-        from: data.fromLocation?.formattedAddress,
-        to: data.toLocation?.formattedAddress,
-        length: data.length,
-        width: data.width,
-        height: data.height,
-        mass: Number(data.mass),
-        fragile: data.fragile,
-        cooling: data.coolingRequired,
-        rideAlong: data.rideAlong,
-        manPower: data.manPower,
-        price: data.price,
-      });
-      setFromCoords({
-        address: data.fromLocation?.formattedAddress || "",
-        lat: data.fromLocation?.latitude,
-        lng: data.fromLocation?.longitude,
-      });
-      setToCoords({
-        address: data.toLocation?.formattedAddress || "",
-        lat: data.toLocation?.latitude,
-        lng: data.toLocation?.longitude,
-      });
+
+      setContractData(contract);
       setImagePaths(
-        [data.imagePath1, data.imagePath2, data.imagePath3].filter(Boolean),
+        [contract.imagePath1, contract.imagePath2, contract.imagePath3].filter(
+          (path): path is string => !!path,
+        ),
       );
-      setError(false);
-      setModalVisible(false);
-    } catch {
+    } catch (err: any) {
+      console.error("Error fetching contract details:", err);
+      const errorMessage =
+        err.response?.data?.message ||
+        "Failed to fetch contract details. Please try again.";
+      message.error(errorMessage);
       setError(true);
     } finally {
       setLoading(false);
@@ -122,159 +108,135 @@ const RatingProposal = ({ proposalId }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, proposalId]);
+  }, [proposalId]);
+
+  if (loading) {
+    return (
+      <div className={styles.registerCenter} style={{ padding: 64 }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error || !contractData) {
+    return (
+      <div className={styles.registerCenter}>
+        <div className={styles.registerError}>
+          <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
+          <p>
+            RatingProposal: Something went wrong while fetching the proposal
+            details.
+          </p>
+          <Button onClick={() => router.push("/dashboard")}>
+            Back to Overview
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const onFinishRating = async (values: any) => {
+    try {
+      const payload = {
+        contractId: parseInt(proposalId, 10),
+        ratingValue: values.rating,
+        flagIssues: values.issues || false,
+        comment: values.issues ? values.issueDetails || "" : "",
+      };
+      await axios.post(`${BASE_URL}/api/v1/ratings`, payload, {
+        headers: {
+          Authorization: localStorage.getItem("token") || "",
+          UserId: localStorage.getItem("userId") || "",
+        },
+      });
+      message.success("Thank you! Your feedback has been submitted.");
+      router.push("/dashboard");
+    } catch (err: any) {
+      console.error("Error submitting rating:", err);
+      const errorMessage =
+        err.response?.data?.message ||
+        "Could not submit your rating. Please try again.";
+      message.error(errorMessage);
+    }
+  };
 
   return (
     <div className={styles.wrapper}>
-      {/* Bild Upload */}
       <div className={styles.imageUpload}>
         <div className={styles.imageRow}>
           {[0, 1, 2].map((idx) => (
             <div key={idx} className={styles.imageBox}>
-              {imagePaths[idx]
-                ? (
-                  <Image
-                    // Use the correct download endpoint
-                    src={`${BASE_URL}/api/v1/files/download?filePath=${imagePaths[idx]}`}
-                    alt={`upload-${idx}`}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                )
-                : (
-                  <div className={styles.cameraIcon}>
-                    <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-                  </div>
-                )}
+              {imagePaths[idx] ? (
+                <Image
+                  src={`${BASE_URL}/api/v1/files/download?filePath=${imagePaths[idx]}`}
+                  alt={`upload-${idx}`}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <div className={styles.cameraIcon}>
+                  <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
+                </div>
+              )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Formular */}
-      <Form layout="vertical" className={styles.form} form={form}>
-        <Form.Item label="Title" name="title">
-          <Input placeholder="Give your proposal a fitting name" disabled />
-        </Form.Item>
+      <div className={styles.form}>
+        <Descriptions title="Contract Details" bordered column={2}>
+          <Descriptions.Item label="Title">
+            {contractData.title}
+          </Descriptions.Item>
+          <Descriptions.Item label="Moving Date">
+            {dayjs(contractData.moveDateTime).format("YYYY-MM-DD HH:mm")}
+          </Descriptions.Item>
+          <Descriptions.Item label="Description" span={2}>
+            {contractData.contractDescription}
+          </Descriptions.Item>
+          <Descriptions.Item label="From">
+            {contractData.fromLocation?.formattedAddress}
+          </Descriptions.Item>
+          <Descriptions.Item label="To">
+            {contractData.toLocation?.formattedAddress}
+          </Descriptions.Item>
+          <Descriptions.Item label="Dimensions (LxWxH)">
+            {`${contractData.length || "-"} x ${contractData.width || "-"} x ${
+              contractData.height || "-"
+            }`}
+          </Descriptions.Item>
+          <Descriptions.Item label="Weight (kg)">
+            {contractData.mass}
+          </Descriptions.Item>
+          <Descriptions.Item label="Fragile">
+            {contractData.fragile ? "Yes" : "No"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Cooling Required">
+            {contractData.coolingRequired ? "Yes" : "No"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Ride Along">
+            {contractData.rideAlong ? "Yes" : "No"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Manpower Needed">
+            {contractData.manPower}
+          </Descriptions.Item>
+          <Descriptions.Item label="Price">
+            {`€${contractData.price}`}
+          </Descriptions.Item>
+        </Descriptions>
+      </div>
 
-        <Form.Item name="description">
-          <Input.TextArea
-            rows={3}
-            placeholder="Describe what you want to move"
-            disabled
-          />
-        </Form.Item>
+      <Divider />
 
-        <Row gutter={16}>
-          <Col span={8}>
-            <Form.Item label="Moving Date" name="moveDate">
-              <DatePicker
-                style={{ width: "100%" }}
-                showTime={{ format: "HH:mm", showSecond: false }}
-                disabledDate={(current) =>
-                  current && current < dayjs().startOf("minute")}
-                disabled
-              />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item label="From" name="from">
-              <Autocomplete
-                onLoad={(auto) => (fromRef.current = auto)}
-                onPlaceChanged={() => {
-                  const place = fromRef.current?.getPlace();
-                  if (place && place.geometry) {
-                    const address = place.formatted_address;
-                    const lat = place.geometry.location.lat();
-                    const lng = place.geometry.location.lng();
-                    form.setFieldsValue({ from: address });
-                    setFromCoords({ address, lat, lng });
-                  }
-                }}
-              >
-                <Input
-                  placeholder="Select where your belongings should be picked up"
-                  value={fromCoords.address}
-                  onChange={(e) => {
-                    setFromCoords((prev) => ({
-                      ...prev,
-                      address: e.target.value,
-                    }));
-                  }}
-                  disabled
-                />
-              </Autocomplete>
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item label="To" name="to">
-              <Autocomplete
-                onLoad={(auto) => (toRef.current = auto)}
-                onPlaceChanged={() => {
-                  const place = toRef.current?.getPlace();
-                  if (place && place.geometry) {
-                    const address = place.formatted_address;
-                    const lat = place.geometry.location.lat();
-                    const lng = place.geometry.location.lng();
-                    form.setFieldsValue({ to: address });
-                    setToCoords({ address, lat, lng });
-                  }
-                }}
-              >
-                <Input
-                  placeholder="Select where your belongings should be moved to"
-                  value={toCoords.address}
-                  onChange={(e) => {
-                    setToCoords((prev) => ({
-                      ...prev,
-                      address: e.target.value,
-                    }));
-                  }}
-                  disabled
-                />
-              </Autocomplete>
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Divider />
+      <div className={styles.form}>
         <Title level={4}>Rate your experience</Title>
         <Form
+          form={form}
           layout="vertical"
-          onFinish={async (values) => {
-            try {
-              // Correct payload structure for RatingPostDTO
-              const payload = {
-                contractId: parseInt(proposalId, 10), // Use contractId (proposalId)
-                ratingValue: values.rating, // Use ratingValue
-                flagIssues: values.issues || false, // Use flagIssues
-                comment: values.issues ? values.issueDetails || "" : "", // Use comment
-              };
-              // Correct API endpoint
-              await axios.post(
-                `${BASE_URL}/api/v1/ratings`, // Use the correct ratings endpoint
-                payload,
-                // Assuming axios instance handles headers (UserId, Authorization)
-              );
-              Modal.success({
-                title: "Thank you!",
-                content: "Your feedback has been submitted.",
-                centered: true,
-                onOk: () => router.push("/dashboard"),
-              });
-            } catch (err) {
-              console.error("Error submitting rating:", err); // Use console.error for errors
-              // Optionally, show an error message to the user
-              Modal.error({
-                title: "Submission Failed",
-                content: "Could not submit your rating. Please try again.",
-                centered: true,
-              });
-            }
-          }}
+          onFinish={onFinishRating}
         >
           <Form.Item
             name="rating"
@@ -297,22 +259,21 @@ const RatingProposal = ({ proposalId }: Props) => {
             shouldUpdate={(prev, cur) => prev.issues !== cur.issues}
           >
             {({ getFieldValue }) =>
-              getFieldValue("issues")
-                ? (
-                  <Form.Item
-                    name="issueDetails"
-                    label="Please describe the issue"
-                    rules={[
-                      { required: true, message: "Please describe the issue" },
-                    ]}
-                  >
-                    <Input.TextArea
-                      rows={3}
-                      placeholder="Explain what went wrong..."
-                    />
-                  </Form.Item>
-                )
-                : null}
+              getFieldValue("issues") ? (
+                <Form.Item
+                  name="issueDetails"
+                  label="Please describe the issue"
+                  rules={[
+                    { required: true, message: "Please describe the issue" },
+                  ]}
+                >
+                  <Input.TextArea
+                    rows={3}
+                    placeholder="Explain what went wrong..."
+                  />
+                </Form.Item>
+              ) : null
+            }
           </Form.Item>
 
           <Form.Item>
@@ -321,43 +282,7 @@ const RatingProposal = ({ proposalId }: Props) => {
             </Button>
           </Form.Item>
         </Form>
-      </Form>
-      <Modal open={modalVisible} footer={null} closable={false} centered>
-        <div className={styles.registerCenter}>
-          {loading
-            ? (
-              <div style={{ padding: 64 }}>
-                <Spin size="large" />
-              </div>
-            )
-            : error
-            ? (
-              <div className={styles.registerError}>
-                <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-                <p>
-                  RatingProposal: Something went wrong while fetching the
-                  proposal details.
-                </p>
-                <Row justify="center" gutter={16}>
-                  <Col>
-                    <Button
-                      type="primary"
-                      onClick={() => router.push("/dashboard/proposal/new")}
-                    >
-                      Create New
-                    </Button>
-                  </Col>
-                  <Col>
-                    <Button onClick={() => router.push("/dashboard")}>
-                      Back to Overview
-                    </Button>
-                  </Col>
-                </Row>
-              </div>
-            )
-            : null}
-        </div>
-      </Modal>
+      </div>
     </div>
   );
 };
