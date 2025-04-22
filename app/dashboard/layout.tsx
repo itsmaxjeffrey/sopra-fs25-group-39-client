@@ -2,7 +2,7 @@
 
 import '@ant-design/v5-patch-for-react-19';
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios"; // Import AxiosError
 import { Spin } from "antd";
 import Sidebar from "@/components/sidebar/sidebar";
 import LayoutWrapper from "./layout-wrapper";
@@ -56,11 +56,31 @@ export default function DashboardLayout({
         });
         console.log("API Response:", response.data);
         setAccountType(response.data.userAccountType);
+        setLoading(false); // Stop loading on success
       } catch (error) {
         console.error("Failed to fetch user in layout:", error);
-      } finally {
-        setLoading(false);
+        // Check if it's an Axios error and specifically an auth error (401 or 403)
+        if (axios.isAxiosError(error)) {
+          const axiosError = error as AxiosError;
+          if (axiosError.response?.status === 401 || axiosError.response?.status === 403) {
+            console.log("Authentication error detected, clearing storage and redirecting to login.");
+            localStorage.removeItem("token");
+            localStorage.removeItem("userId");
+            router.push('/login'); // Redirect to login on auth error
+            // Keep loading true until redirect happens, or set false if preferred
+            // setLoading(false); // Set loading false after initiating redirect
+            return; // Stop further execution in this effect
+          }
+        }
+        // Handle other errors (e.g., network error) - maybe show an error message or retry
+        // For now, just stop loading and potentially leave the user on a broken dashboard state or redirect
+        setLoading(false); // Stop loading on other errors too
+        // Optionally redirect to login for any fetch failure:
+        // localStorage.removeItem("token");
+        // localStorage.removeItem("userId");
+        // router.push('/login');
       }
+      // Removed the finally block as setLoading(false) is handled in try/catch
     };
 
     fetchUserAccountType();
@@ -75,14 +95,12 @@ export default function DashboardLayout({
     );
   }
 
-  // If not loading and accountType is still null (e.g., fetch failed or redirect happened),
-  // render null or a minimal layout to avoid rendering the full dashboard momentarily before redirect completes.
+  // If not loading and accountType is still null (e.g., fetch failed without redirect, or redirect is in progress),
+  // render null or a minimal layout. Redirect should handle the final navigation.
   if (!accountType) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Spin size="large" />
-      </div>
-    );
+    // This state might be reached briefly during redirect or if a non-auth error occurred.
+    // Returning null or a minimal component is safer than rendering the full dashboard.
+    return null; // Or return a specific error/fallback component
   }
 
   return (
