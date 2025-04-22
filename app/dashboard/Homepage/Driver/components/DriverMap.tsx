@@ -41,11 +41,24 @@ interface DriverMapProps {
   onCenterChanged?: (lat: number, lng: number) => void;
 }
 
+interface Location {
+    latitude: number;
+    longitude: number;
+    // Add other location properties if needed, e.g., formattedAddress
+}
+
 interface Contract {
   contractId: string;
   title: string;
-  fromLocation: { latitude: number; longitude: number };
-  contractStatus: "REQUESTED" | "OFFERED" | "ACCEPTED" | "COMPLETED" | "CANCELED" | "DELETED";
+  fromLocation: Location; // Use the defined Location interface
+  contractStatus:
+    | "REQUESTED"
+    | "OFFERED"
+    | "ACCEPTED"
+    | "COMPLETED"
+    | "FINALIZED" // Added FINALIZED status
+    | "CANCELED"
+    | "DELETED";
   driverId?: number; // Changed from string to number based on usage
   price?: number;
   moveDateTime?: string;
@@ -73,21 +86,33 @@ const DriverMap: React.FC<DriverMapProps> = (
   { containerStyle, filters, onCenterChanged },
 ) => {
   // Updated icon definitions: Narrower, teardrop shape
-  const defaultIcon = useMemo(() => ({
+  const baseIconStyle = useMemo(() => ({
     path: "M12 2C8.1 2 5 5.1 5 9.3c0 2.3.9 4.4 2.4 6.1.1.1 4.6 6.6 4.6 6.6s4.5-6.5 4.6-6.6c1.5-1.7 2.4-3.8 2.4-6.1C19 5.1 15.9 2 12 2zm0 10.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z",
-    fillColor: "#EA4335", // Google Red
     fillOpacity: 1.0,
     strokeColor: "#000000", // Black stroke
     strokeWeight: 1.2,
     rotation: 0,
     scale: 1.5,
+    // Anchor point needs google.maps.Point, handle potential SSR issues
     anchor: typeof window !== 'undefined' && window.google ? new google.maps.Point(12, 22) : undefined,
   }), []);
 
+  const defaultIcon = useMemo(() => ({
+    ...baseIconStyle,
+    fillColor: "#EA4335", // Google Red (Default/Requested/Offered)
+  }), [baseIconStyle]);
+
   const acceptedIcon = useMemo(() => ({
-    ...defaultIcon,
-    fillColor: "#34A853", // Google Green
-  }), [defaultIcon]);
+    ...baseIconStyle,
+    fillColor: "#34A853", // Google Green (Accepted by current user)
+  }), [baseIconStyle]);
+
+  // --- NEW ICON for Completed/Finalized ---
+  const completedIcon = useMemo(() => ({
+    ...baseIconStyle,
+    fillColor: "#424242", // Dark Grey / Black (Completed/Finalized)
+  }), [baseIconStyle]);
+  // --- END NEW ICON ---
 
   const [selectedLocation, setSelectedLocation] = useState(center);
   const [allContracts, setAllContracts] = useState<Contract[]>([]);
@@ -129,10 +154,14 @@ const DriverMap: React.FC<DriverMapProps> = (
         if (filters.rideAlong !== null) filterParams.rideAlong = filters.rideAlong;
         if (filters.moveDateTime !== null) {
           // Ensure moveDateTime has the format method (like dayjs)
-          if (typeof filters.moveDateTime.format === 'function') {
+          if (typeof filters.moveDateTime?.format === 'function') {
             filterParams.moveDate = filters.moveDateTime.format("YYYY-MM-DD");
-          } else {
-            console.warn("moveDateTime filter is not a Dayjs object or similar:", filters.moveDateTime);
+          } else if (filters.moveDateTime) { // Handle if it's already a string or Date object
+             try {
+               filterParams.moveDate = new Date(filters.moveDateTime).toISOString().split('T')[0];
+             } catch (e) {
+               console.warn("Could not format moveDateTime filter:", filters.moveDateTime, e);
+             }
           }
         }
 
@@ -171,10 +200,10 @@ const DriverMap: React.FC<DriverMapProps> = (
     [selectedLocation, filters, BASE_URL], // Keep dependencies
   );
 
-  // Filter contracts based on status (this can stay)
+  // Filter contracts based on status (remove CANCELED and DELETED)
   useEffect(() => {
     const filtered = allContracts.filter(contract =>
-      contract.contractStatus !== "COMPLETED" && contract.contractStatus !== "CANCELED" && contract.contractStatus !== "DELETED"
+      contract.contractStatus !== "CANCELED" && contract.contractStatus !== "DELETED"
     );
     // We set the displayContracts here initially, but filtercontractsByBounds will refine it
     setDisplayContracts(filtered);
@@ -183,22 +212,18 @@ const DriverMap: React.FC<DriverMapProps> = (
   // Function to filter contracts based on map bounds
   const filtercontractsByBounds = useCallback(() => {
     if (!mapInstance) {
-      // console.warn("filtercontractsByBounds called before mapInstance is set."); // Optional: change to warn or remove
       return;
     }
 
     const bounds = mapInstance.getBounds();
     if (!bounds) {
-      // This should happen less often now, but keep the check
       console.warn("mapInstance.getBounds() returned null or undefined during filtering.");
-      // Decide if you want to return or maybe display all contracts if bounds are not ready
-      // For now, let's return to avoid errors, but the map might appear empty briefly.
       return;
     }
 
     // Filter from the *status-filtered* list derived from allContracts
     const contractsToFilter = allContracts.filter(contract =>
-        contract.contractStatus !== "COMPLETED" && contract.contractStatus !== "CANCELED" && contract.contractStatus !== "DELETED"
+        contract.contractStatus !== "CANCELED" && contract.contractStatus !== "DELETED"
     );
 
     if (!Array.isArray(contractsToFilter)) { // Check if it's an array
@@ -253,8 +278,6 @@ const DriverMap: React.FC<DriverMapProps> = (
   useEffect(() => {
     fetchContracts();
   }, [filters, fetchContracts]); // fetchContracts dependency is important here
-
-  // --- REMOVED useEffect that called filtercontractsByBounds ---
 
   const handleMapLoad = useCallback((map: google.maps.Map) => {
     if (!map || typeof map.getBounds !== "function") {
@@ -311,14 +334,11 @@ const DriverMap: React.FC<DriverMapProps> = (
     // No immediate action needed here, rely on onIdle.
   };
 
-  // --- ADDED THIS HANDLER ---
   const handleMapIdle = useCallback(() => {
-    // console.log("Map is idle, filtering contracts by bounds."); // Optional debug log
     if (mapInstance) {
         filtercontractsByBounds(); // Now it's safer to call this
     }
   }, [mapInstance, filtercontractsByBounds]); // Add dependencies
-  // --- END ADDED HANDLER ---
 
 
   if (mapError) {
@@ -341,7 +361,7 @@ const DriverMap: React.FC<DriverMapProps> = (
       onLoad={handleMapLoad}
       onDragEnd={handleMapDragEnd}
       onZoomChanged={handleZoomChanged} // Use the renamed handler
-      onIdle={handleMapIdle} // *** ADDED THIS LINE ***
+      onIdle={handleMapIdle} // Filter contracts when map movement stops
     >
        <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
         <Autocomplete
@@ -363,19 +383,37 @@ const DriverMap: React.FC<DriverMapProps> = (
       </div>
 
       {displayContracts.map((contract: Contract) => {
+        // --- UPDATED ICON SELECTION LOGIC ---
+        let iconToUse = defaultIcon; // Start with default (Red)
+
         const isAcceptedByCurrentUser =
           contract.contractStatus === "ACCEPTED" &&
-          contract.driverId?.toString() === loggedInUserId; // Ensure comparison is correct (string vs number)
+          contract.driverId?.toString() === loggedInUserId;
+
+        const isCompletedOrFinalized =
+          contract.contractStatus === "COMPLETED" ||
+          contract.contractStatus === "FINALIZED";
+
+        if (isAcceptedByCurrentUser) {
+          iconToUse = acceptedIcon; // Green for moves accepted by this driver
+        } else if (isCompletedOrFinalized) {
+          iconToUse = completedIcon; // Black/Grey for completed/finalized moves
+        }
+        // Otherwise, it remains defaultIcon (Red for REQUESTED/OFFERED or ACCEPTED by others)
+        // --- END UPDATED LOGIC ---
 
         // Ensure anchor point is valid before creating icon object
         const anchorPoint = typeof window !== 'undefined' && window.google ? new google.maps.Point(12, 22) : undefined;
         if (!anchorPoint) return null; // Don't render marker if anchor can't be created (SSR safety)
 
-        // Use the memoized icons directly if anchor is valid
-        const currentDefaultIcon = { ...defaultIcon, anchor: anchorPoint };
-        const currentAcceptedIcon = { ...acceptedIcon, anchor: anchorPoint };
+        // Apply the anchor point to the selected icon style
+        const finalIcon = { ...iconToUse, anchor: anchorPoint };
 
-        const iconToUse = isAcceptedByCurrentUser ? currentAcceptedIcon : currentDefaultIcon;
+        // Basic validation for location data
+        if (!contract.fromLocation || typeof contract.fromLocation.latitude !== 'number' || typeof contract.fromLocation.longitude !== 'number') {
+            console.warn("Skipping contract due to invalid location:", contract.contractId, contract.fromLocation);
+            return null; // Skip rendering this marker if location is invalid
+        }
 
         return (
           <Marker
@@ -384,11 +422,22 @@ const DriverMap: React.FC<DriverMapProps> = (
               lat: contract.fromLocation.latitude,
               lng: contract.fromLocation.longitude,
             }}
-            icon={iconToUse}
+            icon={finalIcon} // Use the final icon object with the anchor
             onMouseOver={() => setOpenInfoWindowId(contract.contractId)}
             onMouseOut={() => setOpenInfoWindowId(null)}
             onClick={() => {
-              window.location.href = `/dashboard/proposal/${contract.contractId}?type=VIEW`;
+              // Determine the type based on status for the link
+              let linkType = 'VIEW'; // Default
+              if (isAcceptedByCurrentUser) {
+                  linkType = 'ACCEPTED';
+              } else if (isCompletedOrFinalized) {
+                  linkType = contract.contractStatus; // Use COMPLETED or FINALIZED
+              } else if (contract.contractStatus === 'OFFERED') {
+                  linkType = 'OFFERED'; // Could be offered to someone else
+              } else if (contract.contractStatus === 'REQUESTED') {
+                  linkType = 'REQUESTED';
+              }
+              window.location.href = `/dashboard/proposal/${contract.contractId}?type=${linkType}`;
             }}
           >
             {openInfoWindowId === contract.contractId && (
@@ -405,6 +454,7 @@ const DriverMap: React.FC<DriverMapProps> = (
                   {contract.moveDateTime && (
                     <p>Date: {new Date(contract.moveDateTime).toLocaleDateString()}</p>
                   )}
+                   <p>Status: {contract.contractStatus}</p> {/* Added status display */}
                   <div className={styles.infoWindowImages}>
                     {(contract.contractPhotos || []).slice(0, 3).map((photoPath, index) => (
                       <Image
