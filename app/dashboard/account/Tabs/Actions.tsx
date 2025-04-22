@@ -3,9 +3,7 @@ import React, { useState } from "react";
 import { Button, Form, Input, Modal, Typography, message } from "antd";
 import styles from "../Account.module.css";
 import { useApi } from "@/hooks/useApi";
-import { getApiDomain } from "@/utils/domain"; // Corrected function name
 import { useRouter } from "next/navigation"; // Import useRouter
-
 
 const { Title } = Typography;
 
@@ -38,9 +36,10 @@ const ActionsTab = () => {
           message.success("Password changed successfully!");
           setIsModalOpen(false);
           form.resetFields();
-        } catch (error: any) {
+        } catch (error: unknown) { // Use unknown for caught errors
           console.error("Password change failed:", error);
-          const errorMessage = error?.response?.data?.message || error?.message || "Failed to change password. Please try again.";
+          // Add type check for error properties
+          const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error instanceof Error ? error.message : "Failed to change password. Please try again.");
           message.error(errorMessage);
         } finally {
           setLoading(false);
@@ -81,9 +80,10 @@ const ActionsTab = () => {
           router.push("/login");
           setDeleteModalOpen(false);
           deleteForm.resetFields();
-        } catch (error: any) {
+        } catch (error: unknown) { // Use unknown for caught errors
           console.error("Account deletion failed:", error);
-          const errorMessage = error?.response?.data?.message || error?.message || "Failed to delete account. Please try again.";
+          // Add type check for error properties
+          const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error instanceof Error ? error.message : "Failed to delete account. Please try again.");
           message.error(errorMessage);
         } finally {
           setLoading(false);

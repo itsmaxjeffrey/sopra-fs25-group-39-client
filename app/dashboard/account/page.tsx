@@ -15,6 +15,15 @@ const { Title } = Typography;
 
 const BASE_URL = getApiDomain(); // Define BASE_URL
 
+// Define the structure for Car data
+interface CarData {
+  carModel?: string;
+  licensePlate?: string;
+  weightCapacity?: number;
+  volumeCapacity?: number;
+  // Add other car properties if they exist
+}
+
 interface User {
   id: string;
   name: string;
@@ -22,6 +31,8 @@ interface User {
   token: string;
   userAccountType: string;
   profilePicturePath?: string;
+  carDTO?: CarData; // Add carDTO as optional
+  car?: CarData; // Add car as optional (for normalized data)
 }
 
 const AccountPage = () => {
@@ -49,13 +60,15 @@ const AccountPage = () => {
             Authorization: `${token}`,
           },
         });
+        // Use the updated User interface for type assertion
         const user = response.data as User;
         console.log("Fetched user data:", user); // Log fetched data
 
         // Normalize fetched data: ensure car details are under 'car' key
-        const normalizedUser = { ...user };
+        // Explicitly type normalizedUser to allow for both car and carDTO initially
+        const normalizedUser: User = { ...user }; 
         if (normalizedUser.carDTO) {
-            normalizedUser.car = normalizedUser.carDTO;
+            normalizedUser.car = { ...normalizedUser.carDTO }; // Spread to create a new object
             delete normalizedUser.carDTO;
             console.log("Normalized user data:", normalizedUser); // Log normalized data
         }

@@ -82,8 +82,12 @@ const HomePage = () => {
   const [contractsLoading, setContractsLoading] = useState(true);
   const [contractsError, setContractsError] = useState<string | null>(null);
 
-  const updateFilter = (key: keyof typeof filters, value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+  // Define a more specific type for the value based on possible filter types
+  type FilterValue = typeof filters[keyof typeof filters] | dayjs.Dayjs | boolean | number | string | null | undefined;
+
+  const updateFilter = (key: keyof typeof filters, value: FilterValue) => {
     setFilters((prev) => {
+      // Add a check to prevent unnecessary updates if the value hasn't changed
       if (prev[key] === value) return prev;
 
       return { ...prev, [key]: value };
@@ -195,9 +199,13 @@ const HomePage = () => {
           setContractsError("Failed to load contracts due to unexpected format.");
           setContracts([]);
         }
-      } catch (err: any) {
+      } catch (err: unknown) { // Use unknown for caught errors
         console.error("Error fetching driver contracts:", err);
-        setContractsError(err.response?.data?.message || err.message || "Failed to load contracts.");
+        // Type assertion or check needed if accessing specific properties of err
+        const errorMessage = err instanceof Error ? err.message : "Failed to load contracts.";
+        // Define a type for the error structure if known, or use checks
+        const responseMessage = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+        setContractsError(responseMessage || errorMessage);
         setContracts([]);
       } finally {
         setContractsLoading(false);
@@ -214,7 +222,7 @@ const HomePage = () => {
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      <div style={{ flexGrow: 1, position: "relative", marginBottom: '20px' }}>
+      <div style={{ flexGrow: 1, position: "relative" }}>
         {/* Map Component */}
         <DriverMap
           containerStyle={mapContainerStyle}

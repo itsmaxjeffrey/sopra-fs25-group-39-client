@@ -3,10 +3,6 @@
 import '@ant-design/v5-patch-for-react-19';
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { getApiDomain } from "@/utils/domain";
-
-
-const BASE_URL = getApiDomain(); // Define BASE_URL
 
 const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();

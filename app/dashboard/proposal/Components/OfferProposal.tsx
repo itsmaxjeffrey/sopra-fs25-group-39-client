@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   Button,
   Col,
@@ -42,7 +42,6 @@ const OfferProposal = ({ proposalId }: Props) => {
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
-  const [acceptingOffer, setAcceptingOffer] = useState<number | null>(null);
 
   const BASE_URL = getApiDomain();
 
@@ -62,7 +61,7 @@ const OfferProposal = ({ proposalId }: Props) => {
   const [loadingOffers, setLoadingOffers] = useState(true);
   const [errorOffers, setErrorOffers] = useState(false);
 
-  const fetchContract = async () => {
+  const fetchContract = useCallback(async () => {
     try {
       const res = await axios.get<{ contract: any }>(
         `${BASE_URL}/api/v1/contracts/${proposalId}`,
@@ -111,7 +110,7 @@ const OfferProposal = ({ proposalId }: Props) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [BASE_URL, form, proposalId]);
 
   const handleCancelProposal = async () => {
     try {
@@ -141,14 +140,12 @@ const OfferProposal = ({ proposalId }: Props) => {
   };
 
   const handleAcceptOffer = async (offerId: number) => {
-    setAcceptingOffer(offerId);
     try {
       const token = localStorage.getItem("token") || "";
       const userId = localStorage.getItem("userId") || "";
 
       if (!token || !userId) {
         message.error("Authentication details missing. Please log in again.");
-        setAcceptingOffer(null);
         return;
       }
 
@@ -170,8 +167,6 @@ const OfferProposal = ({ proposalId }: Props) => {
       const errorMessage = err.response?.data?.message ||
         "Failed to accept the offer. Please try again.";
       message.error(errorMessage);
-    } finally {
-      setAcceptingOffer(null);
     }
   };
 
@@ -206,7 +201,7 @@ const OfferProposal = ({ proposalId }: Props) => {
     };
 
     fetchOffers();
-  }, [form, proposalId]);
+  }, [form, proposalId, BASE_URL, fetchContract]);
 
   return (
     <div className={styles.wrapper}>

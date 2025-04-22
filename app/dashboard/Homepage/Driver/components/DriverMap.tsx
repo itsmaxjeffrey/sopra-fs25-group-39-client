@@ -7,14 +7,9 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Autocomplete,
   GoogleMap,
-  Libraries,
   Marker,
 } from "@react-google-maps/api";
 import { getApiDomain } from "@/utils/domain";
-
-// Define MAP_LIBRARIES outside the component to avoid redefinition on every render
-
-const MAP_LIBRARIES: Libraries = ["places"];
 
 const center = {
   lat: 47.3769, // Default to Zurich coordinates
@@ -208,14 +203,6 @@ const DriverMap: React.FC<DriverMapProps> = (
     console.log("Google Map Loaded Successfully");
 
     setMapError(null); // Reset any error if map is loaded successfully
-  };
-
-  // Handle error in loading map
-
-  const handleMapError = (e: unknown) => {
-    console.error("Error loading Google Map:", e);
-
-    setMapError("Failed to load Google Map. Please try again later.");
   };
 
   const handlePlaceChanged = () => {

@@ -54,8 +54,8 @@ const ProposalsOverview = () => {
           proposals = res.data;
         } 
         // Check if res.data is an object with a 'contracts' array property
-        else if (res.data && Array.isArray((res.data as any).contracts)) {
-          proposals = (res.data as any).contracts;
+        else if (res.data && Array.isArray((res.data as { contracts: Proposal[] }).contracts)) {
+          proposals = (res.data as { contracts: Proposal[] }).contracts;
         } else {
           // Log an error if the structure is unexpected
           console.error("Unexpected API response structure:", res.data);

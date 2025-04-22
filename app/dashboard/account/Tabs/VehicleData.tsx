@@ -61,7 +61,7 @@ const VehicleData: React.FC<VehicleDataProps> = ({
         try {
           const errorData = await response.json();
           errorMsg = errorData.message || errorMsg;
-        } catch (e) { /* Ignore */ }
+        } catch { /* Ignore if parsing errorData fails */ }
         throw new Error(errorMsg);
       }
 

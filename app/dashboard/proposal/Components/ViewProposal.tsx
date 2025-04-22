@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
@@ -18,7 +18,6 @@ import styles from "./Edit.module.css";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import dayjs from "dayjs";
-import { Autocomplete } from "@react-google-maps/api";
 import { useParams } from "next/navigation";
 import { getApiDomain } from "@/utils/domain";
 
@@ -37,8 +36,6 @@ const ViewProposal = ({ proposalId }: Props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [modalVisible, setModalVisible] = useState(true);
-  const fromRef = useRef<any>(null);
-  const toRef = useRef<any>(null);
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [imagePaths, setImagePaths] = useState<string[]>([]);

@@ -68,11 +68,16 @@ const Sidebar = (
 
       console.log("Successfully logged out");
       message.success("Successfully logged out!"); // Add success message
-    } catch (error: any) { // Add type annotation
+    } catch (error: unknown) { // Use unknown for caught errors
       console.error("Failed to log out:", error);
-      // Add error message
-      const errorMessage = error.response?.data?.message || "Logout failed. Please try again.";
-      message.error(errorMessage);
+      // Add error message and type check
+      const errorMessage = error instanceof Error ? error.message : "Logout failed. Please try again.";
+      // Check if it's an Axios error with a response
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        message.error(error.response.data.message);
+      } else {
+        message.error(errorMessage);
+      }
     } finally {
       // Clear storage and redirect regardless of API call success/failure
       localStorage.removeItem("token");

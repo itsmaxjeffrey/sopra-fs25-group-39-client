@@ -114,15 +114,16 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
     }
 
     try {
-      // Add type assertion for the response
-      const response = await apiService.put(`/api/v1/users/${userId}`, editedData) as { data: any }; 
+      // Assuming apiService.put returns the updated user data
+      const responseData = await apiService.put<UserData>(`/api/v1/users/${userId}`, editedData);
       
-      console.log("User data saved successfully:", response.data);
+      console.log("User data saved successfully:", responseData); // Log the response data
       setChanged(false);
       message.success("User data saved successfully!");
-    } catch (error: any) { 
+    } catch (error: unknown) { // Use unknown for caught errors
       console.error("Error saving user data:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Error saving user data.";
+      // Add type check for error properties
+      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error instanceof Error ? error.message : "Error saving user data.");
       message.error(errorMessage);
     }
   };

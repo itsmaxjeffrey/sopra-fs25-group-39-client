@@ -2,14 +2,11 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
-  Col,
   Descriptions,
   Divider,
   Form,
   Image,
   Input,
-  Modal,
-  Row,
   Spin,
   Switch,
   Rate,
