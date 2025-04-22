@@ -29,7 +29,7 @@ import styles from "../login.module.css";
 
 const { Title } = Typography;
 
-const Customer = () => {
+const Requester = () => {
   // const [fromData, setFormData] = useState<any>({}); // later add "formData" to use it
 
   // const [profilePictureFile, setProfilePictureFile] = useState<File | null>( null, );
@@ -323,4 +323,4 @@ const Customer = () => {
   );
 };
 
-export default Customer;
+export default Requester;

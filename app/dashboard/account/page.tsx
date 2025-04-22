@@ -50,13 +50,22 @@ const AccountPage = () => {
           },
         });
         const user = response.data as User;
-        console.log(user);
-        setUserData({
-          ...user,
-          profilePicturePath: user.profilePicturePath,
+        console.log("Fetched user data:", user); // Log fetched data
+
+        // Normalize fetched data: ensure car details are under 'car' key
+        const normalizedUser = { ...user };
+        if (normalizedUser.carDTO) {
+            normalizedUser.car = normalizedUser.carDTO;
+            delete normalizedUser.carDTO;
+            console.log("Normalized user data:", normalizedUser); // Log normalized data
+        }
+
+        setUserData({ // Use normalized data for userData state
+          ...normalizedUser,
+          profilePicturePath: normalizedUser.profilePicturePath, // Keep this specific handling if needed
         });
-        setEditedData(user);
-        localStorage.setItem("token", user.token);
+        setEditedData(normalizedUser); // Use normalized data for editedData state
+        localStorage.setItem("token", normalizedUser.token); // Use token from normalized data
       } catch (err) {
         setError(err.message);
       } finally {

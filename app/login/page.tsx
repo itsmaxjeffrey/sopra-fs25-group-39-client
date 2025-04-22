@@ -7,7 +7,7 @@ import { Button, Segmented, Typography } from "antd";
 import Login from "./components/login";
 import Driver from "./components/driver";
 import styles from "./login.module.css";
-import Customer from "./components/customer";
+import Requester from "./components/requester";
 import { getApiDomain } from "@/utils/domain"; // Import the function
 
 const BASE_URL = getApiDomain(); // Define BASE_URL
@@ -47,7 +47,7 @@ const AuthPage = () => {
 
   const [mode, setMode] = useState<"login" | "register">("login");
   const [selectedRole, setSelectedRole] = useState<
-    "driver" | "customer" | null
+    "driver" | "requester" | null
   >(null);
 
   return (
@@ -90,7 +90,7 @@ const AuthPage = () => {
                 type="default"
                 size="large"
                 style={{ padding: "12px 24px" }}
-                onClick={() => setSelectedRole("customer")}
+                onClick={() => setSelectedRole("requester")}
               >
                 I am a requester 🏠
               </Button>
@@ -111,7 +111,7 @@ const AuthPage = () => {
           </>
         )}
 
-        {mode === "register" && selectedRole === "customer" && (
+        {mode === "register" && selectedRole === "requester" && (
           <>
             <Button
               type="default"
@@ -120,7 +120,7 @@ const AuthPage = () => {
             >
               ← Back to the selection
             </Button>
-            <Customer />
+            <Requester />
           </>
         )}
       </div>

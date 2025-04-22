@@ -104,13 +104,25 @@ const VehicleDataTab: React.FC<VehicleDataTabProps> = ({
       return;
     }
 
+    // Log the data being sent (should consistently use 'car' now)
+    console.log("Data being sent to backend:", JSON.stringify(editedData, null, 2));
+
     try {
-      // Assume response has a .data property like Axios
+      // Send the editedData directly, assuming it's correctly structured with 'car'
       const response = await apiService.put(`/api/v1/users/${userId}`, editedData) as { data: any }; 
 
       console.log("Vehicle data saved successfully:", response.data);
       setChanged(false);
       message.success("Vehicle data saved successfully!");
+
+      // Normalize the response data before updating state
+      const responseData = { ...response.data }; 
+      if (responseData.carDTO) {
+          responseData.car = responseData.carDTO;
+          delete responseData.carDTO;
+      }
+      setEditedData(responseData); // Update state with normalized response
+
     } catch (error: any) {
       console.error("Error saving vehicle data:", error);
       const errorMessage = error.response?.data?.message || error.message || "Error saving vehicle data.";
@@ -126,63 +138,66 @@ const VehicleDataTab: React.FC<VehicleDataTabProps> = ({
         <div>
           <label>Vehicle Model</label>
           <Input
-            value={editedData?.carDTO?.carModel}
+            value={editedData?.car?.carModel || ""} // Provide default value
             onChange={(e) => {
               setChanged(true);
-              setEditedData({
-                ...editedData,
-                carDTO: {
-                  ...editedData.carDTO,
+              setEditedData((prevData) => ({ // Use functional update
+                ...prevData,
+                car: {
+                  ...(prevData.car || {}), // Initialize car if null/undefined
                   carModel: e.target.value,
                 },
-              });
+              }));
             }}
           />
         </div>
         <div>
           <label>License Plate</label>
           <Input
-            value={editedData?.carDTO?.licensePlate}
+            value={editedData?.car?.licensePlate || ""} // Provide default value
             onChange={(e) => {
               setChanged(true);
-              setEditedData({
-                ...editedData,
-                carDTO: {
-                  ...editedData.carDTO,
+              setEditedData((prevData) => ({ // Use functional update
+                ...prevData,
+                car: {
+                  ...(prevData.car || {}), // Initialize car if null/undefined
                   licensePlate: e.target.value,
                 },
-              });
+              }));
             }}
           />
         </div>
         <div>
           <label>Weight Capacity</label>
           <Input
-            value={editedData?.carDTO?.weightCapacity}
+            type="number" // Ensure type is number for parsing
+            value={editedData?.car?.weightCapacity || 0} // Provide default value
             onChange={(e) => {
               setChanged(true);
-              setEditedData({
-                ...editedData,
-                carDTO: {
-                  ...editedData.carDTO,
+              setEditedData((prevData) => ({ // Use functional update
+                ...prevData,
+                car: {
+                  ...(prevData.car || {}), // Initialize car if null/undefined
                   weightCapacity: parseFloat(e.target.value) || 0,
                 },
-              });
+              }));
             }}
           />
         </div>
         <div>
+          <label>Volume Capacity</label> {/* Added label for clarity */}
           <Input
-            value={editedData?.carDTO?.volumeCapacity}
+            type="number" // Ensure type is number for parsing
+            value={editedData?.car?.volumeCapacity || 0} // Provide default value
             onChange={(e) => {
               setChanged(true);
-              setEditedData({
-                ...editedData,
-                carDTO: {
-                  ...editedData.carDTO,
+              setEditedData((prevData) => ({ // Use functional update
+                ...prevData,
+                car: {
+                  ...(prevData.car || {}), // Initialize car if null/undefined
                   volumeCapacity: parseFloat(e.target.value) || 0,
                 },
-              });
+              }));
             }}
           />
         </div>
