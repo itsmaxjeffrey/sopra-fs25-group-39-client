@@ -9,6 +9,7 @@ import LayoutWrapper from "./layout-wrapper";
 import AccountTypeContext from "./AccountTypeContext";
 import { Libraries, LoadScript } from "@react-google-maps/api";
 import { getApiDomain } from "@/utils/domain"; // Import the function
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 const MAP_LIBRARIES: Libraries = ["places"];
 const BASE_URL = getApiDomain(); // Define BASE_URL
@@ -29,6 +30,7 @@ export default function DashboardLayout({
 }) {
   const [accountType, setAccountType] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); // Get router instance
 
   useEffect(() => {
     const fetchUserAccountType = async () => {
@@ -37,7 +39,12 @@ export default function DashboardLayout({
 
       console.log("UserId:", userId, "Token:", token); // Debugging log
 
-      if (!userId || !token) return;
+      // Check for token/userId first and redirect if missing
+      if (!userId || !token) {
+        setLoading(false); // Stop loading
+        router.push('/login'); // Redirect to login
+        return; // Stop execution here
+      }
 
       try {
         const response = await axios.get<User>(`${BASE_URL}/api/v1/users/${userId}`, {
@@ -57,11 +64,22 @@ export default function DashboardLayout({
     };
 
     fetchUserAccountType();
-  }, []);
+  }, [router]); // Add router to dependency array
 
-  if (loading || !accountType) {
+  // Render loading spinner while loading OR if redirecting (accountType might still be null briefly)
+  if (loading) {
     return (
-      <div style={{ padding: 64 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  // If not loading and accountType is still null (e.g., fetch failed or redirect happened),
+  // render null or a minimal layout to avoid rendering the full dashboard momentarily before redirect completes.
+  if (!accountType) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <Spin size="large" />
       </div>
     );
