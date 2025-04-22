@@ -242,10 +242,10 @@ echo "8. Completing Finalized Contract..." >&2
 make_request "PUT" "$BASE_URL/contracts/$CONTRACT_ID_FINALIZED/complete" "" \
     "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN" || handle_failure "Complete Contract (Finalized)"
 
-# 9. Finalize Contract (Requester)
-echo "9. Finalizing Contract..." >&2
-make_request "PUT" "$BASE_URL/contracts/$CONTRACT_ID_FINALIZED/fulfill" "" \
-    "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN" || handle_failure "Finalize Contract (Fulfill)"
+# 9. Finalize Contract (Requester) - COMMENTED OUT TO LEAVE IN COMPLETED STATE
+# echo "9. Finalizing Contract..." >&2
+# make_request "PUT" "$BASE_URL/contracts/$CONTRACT_ID_FINALIZED/fulfill" "" \
+#     "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN" || handle_failure "Finalize Contract (Fulfill)"
 
 
 # --- Scenario 2: Accepted Contract ---
@@ -308,6 +308,6 @@ echo "--- Multi-Contract Test Setup Complete ---" >&2
 echo "Requester: $REQ_USERNAME / $REQ_PASSWORD (UserID: $REQ_USER_ID, Phone: $REQ_PHONE)" >&2
 echo "Driver: $DRV_USERNAME / $DRV_PASSWORD (UserID: $DRV_USER_ID, Phone: $DRV_PHONE)" >&2
 echo "" >&2
-echo "Contract 1 (Finalized): ID $CONTRACT_ID_FINALIZED (Ready for rating by Requester $REQ_USERNAME)" >&2
+echo "Contract 1 (Completed): ID $CONTRACT_ID_FINALIZED (Ready for rating by Requester $REQ_USERNAME)" >&2
 echo "Contract 2 (Accepted): ID $CONTRACT_ID_ACCEPTED (Should be visible as accepted, not completed/finalized)" >&2
 echo "Contract 3 (Requested): ID $CONTRACT_ID_REQUESTED (Should be visible as requested, no offers)" >&2

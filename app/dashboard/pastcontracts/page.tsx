@@ -33,45 +33,52 @@ const PastContracts = () => {
 
   useEffect(() => {
     const fetchContracts = async () => {
+      setLoading(true); // Start loading
       try {
         const token = localStorage.getItem("token");
-        // Fetch only FINALIZED contracts from the API
-        const res = await axios.get<ContractsApiResponse>( // Use the new interface
-          `${BASE_URL}/api/v1/users/${userId}/contracts?status=FINALIZED`, // Added status=FINALIZED filter
-          {
-            headers: {
-              UserId: `${userId}`,
-              Authorization: `${token}`,
-            },
-          },
+        const headers = {
+          UserId: `${userId}`,
+          Authorization: `${token}`,
+        };
+
+        // Fetch both COMPLETED and FINALIZED contracts concurrently
+        const [completedRes, finalizedRes] = await Promise.all([
+          axios.get<ContractsApiResponse>(
+            `${BASE_URL}/api/v1/users/${userId}/contracts?status=COMPLETED`,
+            { headers }
+          ),
+          axios.get<ContractsApiResponse>(
+            `${BASE_URL}/api/v1/users/${userId}/contracts?status=FINALIZED`,
+            { headers }
+          )
+        ]);
+
+        // --- DEBUGGING: Log raw API responses ---
+        console.log("Raw API response for COMPLETED contracts:", completedRes.data);
+        console.log("Raw API response for FINALIZED contracts:", finalizedRes.data);
+        // --- END DEBUGGING ---
+
+        // Combine the contract arrays from both responses
+        const completedContracts = (completedRes.data?.contracts && Array.isArray(completedRes.data.contracts)) ? completedRes.data.contracts : [];
+        const finalizedContracts = (finalizedRes.data?.contracts && Array.isArray(finalizedRes.data.contracts)) ? finalizedRes.data.contracts : [];
+        const combinedContracts = [...completedContracts, ...finalizedContracts];
+
+        // Sort the combined list by move date (most recent first)
+        const sortedContracts = combinedContracts.sort((a: any, b: any) =>
+          dayjs(b.moveDateTime).valueOf() - dayjs(a.moveDateTime).valueOf()
         );
 
-        // --- DEBUGGING: Log raw API response ---
-        console.log("Raw API response for finalized contracts:", res.data);
+        // --- DEBUGGING: Log combined and sorted contracts ---
+        console.log("Combined and sorted past contracts:", sortedContracts);
         // --- END DEBUGGING ---
 
-        // Access the 'contracts' array within the response data
-        if (!res.data || !Array.isArray(res.data.contracts)) {
-          console.error("Invalid API response structure:", res.data);
-          setContracts([]); // Set to empty array if structure is wrong
-          return; // Exit early
-        }
+        setContracts(sortedContracts);
 
-        // Sort the finalized contracts by move date (most recent first)
-        const finalizedContracts = res.data.contracts // Access the array here
-          .sort((a: any, b: any) =>
-            dayjs(b.moveDateTime).valueOf() - dayjs(a.moveDateTime).valueOf()
-          );
-
-        // --- DEBUGGING: Log sorted contracts ---
-        console.log("Sorted finalized contracts:", finalizedContracts);
-        // --- END DEBUGGING ---
-
-        setContracts(finalizedContracts);
       } catch (err) {
-        console.error("Failed to load finalized contracts", err);
+        console.error("Failed to load past contracts", err);
+        setContracts([]); // Set to empty on error
       } finally {
-        setLoading(false);
+        setLoading(false); // End loading
       }
     };
 
@@ -119,9 +126,9 @@ const PastContracts = () => {
           rowKey="contractId"
           onRow={(record) => ({
             onClick: () => {
-              // Navigate to the proposal page, keeping the type=FINALIZED
+              // Navigate to the proposal page, passing the actual contract status as type
               window.location.href =
-                `/dashboard/proposal/${record.contractId}?type=FINALIZED`;
+                `/dashboard/proposal/${record.contractId}?type=${record.contractStatus}`;
             },
           })}
         />

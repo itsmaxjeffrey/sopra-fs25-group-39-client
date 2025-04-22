@@ -23,14 +23,16 @@ const Page = () => {
       return <OfferProposal proposalId={id.toString()} />;
     case "ACCEPTED":
       return <AcceptedProposal proposalId={id.toString()} />;
-    case "COMPLETED":
+    case "COMPLETED": // Show Rating component for COMPLETED status
       return <RatingProposal proposalId={id.toString()} />;
-    case "FINALIZED":
+    case "FINALIZED": // Show Finalized component for FINALIZED status
       return <FinalizedProposal proposalId={id.toString()} />;
     case "VIEW":
       return <ViewProposal proposalId={id.toString()} />;
     default:
-      return <p style={{ padding: 24 }}>❓ Unknown proposal type</p>;
+      // Optionally, fetch the contract here to determine its actual type if none is provided
+      // For now, show unknown type
+      return <p style={{ padding: 24 }}>❓ Unknown or missing proposal type in URL</p>;
   }
 };
 
