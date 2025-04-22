@@ -27,18 +27,19 @@ import { getApiDomain } from "@/utils/domain"; // Import the function
 const BASE_URL = getApiDomain(); // Define BASE_URL
 
 interface User {
+  userId: number;
   username: string;
 }
 
 interface Contract {
-  userId: number;
-  // Extend as needed
+  contractId: number;
 }
 
 interface Rating {
-  fromUser: User;
-  toUser: User;
-  contract: Contract;
+  ratingId: number;
+  fromUserId: number;
+  toUserId: number;
+  contractId: number;
   ratingValue: number;
   flagIssues: boolean;
   comment: string;
@@ -71,71 +72,109 @@ export default function DriverProfilePage() {
 
     console.log("Driver ID:", id, typeof id); // Debugging the ID
 
-    const fetchDriver = async () => {
+    const fetchDriverAndRatings = async () => {
+      setLoading(true);
+      console.log(`Fetching data for driver ID: ${id}`); // Log start
       try {
-        // Retrieve auth details from localStorage
         const token = localStorage.getItem("token") || "";
         const requestingUserId = localStorage.getItem("userId") || "";
 
         if (!token || !requestingUserId) {
           message.error("Authentication details missing. Please log in again.");
           setLoading(false);
+          console.error("Auth details missing in localStorage"); // Log auth error
           return;
         }
 
-        const res = await axios.get<
-          {
-            userId: number;
-            username: string;
-            profilePicturePath: string;
-            carDTO?: {
-              carModel?: string;
-              licensePlate?: string;
-              weightCapacity?: number;
-              volumeCapacity?: number;
-            };
-          }
-        >(
-          `${BASE_URL}/api/v1/users/${id}`, // Use BASE_URL
+        console.log("Fetching driver details...");
+        const driverRes = await axios.get<{
+          userId: number;
+          username: string;
+          profilePicturePath: string;
+          carDTO?: {
+            carModel?: string;
+            licensePlate?: string;
+            weightCapacity?: number;
+            volumeCapacity?: number;
+          };
+        }>(
+          `${BASE_URL}/api/v1/users/${id}`,
           {
             headers: {
               Authorization: token,
-              UserId: requestingUserId, // Add UserId header
+              UserId: requestingUserId,
             },
           },
         );
-        if (!res.data || !res.data.userId) {
-          throw new Error("Invalid driver data");
+        console.log("Received driver details response:", driverRes.data); // Log driver response
+
+        if (!driverRes.data || !driverRes.data.userId) {
+          console.error("Invalid driver data received:", driverRes.data); // Log invalid data
+          throw new Error("Invalid driver data received");
         }
 
-        // Map backend response to match frontend expectations
+        console.log("Fetching ratings...");
+        const ratingsRes = await axios.get<{ ratings: Rating[] } | Rating[]>(
+          `${BASE_URL}/api/v1/ratings/users/${id}/ratings`,
+          {
+            headers: {
+              Authorization: token,
+              UserId: requestingUserId,
+            },
+          }
+        );
+        console.log("Received ratings response:", ratingsRes.data); // Log ratings response
+
+        let fetchedRatings: Rating[] = [];
+        if (Array.isArray(ratingsRes.data)) {
+          fetchedRatings = ratingsRes.data;
+        } else if (ratingsRes.data && Array.isArray(ratingsRes.data.ratings)) {
+          fetchedRatings = ratingsRes.data.ratings;
+        }
+        console.log("Processed ratings:", fetchedRatings); // Log processed ratings
+
         const driverData: Driver = {
-          userId: res.data.userId,
-          username: res.data.username,
-          profilePicture: res.data.profilePicturePath, // Map profilePicturePath to profilePicture
-          ratings: [], // Assuming ratings are not provided in the backend response
-          car: res.data.carDTO
+          userId: driverRes.data.userId,
+          username: driverRes.data.username,
+          profilePicture: driverRes.data.profilePicturePath,
+          ratings: fetchedRatings,
+          car: driverRes.data.carDTO
             ? {
-              makeModel: res.data.carDTO.carModel || "Unknown Model",
-              licensePlate: res.data.carDTO.licensePlate || "Unknown Plate",
-              weightCapacity:
-                (res.data.carDTO.weightCapacity?.toString() ?? "0.0"),
-              volumeCapacity:
-                (res.data.carDTO.volumeCapacity?.toString() ?? "0.0"),
-            }
+                makeModel: driverRes.data.carDTO.carModel || "Unknown Model",
+                licensePlate: driverRes.data.carDTO.licensePlate || "Unknown Plate",
+                weightCapacity:
+                  (driverRes.data.carDTO.weightCapacity?.toString() ?? "0.0"),
+                volumeCapacity:
+                  (driverRes.data.carDTO.volumeCapacity?.toString() ?? "0.0"),
+              }
             : null,
         };
+        console.log("Final driver data state:", driverData); // Log final state object
 
         setDriver(driverData);
+
       } catch (error: unknown) {
-        const err = error as Error & { response?: { data?: { message?: string } } };
-        message.error(err.response?.data?.message || err.message || "Unknown error.");
+        const err = error as Error & { response?: { data?: { message?: string }, status?: number } };
+        if (err.response?.status === 404) {
+          message.error(`Driver details might be available, but ratings could not be found.`);
+          // Log specific 404 case
+          console.warn('404 Error fetching ratings, driver data might be partial:', driverRes?.data);
+          if (driver && !driver.ratings.length) {
+            // Keep existing driver data if ratings fetch failed but driver exists
+          } else {
+            setDriver(null);
+          }
+        } else {
+          message.error(err.response?.data?.message || err.message || "Failed to load driver profile.");
+          setDriver(null);
+        }
+        console.error("Error fetching driver data or ratings:", error); // Log general error
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDriver();
+    fetchDriverAndRatings();
   }, [id]);
 
   if (loading) {
@@ -157,9 +196,11 @@ export default function DriverProfilePage() {
     );
   }
 
-  const averageRating = driver.ratings && driver.ratings.length > 0
+  const averageRating = driver?.ratings && driver.ratings.length > 0
     ? driver.ratings.reduce((acc, r) => acc + r.ratingValue, 0) / driver.ratings.length
     : 0;
+
+  const ratingsCount = driver?.ratings?.length || 0;
 
   return (
     <div style={{ padding: '24px', background: '#fff', minHeight: 'calc(100vh - 64px)' }}>
@@ -167,7 +208,6 @@ export default function DriverProfilePage() {
         <Col xs={24} sm={24} md={8} lg={6} style={{ textAlign: 'center' }}>
           <Avatar
             size={150}
-            // Construct the correct download URL
             src={driver.profilePicture ? `${BASE_URL}/api/v1/files/download?filePath=${driver.profilePicture}` : undefined}
             icon={!driver.profilePicture ? <UserOutlined /> : undefined}
             alt={`${driver.username}'s profile picture`}
@@ -179,31 +219,18 @@ export default function DriverProfilePage() {
           <Typography.Text>Average Rating:</Typography.Text>
           <br />
           <Rate disabled allowHalf value={averageRating} style={{ marginTop: '8px', fontSize: '18px' }} />
-          <Typography.Text style={{ marginLeft: '8px' }}> ({driver.ratings?.length || 0} ratings)</Typography.Text>
+          <Typography.Text style={{ marginLeft: '8px' }}> ({ratingsCount} ratings)</Typography.Text>
         </Col>
 
         <Col xs={24} sm={24} md={16} lg={18}>
-          {/* <Card title="Vehicle Information" variant="borderless" style={{ marginBottom: '24px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.09)' }}>
-            {driver.car ? (
-              <Descriptions bordered column={1} size="small">
-                <Descriptions.Item label="Make & Model">{driver.car.makeModel}</Descriptions.Item>
-                <Descriptions.Item label="License Plate">{driver.car.licensePlate}</Descriptions.Item>
-                <Descriptions.Item label="Weight Capacity (kg)">{driver.car.weightCapacity}</Descriptions.Item>
-                <Descriptions.Item label="Volume Capacity (m³)">{driver.car.volumeCapacity}</Descriptions.Item>
-              </Descriptions>
-            ) : (
-              <Empty description="No vehicle information available." />
-            )}
-          </Card> */}
-
           <Card title="Ratings & Comments" variant="borderless" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.09)' }}>
-            {driver.ratings && driver.ratings.length > 0 ? (
+            {driver?.ratings && driver.ratings.length > 0 ? (
               <Carousel autoplay dotPosition="bottom">
                 {driver.ratings.map((rating, index) => ( 
-                  <div key={rating.contract?.userId || index} style={{ padding: '10px' }}>
+                  <div key={rating.ratingId || index} style={{ padding: '10px' }}> 
                     <Card
                       type="inner"
-                      title={`Rated by: ${rating.fromUser?.username || 'Anonymous'}`} 
+                      title={`Rated by: User ID ${rating.fromUserId}`} 
                       extra={<Rate value={rating.ratingValue} disabled />}
                       style={{ margin: '0 auto', width: '95%' }}
                     >

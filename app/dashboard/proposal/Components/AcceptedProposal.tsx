@@ -20,6 +20,7 @@ import { Autocomplete } from "@react-google-maps/api";
 import OfferCard from "./OfferCard";
 import Title from "antd/es/typography/Title";
 import { getApiDomain } from "@/utils/domain";
+import useLocalStorage from "@/hooks/useLocalStorage"; // Import default export
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -29,6 +30,45 @@ interface DriverInfo {
   firstName: string;
   lastName: string;
   // Add other relevant driver fields if available, e.g., averageRating
+}
+
+// Add requester info to ContractData
+interface ContractData {
+  contractId: number;
+  title: string;
+  contractDescription: string;
+  moveDateTime: string;
+  fromLocation?: {
+    formattedAddress: string;
+    latitude: number;
+    longitude: number;
+  };
+  toLocation?: {
+    formattedAddress: string;
+    latitude: number;
+    longitude: number;
+  };
+  length: number;
+  width: number;
+  height: number;
+  mass: number;
+  fragile: boolean;
+  coolingRequired: boolean;
+  rideAlong: boolean;
+  manPower: number;
+  price: number;
+  imagePath1?: string;
+  imagePath2?: string;
+  imagePath3?: string;
+  requester: {
+    userId: number;
+    // Add other requester fields if needed
+  };
+  driver?: {
+    userId: number;
+    // Add other driver fields if needed
+  };
+  // Add other fields from your actual contract data structure
 }
 
 interface Props {
@@ -46,9 +86,11 @@ const AcceptedProposal = ({ proposalId }: Props) => {
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [imagePaths, setImagePaths] = useState<string[]>([]);
-  const [driverInfo, setDriverInfo] = useState<DriverInfo | null>(null); // State for driver info
-  const [loadingDriver, setLoadingDriver] = useState(true); // Loading state for driver
-  const [errorDriver, setErrorDriver] = useState(false); // Error state for driver
+  const [driverInfo, setDriverInfo] = useState<DriverInfo | null>(null);
+  const [loadingDriver, setLoadingDriver] = useState(true);
+  const [errorDriver, setErrorDriver] = useState(false);
+  const [contractData, setContractData] = useState<ContractData | null>(null); // State for full contract data
+  const { value: loggedInUserId } = useLocalStorage("userId", null); // Get logged-in user ID value
   const BASE_URL = getApiDomain();
 
   const fetchContract = async () => {
@@ -60,16 +102,15 @@ const AcceptedProposal = ({ proposalId }: Props) => {
         setError(true);
         setLoading(false);
         console.error("Authentication details missing.");
-        // Optionally show a message to the user
         return;
       }
 
-      const res = await axios.get<{ contract: any }>(
+      const res = await axios.get<{ contract: ContractData }>(
         `${BASE_URL}/api/v1/contracts/${proposalId}`,
         {
           headers: {
             Authorization: token,
-            UserId: userId, // Use UserId (capital U, capital I, lowercase d)
+            UserId: userId,
           },
         },
       );
@@ -77,6 +118,8 @@ const AcceptedProposal = ({ proposalId }: Props) => {
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
+      setContractData(data); // Store the full contract data
+
       form.setFieldsValue({
         title: data.title,
         description: data.contractDescription,
@@ -95,25 +138,29 @@ const AcceptedProposal = ({ proposalId }: Props) => {
       });
       setFromCoords({
         address: data.fromLocation?.formattedAddress || "",
-        lat: data.fromLocation?.latitude,
-        lng: data.fromLocation?.longitude,
+        lat: data.fromLocation?.latitude || 0,
+        lng: data.fromLocation?.longitude || 0,
       });
       setToCoords({
         address: data.toLocation?.formattedAddress || "",
-        lat: data.toLocation?.latitude,
-        lng: data.toLocation?.longitude,
+        lat: data.toLocation?.latitude || 0,
+        lng: data.toLocation?.longitude || 0,
       });
-      setImagePaths(data.contractPhotos || []);
+      setImagePaths(
+        [data.imagePath1, data.imagePath2, data.imagePath3].filter(
+          (path): path is string => !!path,
+        ),
+      );
       setError(false);
       setModalVisible(false);
-    } catch {
+    } catch (err: any) {
+      console.error("Error fetching contract details:", err);
       setError(true);
     } finally {
       setLoading(false);
     }
   };
 
-  // Function to fetch driver info
   const fetchDriverInfo = async () => {
     setLoadingDriver(true);
     setErrorDriver(false);
@@ -150,14 +197,13 @@ const AcceptedProposal = ({ proposalId }: Props) => {
   useEffect(() => {
     const loadData = async () => {
       await fetchContract();
-      // Fetch driver info only after contract is fetched successfully (or based on your logic)
       if (!error) {
         await fetchDriverInfo();
       }
     };
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proposalId]);
+  }, [proposalId, error]);
 
   return (
     <div className={styles.wrapper}>
@@ -169,7 +215,6 @@ const AcceptedProposal = ({ proposalId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    // Use the correct download endpoint
                     src={`${BASE_URL}/api/v1/files/download?filePath=${imagePaths[idx]}`}
                     alt={`upload-${idx}`}
                     style={{
@@ -275,27 +320,30 @@ const AcceptedProposal = ({ proposalId }: Props) => {
           </Col>
         </Row>
 
-        <Title level={2}>Your driver:</Title>
-
-        <div className={styles.scrollContainer}>
-          {loadingDriver
-            ? <p>Loading driver information...</p>
-            : errorDriver
-            ? <p>Error loading driver information.</p>
-            : driverInfo
-            ? (
-              <OfferCard
-                offerId={-1} // Dummy offerId as it's not needed here
-                driverName={`${driverInfo.firstName} ${driverInfo.lastName}`}
-                driverId={String(driverInfo.userId)}
-                price={form.getFieldValue("price")} // Price comes from the contract
-                rating={0} // Placeholder rating, fetch/calculate if needed
-                // No onAccept needed here
-              />
-            )
-            : <p>No driver assigned or found.</p>}
-        </div>
-        <br />
+        {/* Conditionally render the Driver section only for the Requester */}
+        {loggedInUserId && contractData && Number(loggedInUserId) === contractData.requester?.userId && (
+          <>
+            <Title level={2}>Your driver:</Title>
+            <div className={styles.scrollContainer}>
+              {loadingDriver
+                ? <p>Loading driver information...</p>
+                : errorDriver
+                ? <p>Error loading driver information.</p>
+                : driverInfo
+                ? (
+                  <OfferCard
+                    offerId={-1} // Dummy offerId
+                    driverName={`${driverInfo.firstName} ${driverInfo.lastName}`}
+                    driverId={String(driverInfo.userId)}
+                    price={form.getFieldValue("price")} // Price from contract
+                    rating={0} // Placeholder rating
+                  />
+                )
+                : <p>No driver assigned or found.</p>}
+            </div>
+            <br />
+          </>
+        )}
       </Form>
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>

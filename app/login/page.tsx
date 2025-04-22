@@ -18,31 +18,13 @@ const AuthPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const refreshAuthToken = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      try {
-        const res = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token }),
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to refresh token");
-        }
-
-        router.push("/dashboard");
-      } catch (error) {
-        console.error("Error refreshing token:", error);
-        localStorage.removeItem("token");
-      }
-    };
-
-    refreshAuthToken();
+    // Removed token refresh logic as the endpoint doesn't exist
+    const token = localStorage.getItem("token");
+    if (token) {
+      // If a token exists, assume it's valid for now and redirect to dashboard
+      // Proper validation should happen on API calls within the dashboard
+      router.push("/dashboard");
+    }
   }, [router]);
 
   const [mode, setMode] = useState<"login" | "register">("login");
