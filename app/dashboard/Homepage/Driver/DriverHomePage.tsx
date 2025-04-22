@@ -1,5 +1,5 @@
 "use client";
-// from Commit 211242d
+import '@ant-design/v5-patch-for-react-19';
 import React, { useCallback, useEffect, useState } from "react";
 
 import DriverMap from "./components/DriverMap";
@@ -12,11 +12,44 @@ import {
   InputNumber,
   Slider,
   Tooltip,
+  Spin,
+  Card,
+  Typography,
+  List,
 } from "antd";
 
-import { FilterOutlined } from "@ant-design/icons";
+import {
+  FilterOutlined,
+  CalendarOutlined,
+  EnvironmentOutlined,
+  CheckOutlined,
+} from "@ant-design/icons";
 
 import dayjs from "dayjs";
+
+import { getApiDomain } from "@/utils/domain";
+import axios from "axios";
+import Link from "next/link";
+
+const BASE_URL = getApiDomain();
+
+interface Contract {
+  contractId: number;
+  title: string;
+  moveDateTime: string;
+  creationDateTime: string;
+  contractStatus:
+    | "REQUESTED"
+    | "OFFERED"
+    | "ACCEPTED"
+    | "COMPLETED"
+    | "FINALIZED"
+    | "CANCELED"
+    | "DELETED";
+  fromLocation: { formattedAddress: string; latitude: number; longitude: number };
+  toLocation: { formattedAddress: string; latitude: number; longitude: number };
+  price: number;
+}
 
 const HomePage = () => {
   const [visible, setVisible] = useState(false);
@@ -44,6 +77,10 @@ const HomePage = () => {
 
     moveDateTime: null as dayjs.Dayjs | null,
   });
+
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [contractsLoading, setContractsLoading] = useState(true);
+  const [contractsError, setContractsError] = useState<string | null>(null);
 
   const updateFilter = (key: keyof typeof filters, value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     setFilters((prev) => {
@@ -123,6 +160,53 @@ const HomePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const fetchDriverContracts = async () => {
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
+
+      if (!userId || !token) {
+        setContractsError("Authentication details missing.");
+        setContractsLoading(false);
+        return;
+      }
+
+      setContractsLoading(true);
+      try {
+        const res = await axios.get(`${BASE_URL}/api/v1/users/${userId}/contracts`, {
+          headers: {
+            UserId: userId,
+            Authorization: token,
+          },
+        });
+        
+        const fetchedContracts = res.data?.contracts || res.data;
+
+        if (Array.isArray(fetchedContracts)) {
+          const sorted = fetchedContracts.sort(
+            (a: Contract, b: Contract) =>
+              new Date(b.creationDateTime).getTime() -
+              new Date(a.creationDateTime).getTime()
+          );
+          setContracts(sorted);
+          setContractsError(null);
+        } else {
+          console.error("Unexpected contract data format:", res.data);
+          setContractsError("Failed to load contracts due to unexpected format.");
+          setContracts([]);
+        }
+      } catch (err: any) {
+        console.error("Error fetching driver contracts:", err);
+        setContractsError(err.response?.data?.message || err.message || "Failed to load contracts.");
+        setContracts([]);
+      } finally {
+        setContractsLoading(false);
+      }
+    };
+
+    fetchDriverContracts();
+  }, []);
+
   const mapContainerStyle = {
     width: "100%",
     height: "100%",
@@ -130,15 +214,13 @@ const HomePage = () => {
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      <div style={{ flexGrow: 1, position: "relative" }}>
+      <div style={{ flexGrow: 1, position: "relative", marginBottom: '20px' }}>
         {/* Map Component */}
-
         <DriverMap
           containerStyle={mapContainerStyle}
           filters={filters}
           onCenterChanged={(lat, lng) => {
             updateFilter("lat", lat);
-
             updateFilter("lng", lng);
           }}
         />
@@ -356,6 +438,44 @@ const HomePage = () => {
           </Button>
         </div>
       </Drawer>
+
+      {/* Section for Accepted Contracts using Ant Design List/Card */}
+      <div style={{ padding: '0 20px 20px 20px', flexShrink: 0, background: '#f0f2f5' }}>
+        <Typography.Title level={3} style={{ marginBottom: '16px' }}>
+          <CheckOutlined /> Your Accepted Moves
+        </Typography.Title>
+        {contractsLoading ? (
+          <div style={{ textAlign: 'center' }}><Spin /></div>
+        ) : contractsError ? (
+          <Typography.Text type="danger">{contractsError}</Typography.Text>
+        ) : (
+          <List
+            grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 4 }}
+            dataSource={contracts.filter((c) => c.contractStatus === "ACCEPTED")}
+            locale={{ emptyText: "No accepted moves yet." }}
+            renderItem={(contract) => (
+              <List.Item>
+                <Link href={`/dashboard/proposal/${contract.contractId}?type=${contract.contractStatus}`}>
+                  <Card 
+                    hoverable 
+                    title={contract.title}
+                    size="small"
+                  >
+                    <p>
+                      <CalendarOutlined />{" "}
+                      {new Date(contract.moveDateTime).toLocaleString()}
+                    </p>
+                    <p style={{ whiteSpace: 'normal' }}>
+                      <EnvironmentOutlined /> {contract.fromLocation?.formattedAddress || "No location"} ➝{" "}
+                      {contract.toLocation?.formattedAddress || "No location"}
+                    </p>
+                  </Card>
+                </Link>
+              </List.Item>
+            )}
+          />
+        )}
+      </div>
     </div>
   );
 };

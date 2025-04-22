@@ -1,4 +1,5 @@
 "use client";
+import '@ant-design/v5-patch-for-react-19';
 import React, { useState } from "react";
 import { Alert, Button, Input } from "antd";
 import styles from "../login.module.css";

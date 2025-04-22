@@ -1,4 +1,5 @@
 "use client";
+import '@ant-design/v5-patch-for-react-19';
 import ProposalsOverview from "./Homepage/Requester/ProposalsOverview";
 import DriverHomePage from "./Homepage/Driver/DriverHomePage";
 import { useContext } from "react";

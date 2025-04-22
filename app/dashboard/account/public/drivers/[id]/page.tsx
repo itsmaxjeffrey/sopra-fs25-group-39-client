@@ -1,6 +1,8 @@
 //best to save this under /users/public/drivers/{userId}
 "use client";
 // pages/driver/[userId].tsx
+import '@ant-design/v5-patch-for-react-19';
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -183,7 +185,20 @@ export default function DriverProfilePage() {
         </Col>
 
         <Col xs={24} sm={24} md={16} lg={18}>
-          <Card title="Ratings & Comments" bordered={false} style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.09)' }}>
+          {/* <Card title="Vehicle Information" variant="borderless" style={{ marginBottom: '24px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.09)' }}>
+            {driver.car ? (
+              <Descriptions bordered column={1} size="small">
+                <Descriptions.Item label="Make & Model">{driver.car.makeModel}</Descriptions.Item>
+                <Descriptions.Item label="License Plate">{driver.car.licensePlate}</Descriptions.Item>
+                <Descriptions.Item label="Weight Capacity (kg)">{driver.car.weightCapacity}</Descriptions.Item>
+                <Descriptions.Item label="Volume Capacity (m³)">{driver.car.volumeCapacity}</Descriptions.Item>
+              </Descriptions>
+            ) : (
+              <Empty description="No vehicle information available." />
+            )}
+          </Card> */}
+
+          <Card title="Ratings & Comments" variant="borderless" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.09)' }}>
             {driver.ratings && driver.ratings.length > 0 ? (
               <Carousel autoplay dotPosition="bottom">
                 {driver.ratings.map((rating, index) => ( 

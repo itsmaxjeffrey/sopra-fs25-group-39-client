@@ -1,4 +1,5 @@
 "use client";
+import '@ant-design/v5-patch-for-react-19';
 import React from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import EditProposal from "../Components/EditProposal";

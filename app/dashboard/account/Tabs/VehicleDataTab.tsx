@@ -1,3 +1,4 @@
+import '@ant-design/v5-patch-for-react-19';
 import React, { useState } from "react"; // Ensure useState is imported
 import { Button, Image, Input, Typography, Upload, message } from "antd"; // Ensure message is imported
 import { FileImageOutlined, UploadOutlined } from "@ant-design/icons";

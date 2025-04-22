@@ -1,3 +1,4 @@
+import '@ant-design/v5-patch-for-react-19';
 import React, { useEffect, useState } from "react";
 import styles from "./components/ProposalsOverview.module.css";
 import axios from "axios";

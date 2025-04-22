@@ -1,4 +1,5 @@
 "use client";
+import '@ant-design/v5-patch-for-react-19';
 // component responsible for rendering the Google Map
 // from Commit 89667df
 import React, { useCallback, useEffect, useRef, useState } from "react";

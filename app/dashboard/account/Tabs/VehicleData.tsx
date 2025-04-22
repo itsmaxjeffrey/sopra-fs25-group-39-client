@@ -1,4 +1,5 @@
 "use client";
+import '@ant-design/v5-patch-for-react-19';
 import React, { useState } from "react";
 import { Button, Image, Input, Typography, Upload, message } from "antd"; // Import message
 import { FileImageOutlined, UploadOutlined } from "@ant-design/icons";
