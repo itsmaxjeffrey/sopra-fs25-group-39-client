@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { message, Modal } from "antd"; // Import message
-import axios, { isAxiosError } from "axios"; // Import axios and isAxiosError
+import axios from "axios"; // Import only the default export
 import { getApiDomain } from "@/utils/domain"; // Import the function
 
 import styles from "./sidebar.module.css";
@@ -70,14 +70,28 @@ const Sidebar = (
       message.success("Successfully logged out!"); // Add success message
     } catch (error: unknown) { // Use unknown for caught errors
       console.error("Failed to log out:", error);
-      // Add error message and type check
       const errorMessage = error instanceof Error ? error.message : "Logout failed. Please try again.";
-      // Check if it's an Axios error with a response
-      if (isAxiosError(error) && error.response?.data?.message) { // Use the imported isAxiosError
-        message.error(error.response.data.message);
-      } else {
-        message.error(errorMessage);
+
+      // Structural check for Axios error
+      let finalErrorMessage = errorMessage;
+      if (
+        error &&
+        typeof error === 'object' &&
+        'isAxiosError' in error && 
+        error.isAxiosError === true && 
+        'response' in error && 
+        error.response &&
+        typeof error.response === 'object' &&
+        'data' in error.response &&
+        error.response.data &&
+        typeof error.response.data === 'object' &&
+        'message' in error.response.data &&
+        typeof error.response.data.message === 'string'
+      ) {
+        finalErrorMessage = error.response.data.message;
       }
+      message.error(finalErrorMessage);
+
     } finally {
       // Clear storage and redirect regardless of API call success/failure
       localStorage.removeItem("token");

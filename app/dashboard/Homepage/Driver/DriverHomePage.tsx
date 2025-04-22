@@ -154,7 +154,7 @@ const HomePage = () => {
       setContractsLoading(true);
       try {
         // Fetch only ACCEPTED contracts for this section
-        const res = await axios.get(`${BASE_URL}/api/v1/users/${userId}/contracts`, {
+        const res = await axios.get<unknown>(`${BASE_URL}/api/v1/users/${userId}/contracts`, { // Keep response data as unknown initially
           headers: {
             UserId: userId,
             Authorization: token,
@@ -164,22 +164,31 @@ const HomePage = () => {
           }
         });
 
-        // Adjust based on expected API response structure
-        const fetchedContracts = res.data?.contracts || res.data;
+        let fetchedContracts: Contract[] = []; // Initialize with a default empty array
 
-        if (Array.isArray(fetchedContracts)) {
-          const sorted = fetchedContracts.sort(
-            (a: Contract, b: Contract) =>
-              new Date(b.creationDateTime).getTime() -
-              new Date(a.creationDateTime).getTime()
-          );
-          setContracts(sorted);
-          setContractsError(null);
+        // Check the structure of res.data before accessing properties
+        if (typeof res.data === 'object' && res.data !== null && 'contracts' in res.data && Array.isArray(res.data.contracts)) {
+          // If data has a 'contracts' property which is an array
+          fetchedContracts = res.data.contracts as Contract[];
+        } else if (Array.isArray(res.data)) {
+          // If data itself is an array
+          fetchedContracts = res.data as Contract[];
         } else {
+          // Handle unexpected format
           console.error("Unexpected accepted contracts data format:", res.data);
           setContractsError("Failed to load accepted contracts due to unexpected format.");
-          setContracts([]);
+          // fetchedContracts remains empty
         }
+
+        // Now fetchedContracts is guaranteed to be Contract[]
+        const sorted = fetchedContracts.sort(
+          (a: Contract, b: Contract) =>
+            new Date(b.creationDateTime).getTime() -
+            new Date(a.creationDateTime).getTime()
+        );
+        setContracts(sorted);
+        setContractsError(null); // Clear error if data was processed successfully
+
       } catch (err: unknown) {
         console.error("Error fetching accepted driver contracts:", err);
         const errorMessage = err instanceof Error ? err.message : "Failed to load accepted contracts.";
