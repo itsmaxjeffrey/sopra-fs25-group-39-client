@@ -246,15 +246,18 @@ const RatingProposal = ({ proposalId }: Props) => {
           layout="vertical"
           onFinish={async (values) => {
             try {
+              // Correct payload structure for RatingPostDTO
               const payload = {
-                proposalId,
-                rating: values.rating,
-                issues: values.issues || false,
-                issueDetails: values.issues ? values.issueDetails || "" : "",
+                contractId: parseInt(proposalId, 10), // Use contractId (proposalId)
+                ratingValue: values.rating, // Use ratingValue
+                flagIssues: values.issues || false, // Use flagIssues
+                comment: values.issues ? values.issueDetails || "" : "", // Use comment
               };
+              // Correct API endpoint
               await axios.post(
-                `${BASE_URL}/api/v1/contracts/${proposalId}/driver-rating`,
+                `${BASE_URL}/api/v1/ratings`, // Use the correct ratings endpoint
                 payload,
+                // Assuming axios instance handles headers (UserId, Authorization)
               );
               Modal.success({
                 title: "Thank you!",
@@ -263,7 +266,13 @@ const RatingProposal = ({ proposalId }: Props) => {
                 onOk: () => router.push("/dashboard"),
               });
             } catch (err) {
-              console.log(err);
+              console.error("Error submitting rating:", err); // Use console.error for errors
+              // Optionally, show an error message to the user
+              Modal.error({
+                title: "Submission Failed",
+                content: "Could not submit your rating. Please try again.",
+                centered: true,
+              });
             }
           }}
         >
