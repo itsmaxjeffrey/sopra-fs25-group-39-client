@@ -511,45 +511,7 @@ const HomePage = () => {
         </div>
       </Drawer>
 
-      {/* Section for Pending Offers */}
-      <div style={{ padding: '20px 20px 10px 20px', flexShrink: 0, background: '#f0f2f5' }}>
-        <Typography.Title level={3} style={{ marginBottom: '16px' }}>
-          <ClockCircleOutlined /> Your Pending Offers
-        </Typography.Title>
-        {pendingOffersLoading ? (
-          <div style={{ textAlign: 'center' }}><Spin /></div>
-        ) : pendingOffersError ? (
-          <Typography.Text type="danger">{pendingOffersError}</Typography.Text>
-        ) : (
-          <List
-            grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 4 }}
-            dataSource={pendingOffers}
-            locale={{ emptyText: "No pending offers." }}
-            renderItem={(offer) => (
-              <List.Item>
-                <Link href={`/dashboard/proposal/${offer.contract.contractId}?type=OFFERED`}>
-                  <Card
-                    hoverable
-                    title={offer.contract.title}
-                    size="small"
-                  >
-                    <p>
-                      <CalendarOutlined />{" "}
-                      {new Date(offer.contract.moveDateTime).toLocaleString()}
-                    </p>
-                    <p style={{ whiteSpace: 'normal' }}>
-                      <EnvironmentOutlined /> {offer.contract.fromLocation?.formattedAddress || "No location"} ➝{" "}
-                      {offer.contract.toLocation?.formattedAddress || "No location"}
-                    </p>
-                    <p>Offer Status: {offer.offerStatus}</p>
-                  </Card>
-                </Link>
-              </List.Item>
-            )}
-          />
-        )}
-      </div>
-
+     
       {/* Section for Accepted Contracts using Ant Design List/Card */}
       <div style={{ padding: '10px 20px 20px 20px', flexShrink: 0, background: '#f0f2f5' }}>
         <Typography.Title level={3} style={{ marginBottom: '16px' }}>

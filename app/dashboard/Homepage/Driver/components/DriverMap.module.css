@@ -1,0 +1,30 @@
+.infoWindow {
+  max-width: 250px;
+  font-family: Arial, sans-serif;
+}
+
+.infoWindow h4 {
+  margin: 0 0 5px 0;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.infoWindow p {
+  margin: 0 0 3px 0;
+  font-size: 0.9em;
+}
+
+.infoWindowImages {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.infoWindowImage {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background-color: #eee; /* Placeholder background */
+}
