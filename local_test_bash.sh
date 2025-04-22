@@ -242,10 +242,10 @@ echo "8. Completing Finalized Contract..." >&2
 make_request "PUT" "$BASE_URL/contracts/$CONTRACT_ID_FINALIZED/complete" "" \
     "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN" || handle_failure "Complete Contract (Finalized)"
 
-# 9. Finalize Contract (Requester) - COMMENTED OUT TO LEAVE IN COMPLETED STATE
-# echo "9. Finalizing Contract..." >&2
-# make_request "PUT" "$BASE_URL/contracts/$CONTRACT_ID_FINALIZED/fulfill" "" \
-#     "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN" || handle_failure "Finalize Contract (Fulfill)"
+# 9. Finalize Contract (Requester) - UNCOMMENTED TO MAKE IT FINALIZED
+echo "9. Finalizing Contract..." >&2
+make_request "PUT" "$BASE_URL/contracts/$CONTRACT_ID_FINALIZED/fulfill" "" \
+    "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN" || handle_failure "Finalize Contract (Fulfill)"
 
 
 # --- Scenario 2: Accepted Contract ---
@@ -303,11 +303,45 @@ fi
 echo "   Contract ID (Requested): $CONTRACT_ID_REQUESTED" >&2
 
 
+# --- Scenario 4: Offered Contract ---
+echo "--- Scenario 4: Creating OFFERED Contract ---" >&2
+
+# 14. Create Fourth Contract (for Offered state)
+echo "14. Creating Contract 4 (for Offered)..." >&2
+contract_response_offered=$(make_request "POST" "$BASE_URL/contracts" \
+    "{\"title\": \"Offered Move ${TIMESTAMP}\", \"contractDescription\": \"Testing offered flow\", \"moveDateTime\": \"$PAST_DATE_REQUESTED\", \"fromLocation\": {\"latitude\": 47.3800, \"longitude\": 8.5800, \"formattedAddress\": \"Zurich Offered From\"}, \"toLocation\": {\"latitude\": 47.3900, \"longitude\": 8.5900, \"formattedAddress\": \"Zurich Offered To\"}, \"mass\": 15.0, \"volume\": 3.0, \"fragile\": false, \"coolingRequired\": false, \"rideAlong\": false, \"manPower\": 3, \"price\": 70.0, \"requesterId\": $REQ_USER_ID}" \
+    "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN") || handle_failure "Create Contract 4 (Offered)"
+
+CONTRACT_ID_OFFERED=$(echo "$contract_response_offered" | jq -r '.contract.contractId // .contractId')
+if [[ -z "$CONTRACT_ID_OFFERED" || "$CONTRACT_ID_OFFERED" == "null" ]]; then
+    echo "Error: Failed to parse Contract ID 4 (Offered)." >&2
+    echo "Raw response was: $contract_response_offered" >&2
+    exit 1
+fi
+echo "   Contract ID (Offered): $CONTRACT_ID_OFFERED" >&2
+
+# 15. Create Offer for Fourth Contract (Driver)
+echo "15. Creating Offer for Offered Contract..." >&2
+offer_response_offered=$(make_request "POST" "$BASE_URL/offers" \
+    "{\"contractId\": $CONTRACT_ID_OFFERED, \"driverId\": $DRV_USER_ID}" \
+    "UserId: $DRV_USER_ID" "Authorization: $DRV_TOKEN") || handle_failure "Create Offer (Offered)"
+
+OFFER_ID_OFFERED=$(echo "$offer_response_offered" | jq -r '.offer.offerId // .offerId')
+if [[ -z "$OFFER_ID_OFFERED" || "$OFFER_ID_OFFERED" == "null" ]]; then
+    echo "Error: Failed to parse Offer ID (Offered)." >&2
+    echo "Raw response was: $offer_response_offered" >&2
+    exit 1
+fi
+echo "   Offer ID (Offered): $OFFER_ID_OFFERED" >&2
+# Note: We stop here for the OFFERED state. The requester does not accept this offer.
+
+
 # --- Final Summary ---
 echo "--- Multi-Contract Test Setup Complete ---" >&2
 echo "Requester: $REQ_USERNAME / $REQ_PASSWORD (UserID: $REQ_USER_ID, Phone: $REQ_PHONE)" >&2
 echo "Driver: $DRV_USERNAME / $DRV_PASSWORD (UserID: $DRV_USER_ID, Phone: $DRV_PHONE)" >&2
 echo "" >&2
-echo "Contract 1 (Completed): ID $CONTRACT_ID_FINALIZED (Ready for rating by Requester $REQ_USERNAME)" >&2
-echo "Contract 2 (Accepted): ID $CONTRACT_ID_ACCEPTED (Should be visible as accepted, not completed/finalized)" >&2
-echo "Contract 3 (Requested): ID $CONTRACT_ID_REQUESTED (Should be visible as requested, no offers)" >&2
+echo "Contract 1 (Finalized): ID $CONTRACT_ID_FINALIZED (Completed and Finalized by Requester $REQ_USERNAME)" >&2
+echo "Contract 2 (Accepted): ID $CONTRACT_ID_ACCEPTED (Accepted by Requester, ready for completion)" >&2
+echo "Contract 3 (Requested): ID $CONTRACT_ID_REQUESTED (Created by Requester, no offers yet)" >&2
+echo "Contract 4 (Offered): ID $CONTRACT_ID_OFFERED (Offer $OFFER_ID_OFFERED made by Driver, pending Requester acceptance)" >&2

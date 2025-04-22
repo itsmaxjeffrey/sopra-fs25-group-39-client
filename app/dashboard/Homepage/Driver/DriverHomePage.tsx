@@ -23,6 +23,7 @@ import {
   CalendarOutlined,
   EnvironmentOutlined,
   CheckOutlined,
+  ClockCircleOutlined,
 } from "@ant-design/icons";
 
 import dayjs from "dayjs";
@@ -49,6 +50,13 @@ interface Contract {
   fromLocation: { formattedAddress: string; latitude: number; longitude: number };
   toLocation: { formattedAddress: string; latitude: number; longitude: number };
   price: number;
+}
+
+interface Offer {
+  offerId: number;
+  offerStatus: "CREATED" | "ACCEPTED" | "REJECTED" | "DELETED";
+  creationDateTime: string;
+  contract: Contract;
 }
 
 const HomePage = () => {
@@ -81,6 +89,10 @@ const HomePage = () => {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [contractsLoading, setContractsLoading] = useState(true);
   const [contractsError, setContractsError] = useState<string | null>(null);
+
+  const [pendingOffers, setPendingOffers] = useState<Offer[]>([]);
+  const [pendingOffersLoading, setPendingOffersLoading] = useState(true);
+  const [pendingOffersError, setPendingOffersError] = useState<string | null>(null);
 
   // Define a more specific type for the value based on possible filter types
   type FilterValue = typeof filters[keyof typeof filters] | dayjs.Dayjs | boolean | number | string | null | undefined;
@@ -213,6 +225,58 @@ const HomePage = () => {
     };
 
     fetchDriverContracts();
+  }, []);
+
+  useEffect(() => {
+    const fetchPendingOffers = async () => {
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
+
+      if (!userId || !token) {
+        setPendingOffersError("Authentication details missing.");
+        setPendingOffersLoading(false);
+        return;
+      }
+
+      setPendingOffersLoading(true);
+      try {
+        const res = await axios.get(`${BASE_URL}/api/v1/users/${userId}/offers`, {
+          headers: {
+            UserId: userId,
+            Authorization: token,
+          },
+          params: {
+            status: 'CREATED'
+          }
+        });
+
+        const fetchedOffers = res.data?.offers || res.data;
+
+        if (Array.isArray(fetchedOffers)) {
+          const sorted = fetchedOffers.sort(
+            (a: Offer, b: Offer) =>
+              new Date(b.creationDateTime).getTime() -
+              new Date(a.creationDateTime).getTime()
+          );
+          setPendingOffers(sorted);
+          setPendingOffersError(null);
+        } else {
+          console.error("Unexpected pending offers data format:", res.data);
+          setPendingOffersError("Failed to load pending offers due to unexpected format.");
+          setPendingOffers([]);
+        }
+      } catch (err: unknown) {
+        console.error("Error fetching pending driver offers:", err);
+        const errorMessage = err instanceof Error ? err.message : "Failed to load pending offers.";
+        const responseMessage = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+        setPendingOffersError(responseMessage || errorMessage);
+        setPendingOffers([]);
+      } finally {
+        setPendingOffersLoading(false);
+      }
+    };
+
+    fetchPendingOffers();
   }, []);
 
   const mapContainerStyle = {
@@ -447,8 +511,47 @@ const HomePage = () => {
         </div>
       </Drawer>
 
+      {/* Section for Pending Offers */}
+      <div style={{ padding: '20px 20px 10px 20px', flexShrink: 0, background: '#f0f2f5' }}>
+        <Typography.Title level={3} style={{ marginBottom: '16px' }}>
+          <ClockCircleOutlined /> Your Pending Offers
+        </Typography.Title>
+        {pendingOffersLoading ? (
+          <div style={{ textAlign: 'center' }}><Spin /></div>
+        ) : pendingOffersError ? (
+          <Typography.Text type="danger">{pendingOffersError}</Typography.Text>
+        ) : (
+          <List
+            grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 4 }}
+            dataSource={pendingOffers}
+            locale={{ emptyText: "No pending offers." }}
+            renderItem={(offer) => (
+              <List.Item>
+                <Link href={`/dashboard/proposal/${offer.contract.contractId}?type=OFFERED`}>
+                  <Card
+                    hoverable
+                    title={offer.contract.title}
+                    size="small"
+                  >
+                    <p>
+                      <CalendarOutlined />{" "}
+                      {new Date(offer.contract.moveDateTime).toLocaleString()}
+                    </p>
+                    <p style={{ whiteSpace: 'normal' }}>
+                      <EnvironmentOutlined /> {offer.contract.fromLocation?.formattedAddress || "No location"} ➝{" "}
+                      {offer.contract.toLocation?.formattedAddress || "No location"}
+                    </p>
+                    <p>Offer Status: {offer.offerStatus}</p>
+                  </Card>
+                </Link>
+              </List.Item>
+            )}
+          />
+        )}
+      </div>
+
       {/* Section for Accepted Contracts using Ant Design List/Card */}
-      <div style={{ padding: '0 20px 20px 20px', flexShrink: 0, background: '#f0f2f5' }}>
+      <div style={{ padding: '10px 20px 20px 20px', flexShrink: 0, background: '#f0f2f5' }}>
         <Typography.Title level={3} style={{ marginBottom: '16px' }}>
           <CheckOutlined /> Your Accepted Moves
         </Typography.Title>

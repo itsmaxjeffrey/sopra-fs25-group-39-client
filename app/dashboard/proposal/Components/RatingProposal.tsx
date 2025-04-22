@@ -52,9 +52,7 @@ interface ContractData {
   rideAlong: boolean;
   manPower: number;
   price: number;
-  imagePath1?: string;
-  imagePath2?: string;
-  imagePath3?: string;
+  contractPhotos?: string[];
 }
 
 const RatingProposal = ({ proposalId }: Props) => {
@@ -85,11 +83,7 @@ const RatingProposal = ({ proposalId }: Props) => {
       }
 
       setContractData(contract);
-      setImagePaths(
-        [contract.imagePath1, contract.imagePath2, contract.imagePath3].filter(
-          (path): path is string => !!path,
-        ),
-      );
+      setImagePaths(contract.contractPhotos || []);
     } catch (err: any) {
       console.error("Error fetching contract details:", err);
       const errorMessage =

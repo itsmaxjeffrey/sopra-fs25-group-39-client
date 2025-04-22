@@ -57,9 +57,7 @@ interface ContractData {
   rideAlong: boolean;
   manPower: number;
   price: number;
-  imagePath1?: string;
-  imagePath2?: string;
-  imagePath3?: string;
+  contractPhotos?: string[];
   requester: {
     userId: number;
     // Add other requester fields if needed
@@ -146,11 +144,8 @@ const AcceptedProposal = ({ proposalId }: Props) => {
         lat: data.toLocation?.latitude || 0,
         lng: data.toLocation?.longitude || 0,
       });
-      setImagePaths(
-        [data.imagePath1, data.imagePath2, data.imagePath3].filter(
-          (path): path is string => !!path,
-        ),
-      );
+      // Use contractPhotos array instead of individual imagePath fields
+      setImagePaths(data.contractPhotos || []);
       setError(false);
       setModalVisible(false);
     } catch (err: any) {
