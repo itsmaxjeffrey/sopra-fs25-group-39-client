@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { message, Modal } from "antd"; // Import message
-import axios from "axios"; // Import axios
+import axios, { isAxiosError } from "axios"; // Import axios and isAxiosError
 import { getApiDomain } from "@/utils/domain"; // Import the function
 
 import styles from "./sidebar.module.css";
@@ -73,7 +73,7 @@ const Sidebar = (
       // Add error message and type check
       const errorMessage = error instanceof Error ? error.message : "Logout failed. Please try again.";
       // Check if it's an Axios error with a response
-      if (axios.isAxiosError(error) && error.response?.data?.message) {
+      if (isAxiosError(error) && error.response?.data?.message) { // Use the imported isAxiosError
         message.error(error.response.data.message);
       } else {
         message.error(errorMessage);
