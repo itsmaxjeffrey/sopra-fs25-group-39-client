@@ -76,7 +76,9 @@ const HomePage = () => {
     radius: undefined as number | undefined, // Explicitly type undefined
     price: undefined as number | undefined, // Explicitly type undefined
     weight: null as number | null,
-    volume: null as number | null,
+    length: null as number | null, // New
+    width: null as number | null,  // New
+    height: null as number | null, // New (replaces volume)
     requiredPeople: null as number | null,
     fragile: null as boolean | null,
     coolingRequired: null as boolean | null,
@@ -99,11 +101,11 @@ const HomePage = () => {
       // Ensure specific types are handled correctly
       if (key === 'moveDateTime' && value instanceof dayjs) {
         return { ...prev, [key]: value };
-      } else if (typeof value === 'number' && (key === 'radius' || key === 'price' || key === 'weight' || key === 'volume' || key === 'requiredPeople')) {
+      } else if (typeof value === 'number' && (key === 'radius' || key === 'price' || key === 'weight' || key === 'length' || key === 'width' || key === 'height' || key === 'requiredPeople')) { // Added length, width, height
         return { ...prev, [key]: value };
       } else if (typeof value === 'boolean' && (key === 'fragile' || key === 'coolingRequired' || key === 'rideAlong')) {
         return { ...prev, [key]: value };
-      } else if (value === null && (key === 'weight' || key === 'volume' || key === 'requiredPeople' || key === 'fragile' || key === 'coolingRequired' || key === 'rideAlong' || key === 'moveDateTime')) {
+      } else if (value === null && (key === 'weight' || key === 'length' || key === 'width' || key === 'height' || key === 'requiredPeople' || key === 'fragile' || key === 'coolingRequired' || key === 'rideAlong' || key === 'moveDateTime')) { // Added length, width, height
          return { ...prev, [key]: value };
       } else if (value === undefined && (key === 'radius' || key === 'price')) {
          return { ...prev, [key]: value };
@@ -129,7 +131,9 @@ const HomePage = () => {
       radius: undefined,
       price: undefined,
       weight: null,
-      volume: null,
+      length: null, // New
+      width: null,  // New
+      height: null, // New (replaces volume)
       requiredPeople: null,
       fragile: null,
       coolingRequired: null,
@@ -381,13 +385,33 @@ const HomePage = () => {
             />
           </div>
           <div>
-            <label>Volume (m³)</label>
+            <label>Max Length (m)</label> {/* New */}
             <InputNumber
               min={0}
-              value={filters.volume}
-              onChange={(val) => updateFilter("volume", val)}
+              value={filters.length}
+              onChange={(val) => updateFilter("length", val)}
               style={{ width: '100%' }}
-              addonAfter="m³"
+              addonAfter="m"
+            />
+          </div>
+          <div>
+            <label>Max Width (m)</label> {/* New */}
+            <InputNumber
+              min={0}
+              value={filters.width}
+              onChange={(val) => updateFilter("width", val)}
+              style={{ width: '100%' }}
+              addonAfter="m"
+            />
+          </div>
+          <div>
+            <label>Max Height (m)</label> {/* New (replaces Volume) */}
+            <InputNumber
+              min={0}
+              value={filters.height}
+              onChange={(val) => updateFilter("height", val)}
+              style={{ width: '100%' }}
+              addonAfter="m"
             />
           </div>
           <div>

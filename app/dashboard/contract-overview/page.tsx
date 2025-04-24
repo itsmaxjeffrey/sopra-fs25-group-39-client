@@ -30,6 +30,10 @@ interface Proposal {
   fromLocation: Location;
   toLocation: Location;
   price: number;
+  mass?: number; // Added mass
+  length?: number; // Added length
+  width?: number;  // Added width
+  height?: number; // Added height
   fragile?: boolean;
   coolingRequired?: boolean;
   rideAlong?: boolean;

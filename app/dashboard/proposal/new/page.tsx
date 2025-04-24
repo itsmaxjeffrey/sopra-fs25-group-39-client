@@ -86,11 +86,6 @@ const NewProposalFormPage = () => {
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
 
-    const length = Number(values.length);
-    const width = Number(values.width);
-    const height = Number(values.height);
-    const volume = length * width * height;
-
     // *** Log the specific values being used for address ***
     console.log("Address from values.from:", values.from);
     console.log("Address from values.to:", values.to);
@@ -109,7 +104,6 @@ const NewProposalFormPage = () => {
         longitude: toCoords.lng,
         formattedAddress: values.to,   // Using form value
       },
-      volume,
       length: Number(values.length),
       width: Number(values.width),
       height: Number(values.height),

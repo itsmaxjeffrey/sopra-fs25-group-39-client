@@ -150,12 +150,12 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       fromLocation: {
         latitude: fromCoords.lat,
         longitude: fromCoords.lng,
-        address: fromCoords.address,
+        address: fromCoords.address, // Use state address for consistency
       },
       toLocation: {
         latitude: toCoords.lat,
         longitude: toCoords.lng,
-        address: toCoords.address,
+        address: toCoords.address, // Use state address for consistency
       },
       length: Number(values.length),
       width: Number(values.width),
@@ -163,11 +163,9 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       fragile: values.fragile,
       coolingRequired: values.cooling,
       rideAlong: values.rideAlong,
-      manPower: parseInt(values.manPower),
+      manPower: parseInt(values.manPower) || 0, // Ensure it's a number, default to 0
       price: parseFloat(values.price),
       mass: Number(values.mass),
-      volume: Number(values.length) * Number(values.width) *
-        Number(values.height),
     };
 
     try {
