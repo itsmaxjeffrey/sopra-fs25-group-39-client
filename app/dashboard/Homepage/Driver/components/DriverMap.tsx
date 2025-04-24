@@ -74,7 +74,9 @@ interface FilterParams {
   radius?: number;
   price?: number;
   weight?: number;
-  volume?: number;
+  height?: number; // Renamed from volume
+  width?: number; // New field
+  length?: number; // New field
   requiredPeople?: number;
   fragile?: boolean;
   coolingRequired?: boolean;
@@ -147,7 +149,9 @@ const DriverMap: React.FC<DriverMapProps> = (
         if (filters.radius !== null && filters.radius !== undefined) filterParams.radius = filters.radius;
         if (filters.price !== null && filters.price !== undefined) filterParams.price = filters.price;
         if (filters.weight !== null && filters.weight !== undefined) filterParams.weight = filters.weight;
-        if (filters.volume !== null && filters.volume !== undefined) filterParams.volume = filters.volume;
+        if (filters.height !== null && filters.height !== undefined) filterParams.height = filters.height; // Renamed from volume
+        if (filters.width !== null && filters.width !== undefined) filterParams.width = filters.width; // New field
+        if (filters.length !== null && filters.length !== undefined) filterParams.length = filters.length; // New field
         if (filters.requiredPeople !== null && filters.requiredPeople !== undefined) filterParams.requiredPeople = filters.requiredPeople;
         if (filters.fragile !== null && filters.fragile !== undefined) filterParams.fragile = filters.fragile;
         if (filters.coolingRequired !== null && filters.coolingRequired !== undefined) filterParams.coolingRequired = filters.coolingRequired;

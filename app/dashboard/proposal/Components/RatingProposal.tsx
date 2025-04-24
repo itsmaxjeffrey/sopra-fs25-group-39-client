@@ -46,7 +46,7 @@ interface ContractData {
   length: number;
   width: number;
   height: number;
-  mass: number;
+  weight: number;
   fragile: boolean;
   coolingRequired: boolean;
   rideAlong: boolean;
@@ -203,7 +203,7 @@ const RatingProposal = ({ proposalId }: Props) => {
             }`}
           </Descriptions.Item>
           <Descriptions.Item label="Weight (kg)">
-            {contractData.mass}
+            {contractData.weight}
           </Descriptions.Item>
           <Descriptions.Item label="Fragile">
             {contractData.fragile ? "Yes" : "No"}

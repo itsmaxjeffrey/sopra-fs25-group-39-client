@@ -90,7 +90,7 @@ const OfferProposal = ({ proposalId }: Props) => {
         rideAlong: data.rideAlong,
         manPower: data.manPower,
         price: data.price,
-        mass: data.mass,
+        weight: data.weight,
       });
       setFromCoords({
         address: data.fromLocation?.formattedAddress || "",
@@ -333,7 +333,7 @@ const OfferProposal = ({ proposalId }: Props) => {
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item label="Weight (kg)" name="mass">
+            <Form.Item label="Weight (kg)" name="weight">
               <InputNumber style={{ width: "100%" }} min={0} disabled />
             </Form.Item>
           </Col>

@@ -81,7 +81,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
         rideAlong: data.rideAlong,
         manPower: data.manPower,
         price: data.price,
-        mass: data.mass,
+        weight: data.weight,
       });
 
       // Update state with additional data
@@ -165,7 +165,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       rideAlong: values.rideAlong,
       manPower: parseInt(values.manPower) || 0, // Ensure it's a number, default to 0
       price: parseFloat(values.price),
-      mass: Number(values.mass),
+      weight: Number(values.weight),
     };
 
     try {
@@ -328,7 +328,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item label="Weight (kg)" name="mass">
+            <Form.Item label="Weight (kg)" name="weight">
               <InputNumber style={{ width: "100%" }} min={0} />
             </Form.Item>
           </Col>

@@ -51,7 +51,7 @@ interface ContractData {
   length: number;
   width: number;
   height: number;
-  mass: number;
+  weight: number;
   fragile: boolean;
   coolingRequired: boolean;
   rideAlong: boolean;
@@ -127,7 +127,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
         length: data.length,
         width: data.width,
         height: data.height,
-        mass: Number(data.mass),
+        weight: Number(data.weight),
         fragile: data.fragile,
         cooling: data.coolingRequired,
         rideAlong: data.rideAlong,

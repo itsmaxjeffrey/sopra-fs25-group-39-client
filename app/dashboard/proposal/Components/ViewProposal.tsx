@@ -74,7 +74,7 @@ const ViewProposal = ({ proposalId }: Props) => {
         length: data.length,
         width: data.width,
         height: data.height,
-        mass: Number(data.mass),
+        weight: Number(data.weight),
         fragile: data.fragile,
         cooling: data.coolingRequired,
         rideAlong: data.rideAlong,
@@ -291,7 +291,7 @@ const ViewProposal = ({ proposalId }: Props) => {
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item label="Weight (kg)" name="mass">
+            <Form.Item label="Weight (kg)" name="weight">
               <InputNumber style={{ width: "100%" }} min={0} disabled />
             </Form.Item>
           </Col>

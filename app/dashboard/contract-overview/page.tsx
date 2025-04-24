@@ -30,7 +30,7 @@ interface Proposal {
   fromLocation: Location;
   toLocation: Location;
   price: number;
-  mass?: number; // Added mass
+  weight?: number; // Added weight
   length?: number; // Added length
   width?: number;  // Added width
   height?: number; // Added height

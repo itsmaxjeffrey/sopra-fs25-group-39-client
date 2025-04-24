@@ -192,7 +192,7 @@ echo "--- Scenario 1: Creating FINALIZED Contract ---" >&2
 # 4. Create Contract (Proposal) in the Past (for Finalized)
 echo "4. Creating Contract 1 (for Finalized)..." >&2
 contract_response_finalized=$(make_request "POST" "$BASE_URL/contracts" \
-    "{\"title\": \"Finalized Move ${TIMESTAMP}\", \"contractDescription\": \"Testing finalized flow\", \"moveDateTime\": \"$PAST_DATE\", \"fromLocation\": {\"latitude\": 47.3769, \"longitude\": 8.5417, \"formattedAddress\": \"Zurich HB Finalized From\"}, \"toLocation\": {\"latitude\": 47.3780, \"longitude\": 8.5400, \"formattedAddress\": \"Zurich Main Station Finalized To\"}, \"mass\": 5.0, \"volume\": 1.0, \"fragile\": false, \"coolingRequired\": false, \"rideAlong\": false, \"manPower\": 1, \"price\": 30.0, \"requesterId\": $REQ_USER_ID}" \
+    "{\"title\": \"Finalized Move ${TIMESTAMP}\", \"contractDescription\": \"Testing finalized flow\", \"moveDateTime\": \"$PAST_DATE\", \"fromLocation\": {\"latitude\": 47.3769, \"longitude\": 8.5417, \"formattedAddress\": \"Zurich HB Finalized From\"}, \"toLocation\": {\"latitude\": 47.3780, \"longitude\": 8.5400, \"formattedAddress\": \"Zurich Main Station Finalized To\"}, \"weight\": 5.0, \"height\": 1.0, \"width\": 1.0, \"length\": 1.0, \"fragile\": false, \"coolingRequired\": false, \"rideAlong\": false, \"manPower\": 1, \"price\": 30.0, \"requesterId\": $REQ_USER_ID}" \
     "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN") || handle_failure "Create Contract 1 (Finalized)"
 
 CONTRACT_ID_FINALIZED=$(echo "$contract_response_finalized" | jq -r '.contract.contractId // .contractId')
@@ -254,7 +254,7 @@ echo "--- Scenario 2: Creating ACCEPTED Contract ---" >&2
 # 10. Create Second Contract (for Accepted state)
 echo "10. Creating Contract 2 (for Accepted)..." >&2
 contract_response_accepted=$(make_request "POST" "$BASE_URL/contracts" \
-    "{\"title\": \"Accepted Move ${TIMESTAMP}\", \"contractDescription\": \"Testing accepted flow\", \"moveDateTime\": \"$PAST_DATE_ACCEPTED\", \"fromLocation\": {\"latitude\": 47.4000, \"longitude\": 8.5000, \"formattedAddress\": \"Zurich Accepted From\"}, \"toLocation\": {\"latitude\": 47.4100, \"longitude\": 8.5100, \"formattedAddress\": \"Zurich Accepted To\"}, \"mass\": 10.0, \"volume\": 2.0, \"fragile\": true, \"coolingRequired\": false, \"rideAlong\": true, \"manPower\": 2, \"price\": 50.0, \"requesterId\": $REQ_USER_ID}" \
+    "{\"title\": \"Accepted Move ${TIMESTAMP}\", \"contractDescription\": \"Testing accepted flow\", \"moveDateTime\": \"$PAST_DATE_ACCEPTED\", \"fromLocation\": {\"latitude\": 47.4000, \"longitude\": 8.5000, \"formattedAddress\": \"Zurich Accepted From\"}, \"toLocation\": {\"latitude\": 47.4100, \"longitude\": 8.5100, \"formattedAddress\": \"Zurich Accepted To\"}, \"weight\": 10.0, \"height\": 1.0, \"width\": 1.0, \"length\": 2.0, \"fragile\": true, \"coolingRequired\": false, \"rideAlong\": true, \"manPower\": 2, \"price\": 50.0, \"requesterId\": $REQ_USER_ID}" \
     "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN") || handle_failure "Create Contract 2 (Accepted)"
 
 CONTRACT_ID_ACCEPTED=$(echo "$contract_response_accepted" | jq -r '.contract.contractId // .contractId')
@@ -291,7 +291,7 @@ echo "--- Scenario 3: Creating REQUESTED Contract ---" >&2
 # 13. Create Third Contract (for Requested state)
 echo "13. Creating Contract 3 (for Requested)..." >&2
 contract_response_requested=$(make_request "POST" "$BASE_URL/contracts" \
-    "{\"title\": \"Requested Move ${TIMESTAMP}\", \"contractDescription\": \"Testing requested flow\", \"moveDateTime\": \"$PAST_DATE_REQUESTED\", \"fromLocation\": {\"latitude\": 47.3500, \"longitude\": 8.5500, \"formattedAddress\": \"Zurich Requested From\"}, \"toLocation\": {\"latitude\": 47.3600, \"longitude\": 8.5600, \"formattedAddress\": \"Zurich Requested To\"}, \"mass\": 2.0, \"volume\": 0.5, \"fragile\": false, \"coolingRequired\": true, \"rideAlong\": false, \"manPower\": 1, \"price\": 20.0, \"requesterId\": $REQ_USER_ID}" \
+    "{\"title\": \"Requested Move ${TIMESTAMP}\", \"contractDescription\": \"Testing requested flow\", \"moveDateTime\": \"$PAST_DATE_REQUESTED\", \"fromLocation\": {\"latitude\": 47.3500, \"longitude\": 8.5500, \"formattedAddress\": \"Zurich Requested From\"}, \"toLocation\": {\"latitude\": 47.3600, \"longitude\": 8.5600, \"formattedAddress\": \"Zurich Requested To\"}, \"weight\": 2.0, \"height\": 1.0, \"width\": 1.0, \"length\": 0.5, \"fragile\": false, \"coolingRequired\": true, \"rideAlong\": false, \"manPower\": 1, \"price\": 20.0, \"requesterId\": $REQ_USER_ID}" \
     "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN") || handle_failure "Create Contract 3 (Requested)"
 
 CONTRACT_ID_REQUESTED=$(echo "$contract_response_requested" | jq -r '.contract.contractId // .contractId')

@@ -107,7 +107,7 @@ const NewProposalFormPage = () => {
       length: Number(values.length),
       width: Number(values.width),
       height: Number(values.height),
-      mass: Number(values.mass),
+      weight: Number(values.weight),
       fragile: values.fragile,
       coolingRequired: values.cooling,
       rideAlong: values.rideAlong,
@@ -325,8 +325,8 @@ const NewProposalFormPage = () => {
           </Col>
           <Col span={6}>
             <Form.Item
-              label="Mass (kg)"
-              name="mass"
+              label="Weight (kg)"
+              name="weight"
               rules={[{ required: true, message: "Please enter height" }]}
             >
               <InputNumber
