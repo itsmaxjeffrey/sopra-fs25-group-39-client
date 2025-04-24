@@ -146,12 +146,12 @@ const DriverMap: React.FC<DriverMapProps> = (
         // Check for null AND undefined before adding to params
         if (filters.radius !== null && filters.radius !== undefined) filterParams.radius = filters.radius;
         if (filters.price !== null && filters.price !== undefined) filterParams.price = filters.price;
-        if (filters.weight !== null) filterParams.weight = filters.weight;
-        if (filters.volume !== null) filterParams.volume = filters.volume;
-        if (filters.requiredPeople !== null) filterParams.requiredPeople = filters.requiredPeople;
-        if (filters.fragile !== null) filterParams.fragile = filters.fragile;
-        if (filters.coolingRequired !== null) filterParams.coolingRequired = filters.coolingRequired;
-        if (filters.rideAlong !== null) filterParams.rideAlong = filters.rideAlong;
+        if (filters.weight !== null && filters.weight !== undefined) filterParams.weight = filters.weight;
+        if (filters.volume !== null && filters.volume !== undefined) filterParams.volume = filters.volume;
+        if (filters.requiredPeople !== null && filters.requiredPeople !== undefined) filterParams.requiredPeople = filters.requiredPeople;
+        if (filters.fragile !== null && filters.fragile !== undefined) filterParams.fragile = filters.fragile;
+        if (filters.coolingRequired !== null && filters.coolingRequired !== undefined) filterParams.coolingRequired = filters.coolingRequired;
+        if (filters.rideAlong !== null && filters.rideAlong !== undefined) filterParams.rideAlong = filters.rideAlong;
         if (filters.moveDateTime !== null) {
           // Ensure moveDateTime has the format method (like dayjs)
           if (typeof filters.moveDateTime?.format === 'function') {
@@ -427,7 +427,7 @@ const DriverMap: React.FC<DriverMapProps> = (
             onMouseOut={() => setOpenInfoWindowId(null)}
             onClick={() => {
               // Determine the type based on status for the link
-              let linkType = 'VIEW'; // Default
+              let linkType = 'VIEW'; // Default to VIEW
               if (isAcceptedByCurrentUser) {
                   linkType = 'ACCEPTED';
               } else if (isCompletedOrFinalized) {
@@ -435,7 +435,8 @@ const DriverMap: React.FC<DriverMapProps> = (
               } else if (contract.contractStatus === 'OFFERED') {
                   linkType = 'OFFERED'; // Could be offered to someone else
               } else if (contract.contractStatus === 'REQUESTED') {
-                  linkType = 'REQUESTED';
+                  // Change: Route REQUESTED contracts to VIEW for the driver
+                  linkType = 'VIEW'; 
               }
               window.location.href = `/dashboard/proposal/${contract.contractId}?type=${linkType}`;
             }}

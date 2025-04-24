@@ -386,7 +386,7 @@ const Driver = () => {
                   rules={[
                     { required: true, message: "Please enter a password" },
                     {
-                      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%#*?&]{8,}$/,
                       message: "Min 8 chars: uppercase, lowercase, number, special char (@$!%*?&)",
                     },
                   ]}
