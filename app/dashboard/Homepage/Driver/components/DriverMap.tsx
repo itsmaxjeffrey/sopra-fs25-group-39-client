@@ -344,6 +344,13 @@ const DriverMap: React.FC<DriverMapProps> = (
     }
   }, [mapInstance, filtercontractsByBounds]); // Add dependencies
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchContracts();
+    }, 5000); // Fetch every 5 seconds
+
+    return () => clearInterval(intervalId); // Clean up on unmount
+  }, [fetchContracts]);
 
   if (mapError) {
     return <div style={{ color: "red" }}>{mapError}</div>;
