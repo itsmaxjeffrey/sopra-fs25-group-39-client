@@ -27,6 +27,14 @@ import styles from "../login.module.css";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+// Helper function to normalize the event object for Form.Item
+const normFile = (e: any) => {
+  if (Array.isArray(e)) {
+    return e;
+  }
+  return e?.fileList;
+};
+
 const { Title } = Typography;
 
 const Requester = () => {
@@ -244,7 +252,12 @@ const Requester = () => {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item label="Profile Picture" name="profilePicture">
+                <Form.Item
+                  label="Profile Picture"
+                  name="profilePicture"
+                  valuePropName="fileList"
+                  getValueFromEvent={normFile}
+                >
                   <Upload
                     listType="picture"
                     maxCount={1}

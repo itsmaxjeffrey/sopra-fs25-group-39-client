@@ -1,6 +1,6 @@
 "use client";
 import '@ant-design/v5-patch-for-react-19';
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Button,
   Col,
@@ -12,6 +12,8 @@ import {
   Spin,
   Upload,
 } from "antd";
+import { UploadChangeParam } from 'antd/es/upload';
+import { UploadFile } from 'antd';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -51,18 +53,94 @@ interface Location {
 const BASE_URL = getApiDomain();
 const libraries: ("places")[] = ["places"];
 
+interface LocationInputProps {
+  value?: Location | null; // Value passed from Form.Item (should be the Location object)
+  onChange?: (value: Location | null) => void; // Function to notify Form.Item of changes
+}
+
+const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
+  const autoRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const [inputValue, setInputValue] = useState(value?.formattedAddress || '');
+  console.log("LocationInput rendered. Initial value:", value, "Initial inputValue:", inputValue);
+
+  useEffect(() => {
+    console.log("LocationInput useEffect triggered. value:", value, "inputValue:", inputValue);
+    if (value && value.formattedAddress !== inputValue) {
+      console.log("useEffect: Updating inputValue from value prop");
+      setInputValue(value.formattedAddress);
+    } else if (!value && inputValue) {
+      console.log("useEffect: Clearing inputValue because value prop is null/undefined");
+      setInputValue('');
+    }
+  }, [value, inputValue]); // Added inputValue to dependency array
+
+  const handlePlaceChanged = () => {
+    console.log("handlePlaceChanged triggered");
+    const place = autoRef.current?.getPlace();
+    console.log("Place selected:", place);
+
+    if (place && place.geometry?.location && place.formatted_address) {
+      const newLocation: Location = {
+        latitude: place.geometry.location.lat(),
+        longitude: place.geometry.location.lng(),
+        formattedAddress: place.formatted_address,
+      };
+      console.log("Valid place selected. Updating input and calling onChange with:", newLocation);
+      setInputValue(newLocation.formattedAddress);
+      onChange?.(newLocation);
+    } else {
+      console.log("Invalid place or place cleared. Clearing input and calling onChange(null).");
+      setInputValue('');
+      onChange?.(null);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const currentInputText = e.target.value;
+    console.log("handleInputChange triggered. New text:", currentInputText);
+    setInputValue(currentInputText);
+  };
+
+  const handleAutocompleteLoad = (autocomplete: google.maps.places.Autocomplete) => {
+    console.log("Autocomplete loaded:", autocomplete);
+    autoRef.current = autocomplete;
+  };
+
+  return (
+    <Autocomplete
+      onLoad={handleAutocompleteLoad} // Use specific handler
+      onPlaceChanged={handlePlaceChanged}
+      fields={['geometry', 'formatted_address']}
+    >
+      <Input
+        placeholder="Enter address and select from suggestions"
+        value={inputValue}
+        onChange={handleInputChange}
+      />
+    </Autocomplete>
+  );
+};
+
+// Helper function to normalize the event object for Form.Item
+const normFile = (e: UploadChangeParam<UploadFile>) => { // Use UploadChangeParam<UploadFile>
+  if (Array.isArray(e)) {
+    return e;
+  }
+  return e?.fileList;
+};
+
 const Driver = () => {
   const [driverLicenseFilePath, setDriverLicenseFilePath] = useState<string | null>(null);
   const [insuranceProofFilePath, setInsuranceProofFilePath] = useState<string | null>(null);
   const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
+  const [profileFileList, setProfileFileList] = useState<UploadFile[]>([]);
   const [formStepOneData, setFormStepOneData] = useState<StepOneData | null>(null);
   const [step, setStep] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">("loading");
   const [errorMessage, setErrorMessage] = useState("");
   const [preferredRange, setPreferredRange] = useState<number | null>(null);
-  const [location, setLocation] = useState<Location | null>(null);
-  const autoRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const [formStepTwo] = Form.useForm();
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -100,15 +178,16 @@ const Driver = () => {
     setStep(2);
   };
 
-  const handleStepTwoFinish = async (values: StepTwoData) => {
+  const handleStepTwoFinish = async (values: StepTwoData & { location: Location | null }) => {
     const {
       vehicleModel,
       licensePlate,
       weightCapacity,
       volumeCapacity,
+      location,
     } = values;
 
-    if (!location) {
+    if (!location || !location.latitude || !location.longitude) {
       setErrorMessage("Please select a valid location from the suggestions.");
       setModalState("error");
       setModalVisible(true);
@@ -160,7 +239,7 @@ const Driver = () => {
       return <Spin tip="Loading Maps..."><div style={{ height: '300px' }} /></Spin>;
     }
     return (
-      <Form layout="vertical" onFinish={handleStepTwoFinish}>
+      <Form form={formStepTwo} layout="vertical" onFinish={handleStepTwoFinish}>
         <div className={styles.formSection}>
           <Row gutter={16}>
             <Col span={12}>
@@ -216,32 +295,26 @@ const Driver = () => {
             <Col span={24}>
               <Form.Item 
                 label="Location" 
-                name="address"
-                rules={[{ required: true, message: 'Please enter and select your address' }]}
+                name="location"
+                rules={[
+                  { required: true, message: 'Please enter and select your address' },
+                  { validator: (_, value) => 
+                      value && typeof value === 'object' && value.latitude && value.longitude
+                        ? Promise.resolve()
+                        : Promise.reject(new Error('Please select a valid address from the suggestions'))
+                  }
+                ]}
               >
-                <Autocomplete
-                  onLoad={(ref) => (autoRef.current = ref)}
-                  onPlaceChanged={() => {
-                    const place = autoRef.current?.getPlace();
-                    if (
-                      place && place.geometry?.location && place.formatted_address
-                    ) {
-                      setLocation({
-                        latitude: place.geometry.location.lat(),
-                        longitude: place.geometry.location.lng(),
-                        formattedAddress: place.formatted_address,
-                      });
-                    } else {
-                      setLocation(null);
-                    }
-                  }}
-                >
-                  <Input placeholder="Enter your address and select from suggestions" />
-                </Autocomplete>
+                <LocationInput />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Driver’s License" name="driversLicense">
+              <Form.Item 
+                label="Driver’s License" 
+                name="driversLicense"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
+              >
                 <Upload
                   listType="picture"
                   maxCount={1}
@@ -268,7 +341,12 @@ const Driver = () => {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Proof of Insurance" name="insuranceProof">
+              <Form.Item 
+                label="Proof of Insurance" 
+                name="insuranceProof"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
+              >
                 <Upload
                   listType="picture"
                   maxCount={1}
@@ -417,31 +495,48 @@ const Driver = () => {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item label="Profile Picture" name="profilePicture">
+                <Form.Item 
+                  label="Profile Picture" 
+                  name="profilePicture"
+                  valuePropName="fileList"
+                  getValueFromEvent={normFile}
+                >
                   <Upload
                     listType="picture"
                     maxCount={1}
+                    fileList={profileFileList}
                     beforeUpload={() => false}
-                    onChange={async ({ fileList }) => {
-                      const file = fileList[0]?.originFileObj;
+                    onChange={async ({ fileList: newFileList }) => {
+                      setProfileFileList(newFileList);
+
+                      const file = newFileList[0]?.originFileObj;
                       if (file) {
                         try {
                           const filePath = await uploadFile(file, "profile");
                           setUploadedFilePath(filePath);
                         } catch (error) {
                           console.error("Profile picture upload failed:", error);
+                          setProfileFileList([]);
+                          setUploadedFilePath(null);
                         }
                       } else {
                         setUploadedFilePath(null);
+                        if (newFileList.length === 0) {
+                          setProfileFileList([]);
+                        }
                       }
                     }}
                     onRemove={() => {
                       setUploadedFilePath(null);
+                      setProfileFileList([]);
+                      return true;
                     }}
                   >
-                    <Button icon={<UploadOutlined />}>
-                      Upload Profile Picture
-                    </Button>
+                    {profileFileList.length < 1 && (
+                      <Button icon={<UploadOutlined />}>
+                        Upload Profile Picture
+                      </Button>
+                    )}
                   </Upload>
                 </Form.Item>
               </Col>
@@ -461,8 +556,9 @@ const Driver = () => {
             <Spin
               indicator={<LoadingOutlined style={{ fontSize: 32 }} spin />}
               className={styles.registerSpinner}
-              tip="Registering..."
-            />
+            >
+              <div style={{ marginTop: 8 }}>Registering...</div>
+            </Spin>
           )}
           {modalState === "success" && (
             <div className={styles.registerSuccess}>
