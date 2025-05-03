@@ -1,4 +1,4 @@
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 import React, { useEffect, useState } from "react";
 import styles from "./components/ProposalsOverview.module.css";
 import axios from "axios";
@@ -21,7 +21,11 @@ interface Proposal {
   moveDateTime: string;
   creationDateTime: string;
   contractStatus: "REQUESTED" | "OFFERED" | "ACCEPTED";
-  fromLocation: { formattedAddress: string; latitude: number; longitude: number };
+  fromLocation: {
+    formattedAddress: string;
+    latitude: number;
+    longitude: number;
+  };
   toLocation: { formattedAddress: string; latitude: number; longitude: number };
   price: number;
   fragile?: boolean;
@@ -48,7 +52,7 @@ const ProposalsOverview = () => {
               UserId: `${userId}`,
               Authorization: `${token}`,
             },
-          }
+          },
         );
         console.log("API Response:", res.data); // Debugging the API response
 
@@ -60,12 +64,12 @@ const ProposalsOverview = () => {
           const sorted = contracts.sort(
             (a: Proposal, b: Proposal) =>
               new Date(a.creationDateTime).getTime() -
-              new Date(b.creationDateTime).getTime()
+              new Date(b.creationDateTime).getTime(),
           );
           setContracts(sorted);
         } else {
           console.error(
-            "Unexpected response format: contracts is not an array"
+            "Unexpected response format: contracts is not an array",
           );
         }
       } catch (err) {
@@ -134,7 +138,9 @@ const ProposalsOverview = () => {
                         {new Date(c.moveDateTime).toLocaleString()}
                       </p>
                       <p>
-                        <EnvironmentOutlined /> {c.fromLocation?.formattedAddress || "No location"} ➝{" "}
+                        <EnvironmentOutlined />{" "}
+                        {c.fromLocation?.formattedAddress || "No location"} ➝
+                        {" "}
                         {c.toLocation?.formattedAddress || "No location"}
                       </p>
                     </div>
@@ -171,7 +177,9 @@ const ProposalsOverview = () => {
                         {new Date(c.moveDateTime).toLocaleString()}
                       </p>
                       <p>
-                        <EnvironmentOutlined /> {c.fromLocation?.formattedAddress || "No location"} ➝{" "}
+                        <EnvironmentOutlined />{" "}
+                        {c.fromLocation?.formattedAddress || "No location"} ➝
+                        {" "}
                         {c.toLocation?.formattedAddress || "No location"}
                       </p>
                     </div>
@@ -208,7 +216,9 @@ const ProposalsOverview = () => {
                         {new Date(c.moveDateTime).toLocaleString()}
                       </p>
                       <p>
-                        <EnvironmentOutlined /> {c.fromLocation?.formattedAddress || "No location"} ➝{" "}
+                        <EnvironmentOutlined />{" "}
+                        {c.fromLocation?.formattedAddress || "No location"} ➝
+                        {" "}
                         {c.toLocation?.formattedAddress || "No location"}
                       </p>
                     </div>

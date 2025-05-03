@@ -16,7 +16,7 @@ import {
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styles from "./Edit.module.css";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import dayjs from "dayjs";
 import { useParams } from "next/navigation";
 import { getApiDomain } from "@/utils/domain";
@@ -40,6 +40,7 @@ const ViewProposal = ({ proposalId }: Props) => {
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [imagePaths, setImagePaths] = useState<string[]>([]);
   const [contractStatus, setContractStatus] = useState<string | null>(null); // Add state for contract status
+  const [hasUserOffered, setHasUserOffered] = useState(false); // Track if the user has already made an offer
 
   const fetchContract = async () => {
     try {
@@ -59,12 +60,24 @@ const ViewProposal = ({ proposalId }: Props) => {
       );
       const data = res.data.contract;
       // *** Log the entire received contract object ***
-      console.log("Received Contract Data:", JSON.stringify(data, null, 2)); 
+      console.log("Received Contract Data:", JSON.stringify(data, null, 2));
 
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
       setContractStatus(data.contractStatus); // Store the contract status
+      console.log("Contract Status:", data.contractStatus); // Log the contract status
+
+      // Check if the user has already made an offer on this contract
+      const userId = localStorage.getItem("userId");
+      if (data.offers && Array.isArray(data.offers)) {
+        const userOffer = data.offers.find(
+          (offer: any) => offer.driverId === Number(userId),
+        );
+        setHasUserOffered(!!userOffer); // Set to true if the user has already offered
+        console.log("User has already made an offer:", !!userOffer); // Log the result
+      }
+
       form.setFieldsValue({
         title: data.title,
         description: data.contractDescription,
@@ -93,9 +106,17 @@ const ViewProposal = ({ proposalId }: Props) => {
       });
       // Update logging to check the correct field
       console.log("Fetched From Address:", data.fromLocation?.formattedAddress);
-      console.log("Set From Coords State:", { address: data.fromLocation?.formattedAddress || "", lat: data.fromLocation?.latitude, lng: data.fromLocation?.longitude });
+      console.log("Set From Coords State:", {
+        address: data.fromLocation?.formattedAddress || "",
+        lat: data.fromLocation?.latitude,
+        lng: data.fromLocation?.longitude,
+      });
       console.log("Fetched To Address:", data.toLocation?.formattedAddress);
-      console.log("Set To Coords State:", { address: data.toLocation?.formattedAddress || "", lat: data.toLocation?.latitude, lng: data.toLocation?.longitude });
+      console.log("Set To Coords State:", {
+        address: data.toLocation?.formattedAddress || "",
+        lat: data.toLocation?.latitude,
+        lng: data.toLocation?.longitude,
+      });
 
       setImagePaths(
         // Use contractPhotos which is populated by the backend
@@ -132,34 +153,36 @@ const ViewProposal = ({ proposalId }: Props) => {
             Authorization: localStorage.getItem("token") || "",
             "UserId": driverId,
           },
-        }
+        },
       );
-      
+
       const contractStatus = contractResponse.data.contract.contractStatus;
-      
+
       // Only allow creating offers for REQUESTED contracts
-      if (contractStatus !== "REQUESTED") {
-        throw new Error(`Cannot create offer for a contract that is in ${contractStatus} state.`);
+      if (contractStatus !== "REQUESTED" && contractStatus !== "OFFERED") {
+        throw new Error(
+          `Cannot create offer for a contract that is in ${contractStatus} state.`,
+        );
       }
-      
+
       // Log the values being sent
       console.log("Submitting offer with:", {
         contractId: Number(proposalId),
         driverId: Number(driverId),
       });
-      
+
       const response = await axios.post(
         `${BASE_URL}/api/v1/offers`,
         {
           contractId: Number(proposalId), // Convert proposalId to number
-          driverId: Number(driverId),     // Convert driverId to number
+          driverId: Number(driverId), // Convert driverId to number
         },
         {
           headers: {
             Authorization: localStorage.getItem("token") || "",
             "UserId": driverId, // Use the retrieved driverId string here
           },
-        }
+        },
       );
 
       if (response.status === 201) {
@@ -169,23 +192,25 @@ const ViewProposal = ({ proposalId }: Props) => {
           content: "Your offer has been submitted successfully!", // Changed success message
           // Keep the modal open until OK is clicked, then redirect
           onOk() {
-            router.push("/dashboard"); 
+            router.push("/dashboard");
           },
         });
       }
     } catch (error) {
       console.error("Error submitting offer:", error); // Changed log message
-      let errorMessage = "An unexpected error occurred. Please try again later.";
-      if (axios.isAxiosError(error) && error.response) {
+      let errorMessage =
+        "An unexpected error occurred. Please try again later.";
+      if ((error as AxiosError).response) {
         // Log the full response for debugging
         console.error("Server Response Data:", error.response.data);
         console.error("Server Response Status:", error.response.status);
         console.error("Server Response Headers:", error.response.headers);
 
         // Check if the server provided a specific error message
-        errorMessage = error.response.data?.message || 
-          (error.response.status === 409 ? "You have already made an offer for this proposal." :
-           `Request failed with status code ${error.response.status}. Possible reasons: Offer already exists, or the contract is not available.`);
+        errorMessage = error.response.data?.message ||
+          (error.response.status === 409
+            ? "You have already made an offer for this proposal."
+            : `Request failed with status code ${error.response.status}. Possible reasons: Offer already exists, or the contract is not available.`);
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }
@@ -209,7 +234,9 @@ const ViewProposal = ({ proposalId }: Props) => {
                 ? (
                   <Image
                     // Use the download endpoint with the correct filePath parameter
-                    src={`${BASE_URL}/api/v1/files/download?filePath=${imagePaths[idx]}`}
+                    src={`${BASE_URL}/api/v1/files/download?filePath=${
+                      imagePaths[idx]
+                    }`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",
@@ -256,7 +283,9 @@ const ViewProposal = ({ proposalId }: Props) => {
           </Col>
           <Col span={8}>
             {/* Manually add label and use standalone Input */}
-            <label style={{ display: 'block', marginBottom: '8px' }}>From</label>
+            <label style={{ display: "block", marginBottom: "8px" }}>
+              From
+            </label>
             <Input
               placeholder="From address"
               value={fromCoords.address} // Bind directly to state
@@ -265,7 +294,7 @@ const ViewProposal = ({ proposalId }: Props) => {
           </Col>
           <Col span={8}>
             {/* Manually add label and use standalone Input */}
-            <label style={{ display: 'block', marginBottom: '8px' }}>To</label>
+            <label style={{ display: "block", marginBottom: "8px" }}>To</label>
             <Input
               placeholder="To address"
               value={toCoords.address} // Bind directly to state
@@ -353,20 +382,42 @@ const ViewProposal = ({ proposalId }: Props) => {
           </Col>
         </Row>
         <Form.Item>
-          <Row justify="start" gutter={16}>
-            <Col>
-              <Button
-                type="primary"
-                htmlType="button"
-                onClick={acceptProposal}
-                style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
-                disabled={contractStatus !== "REQUESTED"} // Disable button if status is not REQUESTED
-                title={contractStatus !== "REQUESTED" ? `Cannot accept proposal in ${contractStatus} state` : ""} // Add tooltip
-              >
-                {contractStatus === "REQUESTED" ? "Accept Proposal" : `Proposal is ${contractStatus}`} {/* Change button text */}
-              </Button>
-            </Col>
-          </Row>
+          {contractStatus === "REQUESTED" ||
+              (contractStatus === "OFFERED" && !hasUserOffered)
+            ? (
+              <Row justify="start" gutter={16}>
+                <Col>
+                  <Button
+                    type="primary"
+                    htmlType="button"
+                    onClick={acceptProposal}
+                    style={{
+                      backgroundColor: "#52c41a",
+                      borderColor: "#52c41a",
+                    }}
+                    disabled={contractStatus === "OFFERED" && hasUserOffered}
+                    title={contractStatus === "OFFERED" && hasUserOffered
+                      ? "You have already made an offer for this proposal."
+                      : ""}
+                  >
+                    Accept Proposal
+                  </Button>
+                </Col>
+              </Row>
+            )
+            : (
+              <div style={{ textAlign: "center", marginTop: "20px" }}>
+                <p>
+                  <strong>Proposal Status:</strong> {contractStatus}
+                </p>
+                <Button
+                  type="default"
+                  onClick={() => router.back()} // Navigate back to the previous page
+                >
+                  Back to Previous Page
+                </Button>
+              </div>
+            )}
         </Form.Item>
       </Form>
       <Modal open={modalVisible} footer={null} closable={false} centered>

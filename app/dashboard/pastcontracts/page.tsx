@@ -1,5 +1,5 @@
 "use client";
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 import React, { useEffect, useState } from "react";
 import { Spin, Table } from "antd";
 import axios from "axios";
@@ -11,8 +11,16 @@ import { getApiDomain } from "@/utils/domain"; // Import the function
 interface Contract {
   contractId: string;
   moveDateTime: string;
-  fromLocation: { latitude: number; longitude: number; formattedAddress?: string }; // Added formattedAddress
-  toLocation: { latitude: number; longitude: number; formattedAddress?: string }; // Added formattedAddress
+  fromLocation: {
+    latitude: number;
+    longitude: number;
+    formattedAddress?: string;
+  }; // Added formattedAddress
+  toLocation: {
+    latitude: number;
+    longitude: number;
+    formattedAddress?: string;
+  }; // Added formattedAddress
   contractStatus: string;
   title: string; // Added title
 }
@@ -45,23 +53,38 @@ const PastContracts = () => {
         const [completedRes, finalizedRes] = await Promise.all([
           axios.get<ContractsApiResponse>(
             `${BASE_URL}/api/v1/users/${userId}/contracts?status=COMPLETED`,
-            { headers }
+            { headers },
           ),
           axios.get<ContractsApiResponse>(
             `${BASE_URL}/api/v1/users/${userId}/contracts?status=FINALIZED`,
-            { headers }
-          )
+            { headers },
+          ),
         ]);
 
         // --- DEBUGGING: Log raw API responses ---
-        console.log("Raw API response for COMPLETED contracts:", completedRes.data);
-        console.log("Raw API response for FINALIZED contracts:", finalizedRes.data);
+        console.log(
+          "Raw API response for COMPLETED contracts:",
+          completedRes.data,
+        );
+        console.log(
+          "Raw API response for FINALIZED contracts:",
+          finalizedRes.data,
+        );
         // --- END DEBUGGING ---
 
         // Combine the contract arrays from both responses
-        const completedContracts = (completedRes.data?.contracts && Array.isArray(completedRes.data.contracts)) ? completedRes.data.contracts : [];
-        const finalizedContracts = (finalizedRes.data?.contracts && Array.isArray(finalizedRes.data.contracts)) ? finalizedRes.data.contracts : [];
-        const combinedContracts = [...completedContracts, ...finalizedContracts];
+        const completedContracts = (completedRes.data?.contracts &&
+            Array.isArray(completedRes.data.contracts))
+          ? completedRes.data.contracts
+          : [];
+        const finalizedContracts = (finalizedRes.data?.contracts &&
+            Array.isArray(finalizedRes.data.contracts))
+          ? finalizedRes.data.contracts
+          : [];
+        const combinedContracts = [
+          ...completedContracts,
+          ...finalizedContracts,
+        ];
 
         // Sort the combined list by move date (most recent first)
         const sortedContracts = combinedContracts.sort((a: any, b: any) =>
@@ -73,7 +96,6 @@ const PastContracts = () => {
         // --- END DEBUGGING ---
 
         setContracts(sortedContracts);
-
       } catch (err) {
         console.error("Failed to load past contracts", err);
         setContracts([]); // Set to empty on error

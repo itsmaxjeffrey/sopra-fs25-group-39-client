@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Button,
   Col,
@@ -9,11 +9,11 @@ import {
   Image,
   Input,
   InputNumber,
+  message,
   Modal,
   Row,
   Spin,
   Switch,
-  message,
 } from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styles from "./Edit.module.css";
@@ -212,7 +212,9 @@ const OfferProposal = ({ proposalId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    src={`${BASE_URL}/api/v1/files/download?filePath=${imagePaths[idx]}`}
+                    src={`${BASE_URL}/api/v1/files/download?filePath=${
+                      imagePaths[idx]
+                    }`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",

@@ -1,5 +1,5 @@
 "use client";
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -59,12 +59,16 @@ const NewProposalFormPage = () => {
     if (!token || !userId) return;
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/v1/files/upload`, formData, {
-        headers: {
-          UserId: `${userId}`,
-          Authorization: `${token}`,
+      const response = await axios.post(
+        `${BASE_URL}/api/v1/files/upload`,
+        formData,
+        {
+          headers: {
+            UserId: `${userId}`,
+            Authorization: `${token}`,
+          },
         },
-      });
+      );
 
       if (!response.data.filePath) {
         throw new Error("File path is missing in the response");
@@ -102,7 +106,7 @@ const NewProposalFormPage = () => {
       toLocation: {
         latitude: toCoords.lat,
         longitude: toCoords.lng,
-        formattedAddress: values.to,   // Using form value
+        formattedAddress: values.to, // Using form value
       },
       length: Number(values.length),
       width: Number(values.width),
@@ -112,7 +116,7 @@ const NewProposalFormPage = () => {
       coolingRequired: values.cooling,
       rideAlong: values.rideAlong,
       // Add fallback for parseInt in case manPower is empty/undefined
-      manPower: parseInt(values.manPower) || 0, 
+      manPower: parseInt(values.manPower) || 0,
       price: parseFloat(values.price),
       contractStatus: "REQUESTED",
       requesterId: userId ? parseInt(userId) : null,
@@ -122,7 +126,10 @@ const NewProposalFormPage = () => {
     };
 
     try {
-      console.log("Payload From Address:", payload.fromLocation.formattedAddress);
+      console.log(
+        "Payload From Address:",
+        payload.fromLocation.formattedAddress,
+      );
       console.log("Payload To Address:", payload.toLocation.formattedAddress);
       console.log("WOULD SEND:", JSON.stringify(payload, null, 2));
       await axios.post(`${BASE_URL}/api/v1/contracts`, payload, {
@@ -138,7 +145,9 @@ const NewProposalFormPage = () => {
       setModalState("error");
       // Extract more specific error message if available
       const backendMessage = err.response?.data?.message || err.message;
-      setErrorMessage(backendMessage || "Something went wrong while creating your proposal.");
+      setErrorMessage(
+        backendMessage || "Something went wrong while creating your proposal.",
+      );
     }
   };
 

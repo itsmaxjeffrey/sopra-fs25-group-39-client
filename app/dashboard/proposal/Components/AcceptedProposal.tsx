@@ -210,7 +210,9 @@ const AcceptedProposal = ({ proposalId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    src={`${BASE_URL}/api/v1/files/download?filePath=${imagePaths[idx]}`}
+                    src={`${BASE_URL}/api/v1/files/download?filePath=${
+                      imagePaths[idx]
+                    }`}
                     alt={`upload-${idx}`}
                     style={{
                       width: "100%",
@@ -316,7 +318,8 @@ const AcceptedProposal = ({ proposalId }: Props) => {
         </Row>
 
         {/* Conditionally render the Driver section only for the Requester */}
-        {loggedInUserId && contractData && Number(loggedInUserId) === contractData.requester?.userId && (
+        {loggedInUserId && contractData &&
+          Number(loggedInUserId) === contractData.requester?.userId && (
           <>
             <Title level={2}>Your driver:</Title>
             <div className={styles.scrollContainer}>

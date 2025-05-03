@@ -7,10 +7,10 @@ import {
   Form,
   Image,
   Input,
+  message,
+  Rate,
   Spin,
   Switch,
-  Rate,
-  message,
 } from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styles from "./Edit.module.css";
@@ -86,8 +86,7 @@ const RatingProposal = ({ proposalId }: Props) => {
       setImagePaths(contract.contractPhotos || []);
     } catch (err: any) {
       console.error("Error fetching contract details:", err);
-      const errorMessage =
-        err.response?.data?.message ||
+      const errorMessage = err.response?.data?.message ||
         "Failed to fetch contract details. Please try again.";
       message.error(errorMessage);
       setError(true);
@@ -146,9 +145,11 @@ const RatingProposal = ({ proposalId }: Props) => {
       message.success("Thank you! Your feedback has been submitted.");
       router.push("/dashboard");
     } catch (err: any) {
-      console.error("Error submitting rating:", err.response?.data || err.message || err); // Log detailed error
-      const errorMessage =
-        err.response?.data?.message ||
+      console.error(
+        "Error submitting rating:",
+        err.response?.data || err.message || err,
+      ); // Log detailed error
+      const errorMessage = err.response?.data?.message ||
         "Could not submit your rating. Please try again.";
       message.error(errorMessage);
     }
@@ -160,21 +161,25 @@ const RatingProposal = ({ proposalId }: Props) => {
         <div className={styles.imageRow}>
           {[0, 1, 2].map((idx) => (
             <div key={idx} className={styles.imageBox}>
-              {imagePaths[idx] ? (
-                <Image
-                  src={`${BASE_URL}/api/v1/files/download?filePath=${imagePaths[idx]}`}
-                  alt={`upload-${idx}`}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              ) : (
-                <div className={styles.cameraIcon}>
-                  <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-                </div>
-              )}
+              {imagePaths[idx]
+                ? (
+                  <Image
+                    src={`${BASE_URL}/api/v1/files/download?filePath=${
+                      imagePaths[idx]
+                    }`}
+                    alt={`upload-${idx}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                )
+                : (
+                  <div className={styles.cameraIcon}>
+                    <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
+                  </div>
+                )}
             </div>
           ))}
         </div>
@@ -253,21 +258,22 @@ const RatingProposal = ({ proposalId }: Props) => {
             shouldUpdate={(prev, cur) => prev.issues !== cur.issues}
           >
             {({ getFieldValue }) =>
-              getFieldValue("issues") ? (
-                <Form.Item
-                  name="issueDetails"
-                  label="Please describe the issue"
-                  rules={[
-                    { required: true, message: "Please describe the issue" },
-                  ]}
-                >
-                  <Input.TextArea
-                    rows={3}
-                    placeholder="Explain what went wrong..."
-                  />
-                </Form.Item>
-              ) : null
-            }
+              getFieldValue("issues")
+                ? (
+                  <Form.Item
+                    name="issueDetails"
+                    label="Please describe the issue"
+                    rules={[
+                      { required: true, message: "Please describe the issue" },
+                    ]}
+                  >
+                    <Input.TextArea
+                      rows={3}
+                      placeholder="Explain what went wrong..."
+                    />
+                  </Form.Item>
+                )
+                : null}
           </Form.Item>
 
           <Form.Item>

@@ -1,6 +1,6 @@
 "use client";
 
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios"; // Import AxiosError
 import { Spin } from "antd";
@@ -9,7 +9,7 @@ import LayoutWrapper from "./layout-wrapper";
 import AccountTypeContext from "./AccountTypeContext";
 import { Libraries, LoadScript } from "@react-google-maps/api";
 import { getApiDomain } from "@/utils/domain"; // Import the function
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from "next/navigation"; // Import useRouter
 
 const MAP_LIBRARIES: Libraries = ["places"];
 const BASE_URL = getApiDomain(); // Define BASE_URL
@@ -42,18 +42,21 @@ export default function DashboardLayout({
       // Check for token/userId first and redirect if missing
       if (!userId || !token) {
         setLoading(false); // Stop loading
-        router.push('/login'); // Redirect to login
+        router.push("/login"); // Redirect to login
         return; // Stop execution here
       }
 
       try {
-        const response = await axios.get<User>(`${BASE_URL}/api/v1/users/${userId}`, {
-          headers: {
-            UserId: `${userId}`,
-            Authorization: `${token}`,
+        const response = await axios.get<User>(
+          `${BASE_URL}/api/v1/users/${userId}`,
+          {
+            headers: {
+              UserId: `${userId}`,
+              Authorization: `${token}`,
+            },
+            withCredentials: true,
           },
-          withCredentials: true,
-        });
+        );
         console.log("API Response:", response.data);
         setAccountType(response.data.userAccountType);
         setLoading(false); // Stop loading on success
@@ -62,11 +65,16 @@ export default function DashboardLayout({
         // Check if it's an Axios error and specifically an auth error (401 or 403)
         if (axios.isAxiosError(error)) {
           const axiosError = error as AxiosError;
-          if (axiosError.response?.status === 401 || axiosError.response?.status === 403) {
-            console.log("Authentication error detected, clearing storage and redirecting to login.");
+          if (
+            axiosError.response?.status === 401 ||
+            axiosError.response?.status === 403
+          ) {
+            console.log(
+              "Authentication error detected, clearing storage and redirecting to login.",
+            );
             localStorage.removeItem("token");
             localStorage.removeItem("userId");
-            router.push('/login'); // Redirect to login on auth error
+            router.push("/login"); // Redirect to login on auth error
             // Keep loading true until redirect happens, or set false if preferred
             // setLoading(false); // Set loading false after initiating redirect
             return; // Stop further execution in this effect
@@ -89,7 +97,14 @@ export default function DashboardLayout({
   // Render loading spinner while loading OR if redirecting (accountType might still be null briefly)
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
         <Spin size="large" />
       </div>
     );

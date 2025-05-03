@@ -7,7 +7,7 @@ import UserDataTab from "./Tabs/UserData";
 import VehicleDataTab from "./Tabs/VehicleData";
 import ActionsTab from "./Tabs/Actions";
 import { getApiDomain } from "@/utils/domain"; // Import the function
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -66,11 +66,11 @@ const AccountPage = () => {
 
         // Normalize fetched data: ensure car details are under 'car' key
         // Explicitly type normalizedUser to allow for both car and carDTO initially
-        const normalizedUser: User = { ...user }; 
+        const normalizedUser: User = { ...user };
         if (normalizedUser.carDTO) {
-            normalizedUser.car = { ...normalizedUser.carDTO }; // Spread to create a new object
-            delete normalizedUser.carDTO;
-            console.log("Normalized user data:", normalizedUser); // Log normalized data
+          normalizedUser.car = { ...normalizedUser.carDTO }; // Spread to create a new object
+          delete normalizedUser.carDTO;
+          console.log("Normalized user data:", normalizedUser); // Log normalized data
         }
 
         setUserData({ // Use normalized data for userData state

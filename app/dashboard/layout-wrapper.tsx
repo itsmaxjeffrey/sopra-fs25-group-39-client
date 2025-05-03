@@ -1,6 +1,6 @@
 "use client";
 
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
