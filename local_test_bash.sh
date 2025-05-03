@@ -192,7 +192,7 @@ echo "--- Scenario 1: Creating FINALIZED Contract ---" >&2
 # 4. Create Contract (Proposal) in the Past (for Finalized)
 echo "4. Creating Contract 1 (for Finalized)..." >&2
 contract_response_finalized=$(make_request "POST" "$BASE_URL/contracts" \
-    "{\"title\": \"Finalized Move ${TIMESTAMP}\", \"contractDescription\": \"Testing finalized flow\", \"moveDateTime\": \"$PAST_DATE\", \"fromLocation\": {\"latitude\": 47.3769, \"longitude\": 8.5417, \"formattedAddress\": \"Zurich HB Finalized From\"}, \"toLocation\": {\"latitude\": 47.3780, \"longitude\": 8.5400, \"formattedAddress\": \"Zurich Main Station Finalized To\"}, \"weight\": 5.0, \"height\": 1.0, \"width\": 1.0, \"length\": 1.0, \"fragile\": false, \"coolingRequired\": false, \"rideAlong\": false, \"manPower\": 1, \"price\": 30.0, \"requesterId\": $REQ_USER_ID}" \
+    "{\"title\": \"Finalized Move ${TIMESTAMP}\", \"contractDescription\": \"Testing finalized flow\", \"moveDateTime\": \"2025-05-29T10:00:00Z\", \"fromLocation\": {\"latitude\": 47.3769, \"longitude\": 8.5417, \"formattedAddress\": \"Zurich HB Finalized From\"}, \"toLocation\": {\"latitude\": 47.3780, \"longitude\": 8.5400, \"formattedAddress\": \"Zurich Main Station Finalized To\"}, \"weight\": 5.0, \"height\": 1.0, \"width\": 1.0, \"length\": 1.0, \"fragile\": false, \"coolingRequired\": false, \"rideAlong\": false, \"manPower\": 1, \"price\": 30.0, \"requesterId\": $REQ_USER_ID}" \
     "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN") || handle_failure "Create Contract 1 (Finalized)"
 
 CONTRACT_ID_FINALIZED=$(echo "$contract_response_finalized" | jq -r '.contract.contractId // .contractId')
@@ -254,7 +254,7 @@ echo "--- Scenario 2: Creating ACCEPTED Contract ---" >&2
 # 10. Create Second Contract (for Accepted state)
 echo "10. Creating Contract 2 (for Accepted)..." >&2
 contract_response_accepted=$(make_request "POST" "$BASE_URL/contracts" \
-    "{\"title\": \"Accepted Move ${TIMESTAMP}\", \"contractDescription\": \"Testing accepted flow\", \"moveDateTime\": \"$PAST_DATE_ACCEPTED\", \"fromLocation\": {\"latitude\": 47.4000, \"longitude\": 8.5000, \"formattedAddress\": \"Zurich Accepted From\"}, \"toLocation\": {\"latitude\": 47.4100, \"longitude\": 8.5100, \"formattedAddress\": \"Zurich Accepted To\"}, \"weight\": 10.0, \"height\": 1.0, \"width\": 1.0, \"length\": 2.0, \"fragile\": true, \"coolingRequired\": false, \"rideAlong\": true, \"manPower\": 2, \"price\": 50.0, \"requesterId\": $REQ_USER_ID}" \
+    "{\"title\": \"Accepted Move ${TIMESTAMP}\", \"contractDescription\": \"Testing accepted flow\", \"moveDateTime\": \"2025-05-29T11:00:00Z\", \"fromLocation\": {\"latitude\": 47.4000, \"longitude\": 8.5000, \"formattedAddress\": \"Zurich Accepted From\"}, \"toLocation\": {\"latitude\": 47.4100, \"longitude\": 8.5100, \"formattedAddress\": \"Zurich Accepted To\"}, \"weight\": 10.0, \"height\": 1.0, \"width\": 1.0, \"length\": 2.0, \"fragile\": true, \"coolingRequired\": false, \"rideAlong\": true, \"manPower\": 2, \"price\": 50.0, \"requesterId\": $REQ_USER_ID}" \
     "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN") || handle_failure "Create Contract 2 (Accepted)"
 
 CONTRACT_ID_ACCEPTED=$(echo "$contract_response_accepted" | jq -r '.contract.contractId // .contractId')
@@ -285,8 +285,8 @@ make_request "PUT" "$BASE_URL/offers/$OFFER_ID_ACCEPTED/status?status=ACCEPTED" 
     "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN" || handle_failure "Accept Offer (Accepted)"
 
 
-# --- Scenario 3: Requested Contract ---
-echo "--- Scenario 3: Creating REQUESTED Contract ---" >&2
+# --- Scenario 3: Cancelled Requested Contract ---
+echo "--- Scenario 3: Creating cancelled REQUESTED Contract ---" >&2
 
 # 13. Create Third Contract (for Requested state)
 echo "13. Creating Contract 3 (for Requested)..." >&2
@@ -303,8 +303,8 @@ fi
 echo "   Contract ID (Requested): $CONTRACT_ID_REQUESTED" >&2
 
 
-# --- Scenario 4: Offered Contract ---
-echo "--- Scenario 4: Creating OFFERED Contract ---" >&2
+# --- Scenario 4: Cancelled Offered Contract ---
+echo "--- Scenario 4: Creating cancelled OFFERED Contract ---" >&2
 
 # 14. Create Fourth Contract (for Offered state)
 echo "14. Creating Contract 4 (for Offered)..." >&2
@@ -335,6 +335,56 @@ fi
 echo "   Offer ID (Offered): $OFFER_ID_OFFERED" >&2
 # Note: We stop here for the OFFERED state. The requester does not accept this offer.
 
+# --- Scenario 5: Requested Contract ---
+echo "--- Scenario 5: Creating REQUESTED Contract ---" >&2
+
+# 15. Create Fifth Contract (for Requested state)
+echo "15. Creating Contract 5 (for Requested)..." >&2
+contract_response_requested=$(make_request "POST" "$BASE_URL/contracts" \
+    "{\"title\": \"Requested Move ${TIMESTAMP}\", \"contractDescription\": \"Testing requested flow\", \"moveDateTime\": \"2025-05-29T12:00:00Z\", \"fromLocation\": {\"latitude\": 47.3500, \"longitude\": 8.5500, \"formattedAddress\": \"Zurich Requested From\"}, \"toLocation\": {\"latitude\": 47.3600, \"longitude\": 8.5600, \"formattedAddress\": \"Zurich Requested To\"}, \"weight\": 2.0, \"height\": 1.0, \"width\": 1.0, \"length\": 0.5, \"fragile\": false, \"coolingRequired\": true, \"rideAlong\": false, \"manPower\": 1, \"price\": 20.0, \"requesterId\": $REQ_USER_ID}" \
+    "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN") || handle_failure "Create Contract 5 (Requested)"
+
+CONTRACT_ID_REQUESTED=$(echo "$contract_response_requested" | jq -r '.contract.contractId // .contractId')
+if [[ -z "$CONTRACT_ID_REQUESTED" || "$CONTRACT_ID_REQUESTED" == "null" ]]; then
+    echo "Error: Failed to parse Contract ID 5 (Requested)." >&2
+    echo "Raw response was: $contract_response_requested" >&2
+    exit 1
+fi
+echo "   Contract ID (Requested): $CONTRACT_ID_REQUESTED" >&2
+
+
+# --- Scenario 6: Offered Contract ---
+echo "--- Scenario 6: Creating OFFERED Contract ---" >&2
+
+# 16. Create Sixth Contract (for Offered state)
+echo "16. Creating Contract 6 (for Offered)..." >&2
+contract_response_offered=$(make_request "POST" "$BASE_URL/contracts" \
+    "{\"title\": \"Offered Move ${TIMESTAMP}\", \"contractDescription\": \"Testing offered flow\", \"moveDateTime\": \"2025-05-29T13:00:00Z\", \"fromLocation\": {\"latitude\": 47.3800, \"longitude\": 8.5800, \"formattedAddress\": \"Zurich Offered From\"}, \"toLocation\": {\"latitude\": 47.3900, \"longitude\": 8.5900, \"formattedAddress\": \"Zurich Offered To\"}, \"weight\": 15.0, \"height\": 1.0, \"width\": 1.0, \"length\": 3.0, \"fragile\": false, \"coolingRequired\": false, \"rideAlong\": false, \"manPower\": 3, \"price\": 70.0, \"requesterId\": $REQ_USER_ID}" \
+    "UserId: $REQ_USER_ID" "Authorization: $REQ_TOKEN") || handle_failure "Create Contract 6 (Offered)"
+
+CONTRACT_ID_OFFERED=$(echo "$contract_response_offered" | jq -r '.contract.contractId // .contractId')
+if [[ -z "$CONTRACT_ID_OFFERED" || "$CONTRACT_ID_OFFERED" == "null" ]]; then
+    echo "Error: Failed to parse Contract ID 6 (Offered)." >&2
+    echo "Raw response was: $contract_response_offered" >&2
+    exit 1
+fi
+echo "   Contract ID (Offered): $CONTRACT_ID_OFFERED" >&2
+
+# 17. Create Offer for Sixth Contract (Driver)
+echo "17. Creating Offer for Offered Contract..." >&2
+offer_response_offered=$(make_request "POST" "$BASE_URL/offers" \
+    "{\"contractId\": $CONTRACT_ID_OFFERED, \"driverId\": $DRV_USER_ID}" \
+    "UserId: $DRV_USER_ID" "Authorization: $DRV_TOKEN") || handle_failure "Create Offer (Offered)"
+
+OFFER_ID_OFFERED=$(echo "$offer_response_offered" | jq -r '.offer.offerId // .offerId')
+if [[ -z "$OFFER_ID_OFFERED" || "$OFFER_ID_OFFERED" == "null" ]]; then
+    echo "Error: Failed to parse Offer ID (Offered)." >&2
+    echo "Raw response was: $offer_response_offered" >&2
+    exit 1
+fi
+echo "   Offer ID (Offered): $OFFER_ID_OFFERED" >&2
+# Note: We stop here for the OFFERED state. The requester does not accept this offer.
+
 
 # --- Final Summary ---
 echo "--- Multi-Contract Test Setup Complete ---" >&2
@@ -343,5 +393,8 @@ echo "Driver: $DRV_USERNAME / $DRV_PASSWORD (UserID: $DRV_USER_ID, Phone: $DRV_P
 echo "" >&2
 echo "Contract 1 (Finalized): ID $CONTRACT_ID_FINALIZED (Completed and Finalized by Requester $REQ_USERNAME)" >&2
 echo "Contract 2 (Accepted): ID $CONTRACT_ID_ACCEPTED (Accepted by Requester, ready for completion)" >&2
-echo "Contract 3 (Requested): ID $CONTRACT_ID_REQUESTED (Created by Requester, no offers yet)" >&2
-echo "Contract 4 (Offered): ID $CONTRACT_ID_OFFERED (Offer $OFFER_ID_OFFERED made by Driver, pending Requester acceptance)" >&2
+echo "Contract 3 (Requested, but cancelled): ID $CONTRACT_ID_REQUESTED (Created by Requester, no offers yet)" >&2
+echo "Contract 4 (Offered, but cancelled): ID $CONTRACT_ID_OFFERED (Offer $OFFER_ID_OFFERED made by Driver, pending Requester acceptance)" >&2
+echo "Contract 5 (Requested): ID $CONTRACT_ID_REQUESTED (Created by Requester, no offers yet)" >&2
+echo "Contract 6 (Offered): ID $CONTRACT_ID_OFFERED (Offer $OFFER_ID_OFFERED made by Driver, pending Requester acceptance)" >&2
+

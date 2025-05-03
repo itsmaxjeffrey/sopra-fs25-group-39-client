@@ -184,8 +184,13 @@ const HomePage = () => {
           // fetchedContracts remains empty
         }
 
+        // Filter out contracts with status "DELETED" or "CANCELED"
+        const validContracts = fetchedContracts.filter(
+        (contract) => contract.contractStatus !== "DELETED" && contract.contractStatus !== "CANCELED"
+        );
+
         // Now fetchedContracts is guaranteed to be Contract[]
-        const sorted = fetchedContracts.sort(
+        const sorted = validContracts.sort(
           (a: Contract, b: Contract) =>
             new Date(b.creationDateTime).getTime() -
             new Date(a.creationDateTime).getTime()
@@ -243,7 +248,7 @@ const HomePage = () => {
               new Date(a.creationDateTime).getTime()
           );
           // Filter out offers without valid contract details if necessary
-          const validOffers = sorted.filter(offer => offer.contract && offer.contract.contractId);
+          const validOffers = sorted.filter(offer => offer.contract && offer.contract.contractId && offer.contract.contractStatus !== "CANCELED" && offer.contract.contractStatus !== "DELETED");
           setPendingOffers(validOffers);
           setPendingOffersError(null);
         } else {

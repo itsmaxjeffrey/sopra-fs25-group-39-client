@@ -186,6 +186,7 @@ const DriverMap: React.FC<DriverMapProps> = (
         );
 
         const data = await response.json();
+        console.log("Fetched contracts:", data.contracts);
 
         if (Array.isArray(data.contracts)) {
           setAllContracts(data.contracts);
@@ -207,9 +208,10 @@ const DriverMap: React.FC<DriverMapProps> = (
   // Filter contracts based on status (remove CANCELED and DELETED)
   useEffect(() => {
     const filtered = allContracts.filter(contract =>
-      contract.contractStatus !== "CANCELED" && contract.contractStatus !== "DELETED"
+      contract.contractStatus === "OFFERED" || contract.contractStatus === "REQUESTED"
     );
     // We set the displayContracts here initially, but filtercontractsByBounds will refine it
+    console.log("Filtered contracts based on status:", filtered);
     setDisplayContracts(filtered);
   }, [allContracts]);
 
@@ -227,7 +229,7 @@ const DriverMap: React.FC<DriverMapProps> = (
 
     // Filter from the *status-filtered* list derived from allContracts
     const contractsToFilter = allContracts.filter(contract =>
-        contract.contractStatus !== "CANCELED" && contract.contractStatus !== "DELETED"
+        contract.contractStatus === "OFFERED" || contract.contractStatus === "REQUESTED"
     );
 
     if (!Array.isArray(contractsToFilter)) { // Check if it's an array
