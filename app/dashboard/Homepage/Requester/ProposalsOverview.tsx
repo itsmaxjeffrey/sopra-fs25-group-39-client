@@ -75,7 +75,21 @@ const ProposalsOverview = () => {
       }
     };
 
-    fetchContracts();
+    const intervalId = setInterval(() => {
+      fetchContracts();
+    }, 5000); // Poll every 5 seconds
+
+    const timeoutId = setTimeout(() => {
+      clearInterval(intervalId); // Stop polling after 5 minutes
+      console.log("Polling stopped after 5 minutes to save traffic.");
+    }, 300000); // 5 minutes in milliseconds
+
+    fetchContracts(); // Fetch immediately on mount
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   useEffect(() => {
