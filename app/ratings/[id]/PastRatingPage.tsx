@@ -57,8 +57,16 @@ const RatingPage: React.FC = () => {
       }
 
       try {
+
+        const token = localStorage.getItem("token") || "";
+        const requestingUserId = localStorage.getItem("userId") || "";
         // Perform an actual API call
-        const response = await fetch(`${BASE_URL}/api/v1/ratings/${ratingId}`); // Update to your actual API endpoint
+        const response = await fetch(`${BASE_URL}/api/v1/ratings/${ratingId}`, { // Pass options object as second argument
+          headers: {
+            Authorization: token,
+            UserId: requestingUserId,
+          },
+        });
         if (response.ok) {
           const data: Rating = await response.json();
           setRating(data);
@@ -79,7 +87,16 @@ const RatingPage: React.FC = () => {
         return;
       }
       try {
-        const response = await fetch(`${BASE_URL}/api/v1/users/${rating.fromUser.userId}`);
+
+        const token = localStorage.getItem("token") || "";
+        const requestingUserId = localStorage.getItem("userId") || "";
+
+        const response = await fetch(`${BASE_URL}/api/v1/users/${rating.fromUser.userId}`, { // Pass options object as second argument
+          headers: {
+            Authorization: token,
+            UserId: requestingUserId,
+          },
+        });
         if (response.ok) {
           const data: User = await response.json();
           setUser(data);
@@ -100,7 +117,16 @@ const RatingPage: React.FC = () => {
         return;
       }
       try {
-        const response = await fetch(`${BASE_URL}/api/v1/contracts/${rating.contract.contractId}`);
+
+        const token = localStorage.getItem("token") || "";
+        const requestingUserId = localStorage.getItem("userId") || "";
+        
+        const response = await fetch(`${BASE_URL}/api/v1/contracts/${rating.contract.contractId}`, { // Pass options object as second argument
+          headers: {
+            Authorization: token,
+            UserId: requestingUserId,
+          },
+        });
         if (response.ok) {
           const data: Contract = await response.json();
           setContract(data);

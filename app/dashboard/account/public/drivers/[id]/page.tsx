@@ -58,6 +58,10 @@ export default function DriverProfilePage() {
   const [driver, setDriver] = useState<Driver | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const handleRatingClick = (ratingId: number) => {
+    router.push(`${BASE_URL}/app/ratings/${ratingId}`);
+  };
+
   useEffect(() => {
     if (!id || typeof id !== "string") return;
 
@@ -264,6 +268,7 @@ export default function DriverProfilePage() {
                     <div
                       key={rating.ratingId || index}
                       style={{ padding: "10px" }}
+                      onClick={() => handleRatingClick(rating.ratingId)} 
                     >
                       <Card
                         type="inner"
