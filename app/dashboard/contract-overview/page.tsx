@@ -75,6 +75,100 @@ const ProposalsOverview = () => {
       return;
     }
 
+    const headers = {
+      UserId: `${userId}`,
+      Authorization: `${token}`,
+    };
+
+    const fetchDriverData = async () => {
+      try {
+        const offersRes = await axios.get<{ offers: Offer[] }>(
+          `${BASE_URL}/api/v1/users/${userId}/offers?status=CREATED`,
+          { headers },
+        );
+        const pendingOffers = offersRes.data.offers || [];
+
+        const pendingContractPromises = pendingOffers.map((offer) =>
+          axios
+            .get<{ contract: Proposal }>(
+              `${BASE_URL}/api/v1/contracts/${offer.contract.contractId}`,
+              { headers },
+            )
+            .then((res) => res.data.contract)
+            .catch((err) => {
+              console.error(`Failed to fetch contract ${offer.contract.contractId}:`, err);
+              return null;
+            }),
+        );
+        const pendingContractsDetails = (await Promise.all(pendingContractPromises)).filter(
+          (contract): contract is Proposal => contract !== null,
+        );
+        setDriverPendingOfferContracts(
+          pendingContractsDetails.sort(
+            (a, b) => new Date(b.creationDateTime).getTime() - new Date(a.creationDateTime).getTime(),
+          ),
+        );
+
+        const acceptedContractsRes = await axios.get(
+          `${BASE_URL}/api/v1/users/${userId}/contracts?status=ACCEPTED`,
+          { headers },
+        );
+        let acceptedContracts: Proposal[] = [];
+        const acceptedResponseData = acceptedContractsRes.data;
+        if (Array.isArray(acceptedResponseData)) {
+          acceptedContracts = acceptedResponseData;
+        } else if (
+          acceptedResponseData &&
+          typeof acceptedResponseData === "object" &&
+          "contracts" in acceptedResponseData &&
+          Array.isArray((acceptedResponseData as AcceptedContractsResponse).contracts)
+        ) {
+          acceptedContracts = (acceptedResponseData as AcceptedContractsResponse).contracts;
+        }
+
+        acceptedContracts = acceptedContracts.filter((c) => c.contractStatus === "ACCEPTED");
+
+        setDriverAcceptedContracts(
+          acceptedContracts.sort(
+            (a, b) => new Date(b.creationDateTime).getTime() - new Date(a.creationDateTime).getTime(),
+          ),
+        );
+      } catch (err) {
+        console.error("Failed to fetch driver data:", err);
+        message.error("Failed to load your contract overview.");
+        setDriverPendingOfferContracts([]);
+        setDriverAcceptedContracts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const intervalId = setInterval(() => {
+      fetchDriverData();
+    }, 5000); // Poll every 5 seconds
+
+    const timeoutId = setTimeout(() => {
+      clearInterval(intervalId); // Stop polling after 5 minutes
+      console.log("Polling stopped after 5 minutes to save traffic.");
+    }, 300000); // 5 minutes in milliseconds
+
+    fetchDriverData(); // Fetch immediately on mount
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  }, [accountType, isDriver]);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+
+    if (!userId || !token) {
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     const headers = {
       UserId: `${userId}`,
