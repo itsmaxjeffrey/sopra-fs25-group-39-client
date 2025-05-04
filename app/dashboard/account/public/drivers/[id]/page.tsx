@@ -268,7 +268,7 @@ export default function DriverProfilePage() {
                     <div
                       key={rating.ratingId || index}
                       style={{ padding: "10px" }}
-                      onClick={() => handleRatingClick(rating.ratingId)} 
+                      onClick={() => handleRatingClick(rating.ratingId)}
                     >
                       <Card
                         type="inner"

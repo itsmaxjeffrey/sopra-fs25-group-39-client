@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Image, Input, Rate } from "antd";
 import "antd/dist/antd.css";
 import { getApiDomain } from "@/utils/domain";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 
 interface User {
   userId: number;
@@ -20,22 +20,22 @@ interface Contract {
 }
 
 interface Rating {
-  ratingId: number,
-    fromUser: {
-      userId: number,
-      username: string
-    },
-    toUser: {
-      userId: number,
-      username: string
-    },
-    contract: {
-      contractId: number
-    },
-    ratingValue: number
-    flagIssues: false,
-    comment: string
-  }
+  ratingId: number;
+  fromUser: {
+    userId: number;
+    username: string;
+  };
+  toUser: {
+    userId: number;
+    username: string;
+  };
+  contract: {
+    contractId: number;
+  };
+  ratingValue: number;
+  flagIssues: false;
+  comment: string;
+}
 
 const RatingPage: React.FC = () => {
   const [rating, setRating] = useState<Rating | null>(null);
@@ -45,11 +45,9 @@ const RatingPage: React.FC = () => {
   const BASE_URL = getApiDomain();
   const router = useRouter();
   const { ratingId } = router.query;
-  
 
   useEffect(() => {
     const fetchRating = async () => {
-
       if (!ratingId) {
         // ratingId might be undefined during the initial render
         setError("Rating ID is missing.");
@@ -57,7 +55,6 @@ const RatingPage: React.FC = () => {
       }
 
       try {
-
         const token = localStorage.getItem("token") || "";
         const requestingUserId = localStorage.getItem("userId") || "";
         // Perform an actual API call
@@ -87,22 +84,24 @@ const RatingPage: React.FC = () => {
         return;
       }
       try {
-
         const token = localStorage.getItem("token") || "";
         const requestingUserId = localStorage.getItem("userId") || "";
 
-        const response = await fetch(`${BASE_URL}/api/v1/users/${rating.fromUser.userId}`, { // Pass options object as second argument
-          headers: {
-            Authorization: token,
-            UserId: requestingUserId,
+        const response = await fetch(
+          `${BASE_URL}/api/v1/users/${rating.fromUser.userId}`,
+          { // Pass options object as second argument
+            headers: {
+              Authorization: token,
+              UserId: requestingUserId,
+            },
           },
-        });
+        );
         if (response.ok) {
           const data: User = await response.json();
           setUser(data);
         } else if (response.status === 404) {
           setError("User not found.");
-        }else {
+        } else {
           setError("An error occurred while fetching the user details.");
         }
       } catch (err) {
@@ -117,16 +116,18 @@ const RatingPage: React.FC = () => {
         return;
       }
       try {
-
         const token = localStorage.getItem("token") || "";
         const requestingUserId = localStorage.getItem("userId") || "";
-        
-        const response = await fetch(`${BASE_URL}/api/v1/contracts/${rating.contract.contractId}`, { // Pass options object as second argument
-          headers: {
-            Authorization: token,
-            UserId: requestingUserId,
+
+        const response = await fetch(
+          `${BASE_URL}/api/v1/contracts/${rating.contract.contractId}`,
+          { // Pass options object as second argument
+            headers: {
+              Authorization: token,
+              UserId: requestingUserId,
+            },
           },
-        });
+        );
         if (response.ok) {
           const data: Contract = await response.json();
           setContract(data);
@@ -144,7 +145,7 @@ const RatingPage: React.FC = () => {
     fetchRating();
     fetchUser();
     fetchContract();
-  }, [ratingId, BASE_URL]);
+  }, [ratingId, BASE_URL, rating.contract.contractId, rating.fromUser.userId]);
 
   if (error) {
     return <div>{error}</div>;
@@ -198,7 +199,11 @@ const RatingPage: React.FC = () => {
           resize: "none",
         }}
       />
-      <Button type="primary" onClick={() => router.back()} style={{ marginTop: "20px" }}>
+      <Button
+        type="primary"
+        onClick={() => router.back()}
+        style={{ marginTop: "20px" }}
+      >
         Return
       </Button>
     </div>
