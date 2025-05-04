@@ -349,7 +349,16 @@ const DriverMap: React.FC<DriverMapProps> = (
       fetchContracts();
     }, 5000); // Fetch every 5 seconds
 
-    return () => clearInterval(intervalId); // Clean up on unmount
+    // Set up timeout to stop polling after 5 minutes
+    const timeoutId = setTimeout(() => {
+      clearInterval(intervalId); // Stop polling
+      console.log("Polling stopped after 5 minutes to save traffic.");
+    }, 300000); // 5 minutes in milliseconds
+
+    return () => {
+      clearInterval(intervalId); // Clean up interval
+      clearTimeout(timeoutId); // Clean up timeout
+    };
   }, [fetchContracts]);
 
   if (mapError) {
