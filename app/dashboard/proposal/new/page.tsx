@@ -97,7 +97,7 @@ const NewProposalFormPage = () => {
     const payload = {
       title: values.title,
       contractDescription: values.description,
-      moveDateTime: values.moveDate?.format('YYYY-MM-DDTHH:mm:ss'),
+      moveDateTime: values.moveDate?.format("YYYY-MM-DDTHH:mm:ss"),
       fromLocation: {
         latitude: fromCoords.lat,
         longitude: fromCoords.lng,

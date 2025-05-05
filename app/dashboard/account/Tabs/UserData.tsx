@@ -218,7 +218,7 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
               setChanged(true);
               setEditedData({
                 ...editedData,
-                birthDate: date?.format('YYYY-MM-DD'),
+                birthDate: date?.format("YYYY-MM-DD"),
               });
             }}
           />
