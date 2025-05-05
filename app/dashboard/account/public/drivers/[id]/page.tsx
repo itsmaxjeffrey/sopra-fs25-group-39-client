@@ -28,11 +28,19 @@ const BASE_URL = getApiDomain(); // Define BASE_URL
 
 interface Rating {
   ratingId: number;
-  fromUserId: number;
-  toUserId: number;
-  contractId: number;
+  fromUser: {
+    userId: number;
+    username: string;
+  };
+  toUser: {
+    userId: number;
+    username: string;
+  };
+  contract: {
+    contractId: number;
+  };
   ratingValue: number;
-  flagIssues: boolean;
+  flagIssues: false;
   comment: string;
 }
 
@@ -272,7 +280,7 @@ export default function DriverProfilePage() {
                     >
                       <Card
                         type="inner"
-                        title={`Rated by: User ID ${rating.fromUserId}`}
+                        title={`Rated by: ${rating.fromUser.username}`}
                         extra={<Rate value={rating.ratingValue} disabled />}
                         style={{ margin: "0 auto", width: "95%" }}
                       >
