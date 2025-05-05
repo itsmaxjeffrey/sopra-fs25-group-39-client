@@ -145,7 +145,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
     const payload = {
       title: values.title,
       contractDescription: values.description,
-      moveDateTime: values.moveDate?.toISOString(),
+      moveDateTime: values.moveDate?.format('YYYY-MM-DDTHH:mm:ss'),
       fromLocation: {
         latitude: fromCoords.lat,
         longitude: fromCoords.lng,
