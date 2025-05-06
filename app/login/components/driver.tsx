@@ -72,20 +72,11 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
     // This effect synchronizes the local inputValue with the external `value` prop.
     // It runs ONLY when the `value` prop changes.
     if (value && value.formattedAddress) {
-      // If a valid location is passed via props (e.g., form init or external update),
-      // update the input field's text if it's different from the current local state.
-      if (value.formattedAddress !== inputValue) {
-        setInputValue(value.formattedAddress);
-      }
-    } else if (!value) {
-      // If the value prop is cleared (e.g., form reset, or onChange(null) was called),
-      // clear the local input field text if it's not already empty.
-      // This won't interfere with typing because this effect doesn't run on inputValue changes.
-      if (inputValue !== "") {
-        setInputValue("");
-      }
+      setInputValue(value.formattedAddress);
+    } else {
+      setInputValue("");
     }
-  }, [value]); // Dependency array is now only [value]
+  }, [value]); // Dependency array is still [value]
 
   const handlePlaceChanged = () => {
     console.log("handlePlaceChanged triggered");
