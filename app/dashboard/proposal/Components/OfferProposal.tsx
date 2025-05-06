@@ -105,8 +105,13 @@ const OfferProposal = ({ proposalId }: Props) => {
       setImagePaths(data.contractPhotos || []);
       setError(false);
       setModalVisible(false);
-    } catch {
+    } catch (err: any) {
       setError(true);
+      const backendMessage = err.response?.data?.message;
+      Modal.error({
+        title: "Error fetching contract details",
+        content: backendMessage || err.message || "An unknown error occurred",
+      });
     } finally {
       setLoading(false);
     }
@@ -133,9 +138,11 @@ const OfferProposal = ({ proposalId }: Props) => {
       router.push("/dashboard");
     } catch (error: any) {
       console.error("Cancel failed:", error);
-      const errorMessage = error.response?.data?.message ||
-        "Failed to cancel the proposal. Please try again.";
-      message.error(errorMessage);
+      const backendMessage = error.response?.data?.message;
+      message.error(
+        backendMessage ||
+          (error.message || "Failed to cancel the proposal. Please try again."),
+      );
     }
   };
 
@@ -164,9 +171,11 @@ const OfferProposal = ({ proposalId }: Props) => {
       router.push("/dashboard");
     } catch (err: any) {
       console.error("Error accepting offer:", err);
-      const errorMessage = err.response?.data?.message ||
-        "Failed to accept the offer. Please try again.";
-      message.error(errorMessage);
+      const backendMessage = err.response?.data?.message;
+      message.error(
+        backendMessage ||
+          (err.message || "Failed to accept the offer. Please try again."),
+      );
     }
   };
 

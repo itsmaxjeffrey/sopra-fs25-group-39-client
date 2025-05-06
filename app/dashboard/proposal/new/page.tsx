@@ -142,12 +142,13 @@ const NewProposalFormPage = () => {
       setModalState("success");
     } catch (err: any) {
       console.error("Creation failed", err);
-      setModalState("error");
       // Extract more specific error message if available
-      const backendMessage = err.response?.data?.message || err.message;
+      const backendMessage = err.response?.data?.message;
       setErrorMessage(
-        backendMessage || "Something went wrong while creating your proposal.",
+        backendMessage ||
+          (err.message || "Something went wrong while creating your proposal."),
       );
+      setModalState("error");
     }
   };
 

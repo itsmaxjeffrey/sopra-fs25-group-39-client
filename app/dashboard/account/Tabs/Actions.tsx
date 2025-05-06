@@ -37,12 +37,15 @@ const ActionsTab = () => {
           form.resetFields();
         } catch (error: unknown) {
           console.error("Password change failed:", error);
-          const errorMessage =
+          const backendMessage =
             (error as { response?: { data?: { message?: string } } })?.response
-              ?.data?.message || (error instanceof Error
+              ?.data?.message;
+          message.error(
+            backendMessage ||
+              (error instanceof Error
                 ? error.message
-                : "Failed to change password. Please try again.");
-          message.error(errorMessage);
+                : "Failed to change password. Please try again."),
+          );
         } finally {
           setLoading(false);
         }
@@ -79,12 +82,15 @@ const ActionsTab = () => {
         setConfirmEmail("");
       } catch (error: unknown) {
         console.error("Account deletion failed:", error);
-        const errorMessage =
+        const backendMessage =
           (error as { response?: { data?: { message?: string } } })?.response
-            ?.data?.message || (error instanceof Error
+            ?.data?.message;
+        message.error(
+          backendMessage ||
+            (error instanceof Error
               ? error.message
-              : "Failed to delete account. Please try again.");
-        message.error(errorMessage);
+              : "Failed to delete account. Please try again."),
+        );
       } finally {
         setLoading(false);
       }

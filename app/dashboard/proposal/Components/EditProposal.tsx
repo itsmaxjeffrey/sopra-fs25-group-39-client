@@ -184,9 +184,11 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
     } catch (err: any) {
       console.error("PUT failed:", err.response?.data || err.message);
       // Add error message
-      const errorMessage = err.response?.data?.message ||
-        "Failed to update proposal.";
-      message.error(errorMessage);
+      const backendMessage = err.response?.data?.message;
+      message.error(
+        backendMessage ||
+          (err.message || "Failed to update proposal."),
+      );
     }
   };
 

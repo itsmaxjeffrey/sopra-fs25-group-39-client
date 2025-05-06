@@ -256,6 +256,7 @@ const Driver = () => {
       } else if (err instanceof Error) {
         specificError = err.message;
       }
+      // Always set the error message, regardless of its source
       setErrorMessage(specificError);
       setModalState("error");
     }

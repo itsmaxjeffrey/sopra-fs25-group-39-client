@@ -90,8 +90,13 @@ const ViewOfferedProposal = ({ proposalId }: Props) => {
       setImagePaths(data.contractPhotos || []);
       setError(false);
       setModalVisible(false);
-    } catch {
+    } catch (err: any) {
       setError(true);
+      const backendMessage = err.response?.data?.message;
+      Modal.error({
+        title: "Error fetching contract details",
+        content: backendMessage || err.message || "An unknown error occurred",
+      });
     } finally {
       setLoading(false);
     }

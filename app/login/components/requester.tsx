@@ -114,7 +114,11 @@ const Requester = () => {
 
             setModalState("success");
           } catch (err: any) {
-            setErrorMessage(err.message);
+            // Extract more specific error message if available
+            const backendMessage = err.response?.data?.message || err.message;
+            setErrorMessage(
+              backendMessage || "Something went wrong during registration.",
+            );
             setModalState("error");
           }
         }}
