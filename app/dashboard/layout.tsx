@@ -75,18 +75,13 @@ export default function DashboardLayout({
             localStorage.removeItem("token");
             localStorage.removeItem("userId");
             router.push("/login"); // Redirect to login on auth error
-            // Keep loading true until redirect happens, or set false if preferred
-            // setLoading(false); // Set loading false after initiating redirect
+            setLoading(false); // Ensure loading state is updated before returning
             return; // Stop further execution in this effect
           }
         }
         // Handle other errors (e.g., network error) - maybe show an error message or retry
         // For now, just stop loading and potentially leave the user on a broken dashboard state or redirect
         setLoading(false); // Stop loading on other errors too
-        // Optionally redirect to login for any fetch failure:
-        // localStorage.removeItem("token");
-        // localStorage.removeItem("userId");
-        // router.push('/login');
       }
       // Removed the finally block as setLoading(false) is handled in try/catch
     };

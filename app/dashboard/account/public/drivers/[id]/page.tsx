@@ -280,7 +280,7 @@ export default function DriverProfilePage() {
                     >
                       <Card
                         type="inner"
-                        title={`Rated by: ${rating.fromUser.username}`}
+                        title={`Rated by: ${rating.fromUser?.username || "Anonymous"}`}
                         extra={<Rate value={rating.ratingValue} disabled />}
                         style={{ margin: "0 auto", width: "95%" }}
                       >
