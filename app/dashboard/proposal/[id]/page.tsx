@@ -1,6 +1,6 @@
 "use client";
 import "@ant-design/v5-patch-for-react-19";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useSearchParams } from "next/navigation";
 import EditProposal from "../Components/EditProposal";
@@ -50,83 +50,82 @@ const Page = () => {
   const type = searchParams.get("type");
 
   const [isRequester, setIsRequester] = useState<boolean | null>(null);
-  const [hasUserOffered, setHasUserOffered] = useState<boolean | null>(null); // Track if the user has offered on the contract
+  const [hasUserOffered, setHasUserOffered] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const hasFetchedRef = useRef(false);
-
   useEffect(() => {
-    console.log("useEffect triggered with id:", id, "and type:", type);
+    const fetchDetails = async () => {
+      // Ensure id and type are present; type is used to decide further actions.
+      if (!id || !type) {
+        setIsRequester(null);
+        setHasUserOffered(null);
+        setLoading(false);
+        return;
+      }
 
-    if (hasFetchedRef.current) {
-      console.log("Skipping duplicate fetch for id:", id, "and type:", type);
-      return;
-    }
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        const userIdString = localStorage.getItem("userId");
 
-    hasFetchedRef.current = true;
-
-    const fetchProposalDetails = async () => {
-      if (type === "OFFERED" && id) {
-        try {
-          const token = localStorage.getItem("token");
-          const userId = localStorage.getItem("userId");
-
-          if (!token || !userId) {
-            console.log("Missing token or userId");
-            setIsRequester(false);
-            setHasUserOffered(false);
-            setLoading(false);
-            return;
-          }
-
-          const response = await axios.get(
-            `${BASE_URL}/api/v1/contracts/${id}`,
-            {
-              headers: {
-                Authorization: token,
-                UserId: userId,
-              },
-            },
-          );
-          console.log("Contract Details:", response.data); // Debugging the proposal details
-
-          const proposal = (response.data as ContractResponse).contract;
-          setIsRequester(Number(userId) === proposal.requesterId);
-
-          // Fetch all offers for the contract
-          const offersResponse = await axios.get(`${BASE_URL}/api/v1/offers`, {
-            headers: {
-              Authorization: token,
-              UserId: userId,
-            },
-            params: {
-              contractId: id, // Filter by contractId
-            },
-          });
-
-          const offers = (offersResponse.data as OfferResponse).offers;
-          console.log("Offers:", offers);
-
-          // Check if the user has offered on this contract
-          const userHasOffered = offers.some((offer) =>
-            offer.driver?.userId === Number(userId)
-          );
-          console.log("User has offered:", userHasOffered); // Debugging the user offer status
-          setHasUserOffered(userHasOffered);
-        } catch (error) {
-          console.error("Error fetching proposal details:", error);
-          setIsRequester(false);
-          setHasUserOffered(false);
-        } finally {
+        if (!token || !userIdString) {
+          console.error("Authentication details missing.");
+          setIsRequester(false); // Or some error state
+          setHasUserOffered(false); // Or some error state
           setLoading(false);
+          return;
         }
-      } else {
+        const currentUserId = Number(userIdString);
+
+        // 1. Fetch contract details (needed for all types to determine requester)
+        const contractResponse = await axios.get(
+          `${BASE_URL}/api/v1/contracts/${id}`,
+          { headers: { Authorization: token, UserId: userIdString } }
+        );
+        const proposalData = contractResponse.data?.contract; // Assuming path based on existing interfaces/usage
+
+        if (!proposalData || typeof proposalData.requesterId === 'undefined') {
+          console.error("Essential contract data (like requesterId) is missing from response:", proposalData);
+          throw new Error("Invalid contract data received.");
+        }
+        
+        const isCurrentUserTheRequester = proposalData.requesterId === currentUserId;
+        setIsRequester(isCurrentUserTheRequester);
+
+        // 2. Determine if the current user (if a driver) has made an offer.
+        if (!isCurrentUserTheRequester) { // Current user is a Driver
+          // For drivers, fetch their offer status for relevant types.
+          // REQUESTED/VIEW types mean they are looking at a proposal they *could* offer on.
+          // In those cases, they wouldn't have an existing offer relevant for this page's routing logic.
+          if (type !== "REQUESTED" && type !== "VIEW") {
+            const offersResponse = await axios.get(`${BASE_URL}/api/v1/offers`, {
+              headers: { Authorization: token, UserId: userIdString },
+              params: { contractId: id }, // Fetch all offers for the contract
+            });
+            const offers = offersResponse.data?.offers; // Assuming path based on existing interfaces/usage
+            const driverOffer = offers?.find((o: any) => o.driver?.userId === currentUserId);
+            setHasUserOffered(!!driverOffer);
+          } else {
+            setHasUserOffered(false); // Driver viewing a new/generic proposal, hasn't offered yet in this context.
+          }
+        } else { // Current user is the Requester
+          // For requesters, `hasUserOffered` by themselves is false in the context of this page's state.
+          // Components like OfferProposal will fetch and display all offers separately.
+          setHasUserOffered(false);
+        }
+
+      } catch (error) {
+        console.error(`Error fetching details for proposal ${id}, type ${type}:`, error);
+        setIsRequester(null); // Indicate error or unknown state
+        setHasUserOffered(null); // Indicate error or unknown state
+        // Consider setting a user-facing error message state here
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchProposalDetails();
-  }, [id, type]);
+    fetchDetails();
+  }, [id, type]); // useEffect dependencies
 
   if (!id) return <p style={{ padding: 24 }}>❌ Invalid proposal ID</p>;
 

@@ -14,6 +14,7 @@ const ActionsTab = () => {
   const apiService = useApi();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [confirmEmail, setConfirmEmail] = useState("");
 
   const handleOk = () => {
     form
@@ -62,13 +63,20 @@ const ActionsTab = () => {
       return;
     }
 
+    if (!confirmEmail) {
+      message.error("Please enter your email to confirm deletion.");
+      setLoading(false);
+      return;
+    }
+
     (async () => {
       try {
-        await apiService.delete(`/api/v1/auth/users/${userId}`);
+        await apiService.post(`/api/v1/auth/users/${userId}`, { email: confirmEmail });
         message.success("Account deleted successfully.");
         localStorage.clear();
         router.push("/login");
         setDeleteModalOpen(false);
+        setConfirmEmail("");
       } catch (error: unknown) {
         console.error("Account deletion failed:", error);
         const errorMessage =
@@ -171,6 +179,7 @@ const ActionsTab = () => {
         onOk={handleDelete}
         onCancel={() => {
           setDeleteModalOpen(false);
+          setConfirmEmail("");
         }}
         okText="Delete Account"
         okType="danger"
@@ -180,8 +189,14 @@ const ActionsTab = () => {
       >
         <p>
           Are you sure you want to delete your account? This action cannot be
-          undone.
+          undone. Please enter your email address to confirm.
         </p>
+        <Input
+          placeholder="Enter your email"
+          value={confirmEmail}
+          onChange={(e) => setConfirmEmail(e.target.value)}
+          style={{ marginTop: 8 }}
+        />
       </Modal>
     </div>
   );

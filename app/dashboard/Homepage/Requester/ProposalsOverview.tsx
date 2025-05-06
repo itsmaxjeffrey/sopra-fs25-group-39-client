@@ -81,7 +81,7 @@ const ProposalsOverview = () => {
 
     const intervalId = setInterval(() => {
       fetchContracts();
-    }, 5000); // Poll every 5 seconds
+    }, 30000); // Poll every 30 seconds
 
     const timeoutId = setTimeout(() => {
       clearInterval(intervalId); // Stop polling after 5 minutes
