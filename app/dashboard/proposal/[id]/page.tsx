@@ -16,32 +16,11 @@ const BASE_URL = process.env.NODE_ENV === "development"
   ? "http://localhost:8080"
   : "https://sopra-fs25-group-39-server.oa.r.appspot.com/";
 
-interface ContractResponse {
-  contract: {
-    requesterId: number;
-    driverId: number | null;
-    // Add other fields as necessary
+interface OfferInArray {
+  driver?: {
+    userId?: number;
   };
-}
-
-interface OfferResponse {
-  offers: {
-    offerId: number;
-    offerStatus: string;
-    creationDateTime: string;
-    contract: {
-      contractId: number;
-      title: string;
-      weight: number;
-      // Add other fields from the contract object as necessary
-    };
-    driver: {
-      userId: number;
-      username: string;
-      email: string;
-      // Add other fields from the driver object as necessary
-    };
-  }[];
+  // other properties of offer can be added here if needed
 }
 
 const Page = () => {
@@ -103,7 +82,7 @@ const Page = () => {
               params: { contractId: id }, // Fetch all offers for the contract
             });
             const offers = offersResponse.data?.offers; // Assuming path based on existing interfaces/usage
-            const driverOffer = offers?.find((o: any) => o.driver?.userId === currentUserId);
+            const driverOffer = offers?.find((o: OfferInArray) => o.driver?.userId === currentUserId);
             setHasUserOffered(!!driverOffer);
           } else {
             setHasUserOffered(false); // Driver viewing a new/generic proposal, hasn't offered yet in this context.

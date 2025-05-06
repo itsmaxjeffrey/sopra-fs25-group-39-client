@@ -66,6 +66,8 @@ interface ContractData {
     userId: number;
     // Add other driver fields if needed
   };
+  requesterPhoneNumber?: string; // Added
+  driverPhoneNumber?: string; // Added
   // Add other fields from your actual contract data structure
 }
 
@@ -370,6 +372,18 @@ const AcceptedProposal = ({ proposalId }: Props) => {
             </Form.Item>
           </Col>
         </Row>
+
+        {/* Display phone numbers if available */}
+        {contractData?.requesterPhoneNumber && (
+          <Form.Item label="Requester Phone Number">
+            <Input value={contractData.requesterPhoneNumber} disabled />
+          </Form.Item>
+        )}
+        {contractData?.driverPhoneNumber && (
+          <Form.Item label="Driver Phone Number">
+            <Input value={contractData.driverPhoneNumber} disabled />
+          </Form.Item>
+        )}
 
         {/* Conditionally render the Driver section only for the Requester */}
         {loggedInUserId && contractData &&
