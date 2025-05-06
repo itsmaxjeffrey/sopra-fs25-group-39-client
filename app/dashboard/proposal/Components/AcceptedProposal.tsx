@@ -317,6 +317,60 @@ const AcceptedProposal = ({ proposalId }: Props) => {
           </Col>
         </Row>
 
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item label="Weight (kg)" name="weight">
+              <Input type="number" disabled />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Price (€)" name="price">
+              <Input type="number" disabled />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Man Power" name="manPower">
+              <Input type="number" disabled />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={6}>
+            <Form.Item label="Length (m)" name="length">
+              <Input type="number" disabled />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item label="Width (m)" name="width">
+              <Input type="number" disabled />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item label="Height (m)" name="height">
+              <Input type="number" disabled />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item label="Fragile" name="fragile">
+              <Input disabled />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Cooling Required" name="cooling">
+              <Input disabled />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Ride Along" name="rideAlong">
+              <Input disabled />
+            </Form.Item>
+          </Col>
+        </Row>
+
         {/* Conditionally render the Driver section only for the Requester */}
         {loggedInUserId && contractData &&
           Number(loggedInUserId) === contractData.requester?.userId && (
