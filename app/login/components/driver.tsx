@@ -69,22 +69,23 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
   );
 
   useEffect(() => {
-    console.log(
-      "LocationInput useEffect triggered. value:",
-      value,
-      "inputValue:",
-      inputValue,
-    );
-    if (value && value.formattedAddress !== inputValue) {
-      console.log("useEffect: Updating inputValue from value prop");
-      setInputValue(value.formattedAddress);
-    } else if (!value && inputValue) {
-      console.log(
-        "useEffect: Clearing inputValue because value prop is null/undefined",
-      );
-      setInputValue("");
+    // This effect synchronizes the local inputValue with the external `value` prop.
+    // It runs ONLY when the `value` prop changes.
+    if (value && value.formattedAddress) {
+      // If a valid location is passed via props (e.g., form init or external update),
+      // update the input field's text if it's different from the current local state.
+      if (value.formattedAddress !== inputValue) {
+        setInputValue(value.formattedAddress);
+      }
+    } else if (!value) {
+      // If the value prop is cleared (e.g., form reset, or onChange(null) was called),
+      // clear the local input field text if it's not already empty.
+      // This won't interfere with typing because this effect doesn't run on inputValue changes.
+      if (inputValue !== "") {
+        setInputValue("");
+      }
     }
-  }, [value, inputValue]); // Added inputValue to dependency array
+  }, [value]); // Dependency array is now only [value]
 
   const handlePlaceChanged = () => {
     console.log("handlePlaceChanged triggered");
@@ -138,7 +139,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
       />
     </Autocomplete>
   );
-};
+}; 
 
 // Helper function to normalize the event object for Form.Item
 const normFile = (e: UploadChangeParam<UploadFile>) => { // Use UploadChangeParam<UploadFile>
