@@ -1,6 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Button, DatePicker, Image, Input, Typography, Upload, message } from "antd"; // Import message
+import {
+  Button,
+  DatePicker,
+  Image,
+  Input,
+  message,
+  Typography,
+  Upload,
+} from "antd"; // Import message
 import { CameraOutlined, UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import styles from "../Account.module.css";
@@ -105,7 +113,7 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
     return false; // Prevent default upload behavior
   };
 
-  const handleSave = async () => { 
+  const handleSave = async () => {
     const userId = localStorage.getItem("userId");
 
     if (!userId) {
@@ -115,15 +123,21 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
 
     try {
       // Assuming apiService.put returns the updated user data
-      const responseData = await apiService.put<UserData>(`/api/v1/users/${userId}`, editedData);
-      
+      const responseData = await apiService.put<UserData>(
+        `/api/v1/users/${userId}`,
+        editedData,
+      );
+
       console.log("User data saved successfully:", responseData); // Log the response data
       setChanged(false);
       message.success("User data saved successfully!");
     } catch (error: unknown) { // Use unknown for caught errors
       console.error("Error saving user data:", error);
       // Add type check for error properties
-      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error instanceof Error ? error.message : "Error saving user data.");
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message ||
+        (error instanceof Error ? error.message : "Error saving user data.");
       message.error(errorMessage);
     }
   };
@@ -132,7 +146,6 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
     <div className={styles.tabContent}>
       <Title level={5}>Personal Information</Title>
       <div className={styles.profilePicSection}>
-       
         {editedData?.profilePicturePath
           ? (
             <Image
@@ -205,7 +218,7 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
               setChanged(true);
               setEditedData({
                 ...editedData,
-                birthDate: date?.toISOString(),
+                birthDate: date?.format("YYYY-MM-DD"),
               });
             }}
           />

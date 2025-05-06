@@ -1,7 +1,7 @@
 "use client";
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 import React, { useState } from "react"; // Ensure useState is imported
-import { Button, Image, Input, Typography, Upload, message } from "antd"; // Ensure message is imported
+import { Button, Image, Input, message, Typography, Upload } from "antd"; // Ensure message is imported
 import { FileImageOutlined, UploadOutlined } from "@ant-design/icons";
 import styles from "../Account.module.css";
 import { getApiDomain } from "@/utils/domain";
@@ -16,7 +16,7 @@ const BASE_URL = getApiDomain();
 // Define props interface for clarity
 interface VehicleDataProps {
   editedData: any; // Use a more specific type if available
-  userData: any;   // Use a more specific type if available
+  userData: any; // Use a more specific type if available
   setEditedData: React.Dispatch<React.SetStateAction<any>>;
   changed: boolean;
   setChanged: React.Dispatch<React.SetStateAction<boolean>>;
@@ -83,7 +83,11 @@ const VehicleData: React.FC<VehicleDataProps> = ({
           setInsuranceKey((prev) => prev + 1);
         }
         setChanged(true);
-        message.success(`${type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully!`);
+        message.success(
+          `${
+            type.charAt(0).toUpperCase() + type.slice(1)
+          } uploaded successfully!`,
+        );
       } else {
         throw new Error("File path missing in response");
       }
@@ -106,17 +110,23 @@ const VehicleData: React.FC<VehicleDataProps> = ({
     // Ensure data being sent uses 'car' not 'carDTO' and is the final structure
     const dataToSend = { ...editedData };
     if (dataToSend.carDTO) {
-        if (!dataToSend.car) { // If car doesn't exist, copy from carDTO
-            dataToSend.car = { ...dataToSend.carDTO };
-        }
-        delete dataToSend.carDTO; // Always remove carDTO before sending
+      if (!dataToSend.car) { // If car doesn't exist, copy from carDTO
+        dataToSend.car = { ...dataToSend.carDTO };
+      }
+      delete dataToSend.carDTO; // Always remove carDTO before sending
     }
 
-    console.log("Data being sent to backend:", JSON.stringify(dataToSend, null, 2));
+    console.log(
+      "Data being sent to backend:",
+      JSON.stringify(dataToSend, null, 2),
+    );
 
     try {
       // Send the dataToSend, which is guaranteed to have 'car' if vehicle data exists
-      const response = await apiService.put(`/api/v1/users/${userId}`, dataToSend) as { data: any }; // Keep response for logging/potential future use
+      const response = await apiService.put(
+        `/api/v1/users/${userId}`,
+        dataToSend,
+      ) as { data: any }; // Keep response for logging/potential future use
 
       console.log("Server response after save:", response.data); // Log server response
       setChanged(false);
@@ -124,10 +134,10 @@ const VehicleData: React.FC<VehicleDataProps> = ({
 
       // *** FIX: Update the state with the data that was sent, ensuring UI consistency ***
       setEditedData(dataToSend); // Use the successfully sent data to update the UI state immediately
-
     } catch (error: any) {
       console.error("Error saving vehicle data:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Error saving vehicle data.";
+      const errorMessage = error.response?.data?.message || error.message ||
+        "Error saving vehicle data.";
       message.error(errorMessage);
     }
   };
@@ -235,7 +245,6 @@ const VehicleData: React.FC<VehicleDataProps> = ({
         <div className={styles.uploadItem}>
           <label>Driver&apos;s License</label>
           <div className={styles.uploadWrapper}>
-
             {editedData?.driverLicensePath
               ? (
                 <Image
@@ -250,7 +259,9 @@ const VehicleData: React.FC<VehicleDataProps> = ({
               : (
                 <div className={styles.uploadPlaceholder}>
                   <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
-                  <Text type="secondary" style={{ marginTop: 8 }}>No License Uploaded</Text>
+                  <Text type="secondary" style={{ marginTop: 8 }}>
+                    No License Uploaded
+                  </Text>
                 </div>
               )}
             <Upload
@@ -282,7 +293,9 @@ const VehicleData: React.FC<VehicleDataProps> = ({
               : (
                 <div className={styles.uploadPlaceholder}>
                   <FileImageOutlined style={{ fontSize: 24, color: "#999" }} />
-                  <Text type="secondary" style={{ marginTop: 8 }}>No Insurance Uploaded</Text>
+                  <Text type="secondary" style={{ marginTop: 8 }}>
+                    No Insurance Uploaded
+                  </Text>
                 </div>
               )}
             <Upload
@@ -297,7 +310,6 @@ const VehicleData: React.FC<VehicleDataProps> = ({
         </div>
       </div>
 
-
       <div className={styles.actions}>
         <Button type="primary" disabled={!changed} onClick={handleSave}>
           Save Changes
@@ -308,8 +320,8 @@ const VehicleData: React.FC<VehicleDataProps> = ({
               // Reset should also handle potential carDTO in original userData
               const resetData = { ...userData };
               if (resetData.carDTO) {
-                  resetData.car = resetData.carDTO; // Normalize to 'car'
-                  delete resetData.carDTO;
+                resetData.car = resetData.carDTO; // Normalize to 'car'
+                delete resetData.carDTO;
               }
               setEditedData(resetData); // Set the normalized data
               setChanged(false);

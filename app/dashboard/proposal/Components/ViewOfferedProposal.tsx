@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
@@ -18,31 +18,32 @@ import styles from "./Edit.module.css";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import dayjs from "dayjs";
-import { Autocomplete } from "@react-google-maps/api";
+import { useParams } from "next/navigation";
 import { getApiDomain } from "@/utils/domain";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const BASE_URL = getApiDomain();
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   proposalId: string;
 }
 
-const FinalizedProposal = ({ proposalId }: Props) => {
+const ViewOfferedProposal = ({ proposalId }: Props) => {
+  const { id } = useParams(); // Retrieve the proposal ID from the URL
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [modalVisible, setModalVisible] = useState(true);
-  const fromRef = useRef<any>(null);
-  const toRef = useRef<any>(null);
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [imagePaths, setImagePaths] = useState<string[]>([]);
 
   const fetchContract = async () => {
     try {
+      console.log(`proposalId: ${id}`);
+      if (!id) {
+        throw new Error("Proposal ID is missing");
+      }
       const res = await axios.get<{ contract: any }>(
         `${BASE_URL}/api/v1/contracts/${proposalId}`,
         {
@@ -53,9 +54,12 @@ const FinalizedProposal = ({ proposalId }: Props) => {
         },
       );
       const data = res.data.contract;
+      console.log("Received Contract Data:", JSON.stringify(data, null, 2));
+
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
+
       form.setFieldsValue({
         title: data.title,
         description: data.contractDescription,
@@ -82,6 +86,7 @@ const FinalizedProposal = ({ proposalId }: Props) => {
         lat: data.toLocation?.latitude,
         lng: data.toLocation?.longitude,
       });
+
       setImagePaths(data.contractPhotos || []);
       setError(false);
       setModalVisible(false);
@@ -99,7 +104,7 @@ const FinalizedProposal = ({ proposalId }: Props) => {
 
   return (
     <div className={styles.wrapper}>
-      {/* Bild Upload */}
+      {/* Image Upload */}
       <div className={styles.imageUpload}>
         <div className={styles.imageRow}>
           {[0, 1, 2].map((idx) => (
@@ -107,7 +112,6 @@ const FinalizedProposal = ({ proposalId }: Props) => {
               {imagePaths[idx]
                 ? (
                   <Image
-                    // Use the correct download endpoint
                     src={`${BASE_URL}/api/v1/files/download?filePath=${
                       imagePaths[idx]
                     }`}
@@ -129,7 +133,7 @@ const FinalizedProposal = ({ proposalId }: Props) => {
         </div>
       </div>
 
-      {/* Formular */}
+      {/* Form */}
       <Form layout="vertical" className={styles.form} form={form}>
         <Form.Item label="Title" name="title">
           <Input placeholder="Give your proposal a fitting name" disabled />
@@ -156,62 +160,22 @@ const FinalizedProposal = ({ proposalId }: Props) => {
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="From" name="from">
-              <Autocomplete
-                onLoad={(auto) => (fromRef.current = auto)}
-                onPlaceChanged={() => {
-                  const place = fromRef.current?.getPlace();
-                  if (place && place.geometry) {
-                    const address = place.formatted_address;
-                    const lat = place.geometry.location.lat();
-                    const lng = place.geometry.location.lng();
-                    form.setFieldsValue({ from: address });
-                    setFromCoords({ address, lat, lng });
-                  }
-                }}
-              >
-                <Input
-                  placeholder="Select where your belongings should be picked up"
-                  value={fromCoords.address}
-                  onChange={(e) => {
-                    setFromCoords((prev) => ({
-                      ...prev,
-                      address: e.target.value,
-                    }));
-                  }}
-                  disabled
-                />
-              </Autocomplete>
-            </Form.Item>
+            <label style={{ display: "block", marginBottom: "8px" }}>
+              From
+            </label>
+            <Input
+              placeholder="From address"
+              value={fromCoords.address}
+              disabled
+            />
           </Col>
           <Col span={8}>
-            <Form.Item label="To" name="to">
-              <Autocomplete
-                onLoad={(auto) => (toRef.current = auto)}
-                onPlaceChanged={() => {
-                  const place = toRef.current?.getPlace();
-                  if (place && place.geometry) {
-                    const address = place.formatted_address;
-                    const lat = place.geometry.location.lat();
-                    const lng = place.geometry.location.lng();
-                    form.setFieldsValue({ to: address });
-                    setToCoords({ address, lat, lng });
-                  }
-                }}
-              >
-                <Input
-                  placeholder="Select where your belongings should be moved to"
-                  value={toCoords.address}
-                  onChange={(e) => {
-                    setToCoords((prev) => ({
-                      ...prev,
-                      address: e.target.value,
-                    }));
-                  }}
-                  disabled
-                />
-              </Autocomplete>
-            </Form.Item>
+            <label style={{ display: "block", marginBottom: "8px" }}>To</label>
+            <Input
+              placeholder="To address"
+              value={toCoords.address}
+              disabled
+            />
           </Col>
         </Row>
 
@@ -293,7 +257,16 @@ const FinalizedProposal = ({ proposalId }: Props) => {
             </Form.Item>
           </Col>
         </Row>
+
+        <Row justify="start" style={{ marginTop: "20px" }}>
+          <Col>
+            <Button type="default" onClick={() => router.back()}>
+              Go Back
+            </Button>
+          </Col>
+        </Row>
       </Form>
+
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>
           {loading
@@ -307,20 +280,15 @@ const FinalizedProposal = ({ proposalId }: Props) => {
               <div className={styles.registerError}>
                 <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
                 <p>
-                  FinalizedProposal: Something went wrong while fetching the
+                  ViewOfferedProposal: Something went wrong while fetching the
                   proposal details.
                 </p>
                 <Row justify="center" gutter={16}>
                   <Col>
                     <Button
-                      type="primary"
-                      onClick={() => router.push("/dashboard/proposal/new")}
+                      onClick={() =>
+                        router.push("/dashboard/contract-overview")}
                     >
-                      Create New
-                    </Button>
-                  </Col>
-                  <Col>
-                    <Button onClick={() => router.push("/dashboard")}>
                       Back to Overview
                     </Button>
                   </Col>
@@ -334,4 +302,4 @@ const FinalizedProposal = ({ proposalId }: Props) => {
   );
 };
 
-export default FinalizedProposal;
+export default ViewOfferedProposal;

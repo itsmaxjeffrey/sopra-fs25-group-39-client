@@ -3,7 +3,7 @@
 import React from "react";
 import styles from "./OfferCard.module.css";
 import { UserOutlined } from "@ant-design/icons";
-import { Rate, Button } from "antd"; // Import Button
+import { Button, Rate } from "antd"; // Import Button
 import Link from "next/link"; // Import Link from next/link
 
 interface OfferCardProps {

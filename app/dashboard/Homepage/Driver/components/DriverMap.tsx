@@ -1,15 +1,21 @@
 "use client";
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 // component responsible for rendering the Google Map
 // from Commit 89667df
-import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 
 import {
   Autocomplete,
   GoogleMap,
-  Marker,
   InfoWindow,
+  Marker,
 } from "@react-google-maps/api";
 import { getApiDomain } from "@/utils/domain";
 import styles from "./DriverMap.module.css";
@@ -26,13 +32,13 @@ const mapStyles = [
   {
     featureType: "poi", // Target Points of Interest
     elementType: "all", // Apply to all elements (icons, labels)
-    stylers: [{ visibility: "simplified" }] // Reduce visibility (less prominent icons/fewer shown)
+    stylers: [{ visibility: "simplified" }], // Reduce visibility (less prominent icons/fewer shown)
   },
   {
     featureType: "road",
     elementType: "labels.text.fill",
-    stylers: [{ color: "#666666" }] // Ensure road labels are readable
-  }
+    stylers: [{ color: "#666666" }], // Ensure road labels are readable
+  },
 ];
 
 interface DriverMapProps {
@@ -42,9 +48,9 @@ interface DriverMapProps {
 }
 
 interface Location {
-    latitude: number;
-    longitude: number;
-    // Add other location properties if needed, e.g., formattedAddress
+  latitude: number;
+  longitude: number;
+  // Add other location properties if needed, e.g., formattedAddress
 }
 
 interface Contract {
@@ -89,14 +95,17 @@ const DriverMap: React.FC<DriverMapProps> = (
 ) => {
   // Updated icon definitions: Narrower, teardrop shape
   const baseIconStyle = useMemo(() => ({
-    path: "M12 2C8.1 2 5 5.1 5 9.3c0 2.3.9 4.4 2.4 6.1.1.1 4.6 6.6 4.6 6.6s4.5-6.5 4.6-6.6c1.5-1.7 2.4-3.8 2.4-6.1C19 5.1 15.9 2 12 2zm0 10.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z",
+    path:
+      "M12 2C8.1 2 5 5.1 5 9.3c0 2.3.9 4.4 2.4 6.1.1.1 4.6 6.6 4.6 6.6s4.5-6.5 4.6-6.6c1.5-1.7 2.4-3.8 2.4-6.1C19 5.1 15.9 2 12 2zm0 10.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z",
     fillOpacity: 1.0,
     strokeColor: "#000000", // Black stroke
     strokeWeight: 1.2,
     rotation: 0,
     scale: 1.5,
     // Anchor point needs google.maps.Point, handle potential SSR issues
-    anchor: typeof window !== 'undefined' && window.google ? new google.maps.Point(12, 22) : undefined,
+    anchor: typeof window !== "undefined" && window.google
+      ? new google.maps.Point(12, 22)
+      : undefined,
   }), []);
 
   const defaultIcon = useMemo(() => ({
@@ -146,26 +155,53 @@ const DriverMap: React.FC<DriverMapProps> = (
 
         const filterParams: FilterParams = {};
         // Check for null AND undefined before adding to params
-        if (filters.radius !== null && filters.radius !== undefined) filterParams.radius = filters.radius;
-        if (filters.price !== null && filters.price !== undefined) filterParams.price = filters.price;
-        if (filters.weight !== null && filters.weight !== undefined) filterParams.weight = filters.weight;
-        if (filters.height !== null && filters.height !== undefined) filterParams.height = filters.height; // Renamed from volume
-        if (filters.width !== null && filters.width !== undefined) filterParams.width = filters.width; // New field
-        if (filters.length !== null && filters.length !== undefined) filterParams.length = filters.length; // New field
-        if (filters.requiredPeople !== null && filters.requiredPeople !== undefined) filterParams.requiredPeople = filters.requiredPeople;
-        if (filters.fragile !== null && filters.fragile !== undefined) filterParams.fragile = filters.fragile;
-        if (filters.coolingRequired !== null && filters.coolingRequired !== undefined) filterParams.coolingRequired = filters.coolingRequired;
-        if (filters.rideAlong !== null && filters.rideAlong !== undefined) filterParams.rideAlong = filters.rideAlong;
+        if (filters.radius !== null && filters.radius !== undefined) {
+          filterParams.radius = filters.radius;
+        }
+        if (filters.price !== null && filters.price !== undefined) {
+          filterParams.price = filters.price;
+        }
+        if (filters.weight !== null && filters.weight !== undefined) {
+          filterParams.weight = filters.weight;
+        }
+        if (filters.height !== null && filters.height !== undefined) {
+          filterParams.height = filters.height; // Renamed from volume
+        }
+        if (filters.width !== null && filters.width !== undefined) {
+          filterParams.width = filters.width; // New field
+        }
+        if (filters.length !== null && filters.length !== undefined) {
+          filterParams.length = filters.length; // New field
+        }
+        if (
+          filters.requiredPeople !== null &&
+          filters.requiredPeople !== undefined
+        ) filterParams.requiredPeople = filters.requiredPeople;
+        if (filters.fragile !== null && filters.fragile !== undefined) {
+          filterParams.fragile = filters.fragile;
+        }
+        if (
+          filters.coolingRequired !== null &&
+          filters.coolingRequired !== undefined
+        ) filterParams.coolingRequired = filters.coolingRequired;
+        if (filters.rideAlong !== null && filters.rideAlong !== undefined) {
+          filterParams.rideAlong = filters.rideAlong;
+        }
         if (filters.moveDateTime !== null) {
           // Ensure moveDateTime has the format method (like dayjs)
-          if (typeof filters.moveDateTime?.format === 'function') {
+          if (typeof filters.moveDateTime?.format === "function") {
             filterParams.moveDate = filters.moveDateTime.format("YYYY-MM-DD");
           } else if (filters.moveDateTime) { // Handle if it's already a string or Date object
-             try {
-               filterParams.moveDate = new Date(filters.moveDateTime).toISOString().split('T')[0];
-             } catch (e) {
-               console.warn("Could not format moveDateTime filter:", filters.moveDateTime, e);
-             }
+            try {
+              filterParams.moveDate =
+                new Date(filters.moveDateTime).toISOString().split("T")[0];
+            } catch (e) {
+              console.warn(
+                "Could not format moveDateTime filter:",
+                filters.moveDateTime,
+                e,
+              );
+            }
           }
         }
 
@@ -182,10 +218,11 @@ const DriverMap: React.FC<DriverMapProps> = (
 
         const response = await fetch(
           `${BASE_URL}/api/v1/contracts?lat=${selectedLocation.lat}&lng=${selectedLocation.lng}&filters=${encodedFilters}`,
-          { headers }
+          { headers },
         );
 
         const data = await response.json();
+        console.log("Fetched contracts:", data.contracts);
 
         if (Array.isArray(data.contracts)) {
           setAllContracts(data.contracts);
@@ -206,10 +243,12 @@ const DriverMap: React.FC<DriverMapProps> = (
 
   // Filter contracts based on status (remove CANCELED and DELETED)
   useEffect(() => {
-    const filtered = allContracts.filter(contract =>
-      contract.contractStatus !== "CANCELED" && contract.contractStatus !== "DELETED"
+    const filtered = allContracts.filter((contract) =>
+      contract.contractStatus === "OFFERED" ||
+      contract.contractStatus === "REQUESTED"
     );
     // We set the displayContracts here initially, but filtercontractsByBounds will refine it
+    console.log("Filtered contracts based on status:", filtered);
     setDisplayContracts(filtered);
   }, [allContracts]);
 
@@ -221,18 +260,21 @@ const DriverMap: React.FC<DriverMapProps> = (
 
     const bounds = mapInstance.getBounds();
     if (!bounds) {
-      console.warn("mapInstance.getBounds() returned null or undefined during filtering.");
+      console.warn(
+        "mapInstance.getBounds() returned null or undefined during filtering.",
+      );
       return;
     }
 
     // Filter from the *status-filtered* list derived from allContracts
-    const contractsToFilter = allContracts.filter(contract =>
-        contract.contractStatus !== "CANCELED" && contract.contractStatus !== "DELETED"
+    const contractsToFilter = allContracts.filter((contract) =>
+      contract.contractStatus === "OFFERED" ||
+      contract.contractStatus === "REQUESTED"
     );
 
     if (!Array.isArray(contractsToFilter)) { // Check if it's an array
-        setDisplayContracts([]);
-        return;
+      setDisplayContracts([]);
+      return;
     }
 
     const newlyFiltered = contractsToFilter.filter(
@@ -242,21 +284,28 @@ const DriverMap: React.FC<DriverMapProps> = (
           typeof contract.fromLocation.latitude !== "number" ||
           typeof contract.fromLocation.longitude !== "number"
         ) {
-          console.error("Invalid contract fromLocation or coordinates", contract);
+          console.error(
+            "Invalid contract fromLocation or coordinates",
+            contract,
+          );
           return false;
         }
         const contractLat = contract.fromLocation.latitude;
         const contractLng = contract.fromLocation.longitude;
         // Use try-catch for safety, although bounds.contains should be reliable here
         try {
-            // Ensure google maps is loaded before trying to use LatLng
-            if (typeof window !== 'undefined' && window.google && window.google.maps) {
-                return bounds.contains(new google.maps.LatLng(contractLat, contractLng));
-            }
-            return false; // Cannot check bounds if google maps isn't ready
+          // Ensure google maps is loaded before trying to use LatLng
+          if (
+            typeof window !== "undefined" && window.google && window.google.maps
+          ) {
+            return bounds.contains(
+              new google.maps.LatLng(contractLat, contractLng),
+            );
+          }
+          return false; // Cannot check bounds if google maps isn't ready
         } catch (e) {
-            console.error("Error checking bounds containment:", e, contract);
-            return false;
+          console.error("Error checking bounds containment:", e, contract);
+          return false;
         }
       },
     );
@@ -305,7 +354,9 @@ const DriverMap: React.FC<DriverMapProps> = (
         setSelectedLocation(newLocation); // This will trigger fetchContracts via useEffect
 
         if (mapInstance) {
-          mapInstance.setCenter(new google.maps.LatLng(newLocation.lat, newLocation.lng));
+          mapInstance.setCenter(
+            new google.maps.LatLng(newLocation.lat, newLocation.lng),
+          );
         }
         if (onCenterChanged) {
           onCenterChanged(newLocation.lat, newLocation.lng);
@@ -340,7 +391,7 @@ const DriverMap: React.FC<DriverMapProps> = (
 
   const handleMapIdle = useCallback(() => {
     if (mapInstance) {
-        filtercontractsByBounds(); // Now it's safer to call this
+      filtercontractsByBounds(); // Now it's safer to call this
     }
   }, [mapInstance, filtercontractsByBounds]); // Add dependencies
 
@@ -376,14 +427,14 @@ const DriverMap: React.FC<DriverMapProps> = (
       options={{
         fullscreenControl: false,
         streetViewControl: false,
-        styles: mapStyles
+        styles: mapStyles,
       }}
       onLoad={handleMapLoad}
       onDragEnd={handleMapDragEnd}
       onZoomChanged={handleZoomChanged} // Use the renamed handler
       onIdle={handleMapIdle} // Filter contracts when map movement stops
     >
-       <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
+      <div style={{ position: "absolute", top: 10, left: 10, zIndex: 10 }}>
         <Autocomplete
           onLoad={(auto) => (autocompleteRef.current = auto)}
           onPlaceChanged={handlePlaceChanged}
@@ -423,16 +474,26 @@ const DriverMap: React.FC<DriverMapProps> = (
         // --- END UPDATED LOGIC ---
 
         // Ensure anchor point is valid before creating icon object
-        const anchorPoint = typeof window !== 'undefined' && window.google ? new google.maps.Point(12, 22) : undefined;
+        const anchorPoint = typeof window !== "undefined" && window.google
+          ? new google.maps.Point(12, 22)
+          : undefined;
         if (!anchorPoint) return null; // Don't render marker if anchor can't be created (SSR safety)
 
         // Apply the anchor point to the selected icon style
         const finalIcon = { ...iconToUse, anchor: anchorPoint };
 
         // Basic validation for location data
-        if (!contract.fromLocation || typeof contract.fromLocation.latitude !== 'number' || typeof contract.fromLocation.longitude !== 'number') {
-            console.warn("Skipping contract due to invalid location:", contract.contractId, contract.fromLocation);
-            return null; // Skip rendering this marker if location is invalid
+        if (
+          !contract.fromLocation ||
+          typeof contract.fromLocation.latitude !== "number" ||
+          typeof contract.fromLocation.longitude !== "number"
+        ) {
+          console.warn(
+            "Skipping contract due to invalid location:",
+            contract.contractId,
+            contract.fromLocation,
+          );
+          return null; // Skip rendering this marker if location is invalid
         }
 
         return (
@@ -447,18 +508,19 @@ const DriverMap: React.FC<DriverMapProps> = (
             onMouseOut={() => setOpenInfoWindowId(null)}
             onClick={() => {
               // Determine the type based on status for the link
-              let linkType = 'VIEW'; // Default to VIEW
+              let linkType = "VIEW"; // Default to VIEW
               if (isAcceptedByCurrentUser) {
-                  linkType = 'ACCEPTED';
+                linkType = "ACCEPTED";
               } else if (isCompletedOrFinalized) {
-                  linkType = contract.contractStatus; // Use COMPLETED or FINALIZED
-              } else if (contract.contractStatus === 'OFFERED') {
-                  linkType = 'OFFERED'; // Could be offered to someone else
-              } else if (contract.contractStatus === 'REQUESTED') {
-                  // Change: Route REQUESTED contracts to VIEW for the driver
-                  linkType = 'VIEW'; 
+                linkType = contract.contractStatus; // Use COMPLETED or FINALIZED
+              } else if (contract.contractStatus === "OFFERED") {
+                linkType = "OFFERED"; // Could be offered to someone else
+              } else if (contract.contractStatus === "REQUESTED") {
+                // Change: Route REQUESTED contracts to VIEW for the driver
+                linkType = "VIEW";
               }
-              window.location.href = `/dashboard/proposal/${contract.contractId}?type=${linkType}`;
+              window.location.href =
+                `/dashboard/proposal/${contract.contractId}?type=${linkType}`;
             }}
           >
             {openInfoWindowId === contract.contractId && (
@@ -473,20 +535,31 @@ const DriverMap: React.FC<DriverMapProps> = (
                   <h4>{contract.title || "Contract Details"}</h4>
                   {contract.price && <p>Price: ${contract.price.toFixed(2)}</p>}
                   {contract.moveDateTime && (
-                    <p>Date: {new Date(contract.moveDateTime).toLocaleDateString()}</p>
+                    <p>
+                      Date:{" "}
+                      {new Date(contract.moveDateTime).toLocaleDateString()}
+                    </p>
                   )}
-                   <p>Status: {contract.contractStatus}</p> {/* Added status display */}
+                  <p>Status: {contract.contractStatus}</p>{" "}
+                  {/* Added status display */}
                   <div className={styles.infoWindowImages}>
-                    {(contract.contractPhotos || []).slice(0, 3).map((photoPath, index) => (
+                    {(contract.contractPhotos || []).slice(0, 3).map((
+                      photoPath,
+                      index,
+                    ) => (
                       <Image
                         key={index}
-                        src={`${BASE_URL}/api/v1/files/download?filePath=${encodeURIComponent(photoPath)}`}
+                        src={`${BASE_URL}/api/v1/files/download?filePath=${
+                          encodeURIComponent(photoPath)
+                        }`}
                         alt={`Contract photo ${index + 1}`}
                         className={styles.infoWindowImage}
                         width={50}
                         height={50}
-                        onError={(e) => (e.currentTarget.style.display = 'none')}
-                        style={{ objectFit: 'cover' }}
+                        onError={(
+                          e,
+                        ) => (e.currentTarget.style.display = "none")}
+                        style={{ objectFit: "cover" }}
                       />
                     ))}
                   </div>

@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./ProposalsOverview.module.css";
 import axios from "axios";
-import { Spin, message } from "antd";
+import { message, Spin } from "antd";
 import Link from "next/link";
 import {
   CalendarOutlined,
@@ -32,7 +32,7 @@ interface Proposal {
   price: number;
   weight?: number; // Added weight
   length?: number; // Added length
-  width?: number;  // Added width
+  width?: number; // Added width
   height?: number; // Added height
   fragile?: boolean;
   coolingRequired?: boolean;
@@ -61,8 +61,11 @@ const BASE_URL = getApiDomain();
 const ProposalsOverview = () => {
   const accountType = useContext(AccountTypeContext);
   const [requesterContracts, setRequesterContracts] = useState<Proposal[]>([]);
-  const [driverPendingOfferContracts, setDriverPendingOfferContracts] = useState<Proposal[]>([]);
-  const [driverAcceptedContracts, setDriverAcceptedContracts] = useState<Proposal[]>([]);
+  const [driverPendingOfferContracts, setDriverPendingOfferContracts] =
+    useState<Proposal[]>([]);
+  const [driverAcceptedContracts, setDriverAcceptedContracts] = useState<
+    Proposal[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const isDriver = accountType === "DRIVER";
 
@@ -186,20 +189,32 @@ const ProposalsOverview = () => {
 
         const pendingContractPromises = pendingOffers.map((offer) =>
           axios
-            .get<{ contract: Proposal }>(`${BASE_URL}/api/v1/contracts/${offer.contract.contractId}`, { headers })
+            .get<{ contract: Proposal }>(
+              `${BASE_URL}/api/v1/contracts/${offer.contract.contractId}`,
+              { headers },
+            )
             .then((res) => res.data.contract)
             .catch((err) => {
-              console.error(`Failed to fetch contract ${offer.contract.contractId}:`, err);
+              console.error(
+                `Failed to fetch contract ${offer.contract.contractId}:`,
+                err,
+              );
               return null;
-            }),
+            })
         );
-        const pendingContractsDetails = (await Promise.all(pendingContractPromises)).filter(
-          (contract): contract is Proposal => contract !== null,
+        const pendingContractsDetails =
+          (await Promise.all(pendingContractPromises)).filter(
+            (contract): contract is Proposal => contract !== null,
+          );
+        console.log(
+          "Fetched Pending Contract Details:",
+          pendingContractsDetails,
         );
-        console.log("Fetched Pending Contract Details:", pendingContractsDetails);
         setDriverPendingOfferContracts(
           pendingContractsDetails.sort(
-            (a, b) => new Date(b.creationDateTime).getTime() - new Date(a.creationDateTime).getTime(),
+            (a, b) =>
+              new Date(b.creationDateTime).getTime() -
+              new Date(a.creationDateTime).getTime(),
           ),
         );
 
@@ -215,19 +230,29 @@ const ProposalsOverview = () => {
           acceptedResponseData &&
           typeof acceptedResponseData === "object" &&
           "contracts" in acceptedResponseData &&
-          Array.isArray((acceptedResponseData as AcceptedContractsResponse).contracts)
+          Array.isArray(
+            (acceptedResponseData as AcceptedContractsResponse).contracts,
+          )
         ) {
-          acceptedContracts = (acceptedResponseData as AcceptedContractsResponse).contracts;
+          acceptedContracts =
+            (acceptedResponseData as AcceptedContractsResponse).contracts;
         } else {
-          console.warn("Unexpected API response structure for driver's accepted contracts:", acceptedResponseData);
+          console.warn(
+            "Unexpected API response structure for driver's accepted contracts:",
+            acceptedResponseData,
+          );
         }
 
-        acceptedContracts = acceptedContracts.filter((c) => c.contractStatus === "ACCEPTED");
+        acceptedContracts = acceptedContracts.filter((c) =>
+          c.contractStatus === "ACCEPTED"
+        );
 
         console.log("Fetched Accepted Contracts:", acceptedContracts);
         setDriverAcceptedContracts(
           acceptedContracts.sort(
-            (a, b) => new Date(b.creationDateTime).getTime() - new Date(a.creationDateTime).getTime(),
+            (a, b) =>
+              new Date(b.creationDateTime).getTime() -
+              new Date(a.creationDateTime).getTime(),
           ),
         );
       } catch (err) {
@@ -242,7 +267,10 @@ const ProposalsOverview = () => {
 
     const fetchRequesterData = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/api/v1/users/${userId}/contracts`, { headers });
+        const res = await axios.get(
+          `${BASE_URL}/api/v1/users/${userId}/contracts`,
+          { headers },
+        );
         console.log("Raw API Response (Requester):", res.data);
 
         let proposals: Proposal[] = [];
@@ -256,22 +284,30 @@ const ProposalsOverview = () => {
           "contracts" in responseData &&
           Array.isArray((responseData as RequesterContractsResponse).contracts)
         ) {
-          console.log("Found 'contracts' array in response object (Requester).");
+          console.log(
+            "Found 'contracts' array in response object (Requester).",
+          );
           proposals = (responseData as RequesterContractsResponse).contracts;
         } else {
-          console.error("Unexpected API response structure for requester:", responseData);
+          console.error(
+            "Unexpected API response structure for requester:",
+            responseData,
+          );
         }
 
         proposals = proposals.filter(
           (item): item is Proposal =>
-            item && typeof item === "object" && "contractId" in item && "contractStatus" in item,
+            item && typeof item === "object" && "contractId" in item &&
+            "contractStatus" in item,
         );
 
         console.log("Extracted Proposals (Requester):", proposals);
 
         if (proposals.length > 0) {
           const sorted = proposals.sort(
-            (a, b) => new Date(b.creationDateTime).getTime() - new Date(a.creationDateTime).getTime(),
+            (a, b) =>
+              new Date(b.creationDateTime).getTime() -
+              new Date(a.creationDateTime).getTime(),
           );
           setRequesterContracts(sorted);
           console.log("Sorted Contracts Set (Requester):", sorted);
@@ -312,14 +348,24 @@ const ProposalsOverview = () => {
     );
   }
 
-  const requesterRequestedContracts = requesterContracts.filter((c) => c.contractStatus === "REQUESTED");
-  const requesterOfferedContracts = requesterContracts.filter((c) => c.contractStatus === "OFFERED");
-  const requesterAcceptedContracts = requesterContracts.filter((c) => c.contractStatus === "ACCEPTED");
+  const requesterRequestedContracts = requesterContracts.filter((c) =>
+    c.contractStatus === "REQUESTED"
+  );
+  const requesterOfferedContracts = requesterContracts.filter((c) =>
+    c.contractStatus === "OFFERED"
+  );
+  const requesterAcceptedContracts = requesterContracts.filter((c) =>
+    c.contractStatus === "ACCEPTED"
+  );
 
   const requestedTitle = "Open Proposals";
   const requestedEmptyMsg = "No open proposals";
-  const offeredTitle = isDriver ? "Your Pending Offers" : "Pending Offers Received";
-  const offeredEmptyMsg = isDriver ? "You have no pending offers" : "No pending offers received";
+  const offeredTitle = isDriver
+    ? "Your Pending Offers"
+    : "Pending Offers Received";
+  const offeredEmptyMsg = isDriver
+    ? "You have no pending offers"
+    : "No pending offers received";
   const acceptedTitle = "Confirmed Moves";
   const acceptedEmptyMsg = "No confirmed moves";
 
@@ -338,31 +384,34 @@ const ProposalsOverview = () => {
             <FileTextOutlined /> {requestedTitle}
           </h2>
           <div className={styles.cardRow}>
-            {requesterRequestedContracts.length === 0 ? (
-              <p className={styles.emptySection}>{requestedEmptyMsg}</p>
-            ) : (
-              requesterRequestedContracts.map((c) => (
-                <Link
-                  key={c.contractId}
-                  href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
-                  className={styles.link}
-                >
-                  <div className={styles.card}>
-                    <div className={styles.icon}>
-                      <FileTextOutlined />
+            {requesterRequestedContracts.length === 0
+              ? <p className={styles.emptySection}>{requestedEmptyMsg}</p>
+              : (
+                requesterRequestedContracts.map((c) => (
+                  <Link
+                    key={c.contractId}
+                    href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
+                    className={styles.link}
+                  >
+                    <div className={styles.card}>
+                      <div className={styles.icon}>
+                        <FileTextOutlined />
+                      </div>
+                      <h3>{c.title}</h3>
+                      <p>
+                        <CalendarOutlined />{" "}
+                        {new Date(c.moveDateTime).toLocaleString()}
+                      </p>
+                      <p>
+                        <EnvironmentOutlined />{" "}
+                        {c.fromLocation?.formattedAddress || "No location"} ➝
+                        {" "}
+                        {c.toLocation?.formattedAddress || "No location"}
+                      </p>
                     </div>
-                    <h3>{c.title}</h3>
-                    <p>
-                      <CalendarOutlined /> {new Date(c.moveDateTime).toLocaleString()}
-                    </p>
-                    <p>
-                      <EnvironmentOutlined /> {c.fromLocation?.formattedAddress || "No location"} ➝{" "}
-                      {c.toLocation?.formattedAddress || "No location"}
-                    </p>
-                  </div>
-                </Link>
-              ))
-            )}
+                  </Link>
+                ))
+              )}
           </div>
         </div>
       )}
@@ -372,31 +421,37 @@ const ProposalsOverview = () => {
           <ClockCircleOutlined /> {offeredTitle}
         </h2>
         <div className={styles.cardRow}>
-          {(isDriver ? driverPendingOfferContracts : requesterOfferedContracts).length === 0 ? (
-            <p className={styles.emptySection}>{offeredEmptyMsg}</p>
-          ) : (
-            (isDriver ? driverPendingOfferContracts : requesterOfferedContracts).map((c) => (
-              <Link
-                key={c.contractId}
-                href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
-                className={styles.link}
-              >
-                <div className={styles.card}>
-                  <div className={styles.icon}>
-                    <ClockCircleOutlined />
-                  </div>
-                  <h3>{c.title}</h3>
-                  <p>
-                    <CalendarOutlined /> {new Date(c.moveDateTime).toLocaleString()}
-                  </p>
-                  <p>
-                    <EnvironmentOutlined /> {c.fromLocation?.formattedAddress || "No location"} ➝{" "}
-                    {c.toLocation?.formattedAddress || "No location"}
-                  </p>
-                </div>
-              </Link>
-            ))
-          )}
+          {(isDriver ? driverPendingOfferContracts : requesterOfferedContracts)
+              .length === 0
+            ? <p className={styles.emptySection}>{offeredEmptyMsg}</p>
+            : (
+              (isDriver
+                ? driverPendingOfferContracts
+                : requesterOfferedContracts).map((c) => (
+                  <Link
+                    key={c.contractId}
+                    href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
+                    className={styles.link}
+                  >
+                    <div className={styles.card}>
+                      <div className={styles.icon}>
+                        <ClockCircleOutlined />
+                      </div>
+                      <h3>{c.title}</h3>
+                      <p>
+                        <CalendarOutlined />{" "}
+                        {new Date(c.moveDateTime).toLocaleString()}
+                      </p>
+                      <p>
+                        <EnvironmentOutlined />{" "}
+                        {c.fromLocation?.formattedAddress || "No location"} ➝
+                        {" "}
+                        {c.toLocation?.formattedAddress || "No location"}
+                      </p>
+                    </div>
+                  </Link>
+                ))
+            )}
         </div>
       </div>
 
@@ -405,31 +460,36 @@ const ProposalsOverview = () => {
           <LockOutlined /> {acceptedTitle}
         </h2>
         <div className={styles.cardRow}>
-          {(isDriver ? driverAcceptedContracts : requesterAcceptedContracts).length === 0 ? (
-            <p className={styles.emptySection}>{acceptedEmptyMsg}</p>
-          ) : (
-            (isDriver ? driverAcceptedContracts : requesterAcceptedContracts).map((c) => (
-              <Link
-                key={c.contractId}
-                href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
-                className={styles.link}
-              >
-                <div className={styles.card}>
-                  <div className={styles.icon}>
-                    <CheckOutlined />
-                  </div>
-                  <h3>{c.title}</h3>
-                  <p>
-                    <CalendarOutlined /> {new Date(c.moveDateTime).toLocaleString()}
-                  </p>
-                  <p>
-                    <EnvironmentOutlined /> {c.fromLocation?.formattedAddress || "No location"} ➝{" "}
-                    {c.toLocation?.formattedAddress || "No location"}
-                  </p>
-                </div>
-              </Link>
-            ))
-          )}
+          {(isDriver ? driverAcceptedContracts : requesterAcceptedContracts)
+              .length === 0
+            ? <p className={styles.emptySection}>{acceptedEmptyMsg}</p>
+            : (
+              (isDriver ? driverAcceptedContracts : requesterAcceptedContracts)
+                .map((c) => (
+                  <Link
+                    key={c.contractId}
+                    href={`/dashboard/proposal/${c.contractId}?type=${c.contractStatus}`}
+                    className={styles.link}
+                  >
+                    <div className={styles.card}>
+                      <div className={styles.icon}>
+                        <CheckOutlined />
+                      </div>
+                      <h3>{c.title}</h3>
+                      <p>
+                        <CalendarOutlined />{" "}
+                        {new Date(c.moveDateTime).toLocaleString()}
+                      </p>
+                      <p>
+                        <EnvironmentOutlined />{" "}
+                        {c.fromLocation?.formattedAddress || "No location"} ➝
+                        {" "}
+                        {c.toLocation?.formattedAddress || "No location"}
+                      </p>
+                    </div>
+                  </Link>
+                ))
+            )}
         </div>
       </div>
     </div>

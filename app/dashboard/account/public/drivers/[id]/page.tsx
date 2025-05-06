@@ -1,24 +1,24 @@
 //best to save this under /users/public/drivers/{userId}
 "use client";
 // pages/driver/[userId].tsx
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
+  Avatar,
   Button,
   Card,
   Carousel,
-  message,
-  Rate,
-  Spin,
-  Row,
   Col,
-  Avatar,
-  Typography,
   Divider,
   Empty,
+  message,
+  Rate,
   Result,
+  Row,
+  Spin,
+  Typography,
 } from "antd";
 import { UserOutlined } from "@ant-design/icons"; // Import UserOutlined for default avatar
 import axios from "axios";
@@ -28,11 +28,19 @@ const BASE_URL = getApiDomain(); // Define BASE_URL
 
 interface Rating {
   ratingId: number;
-  fromUserId: number;
-  toUserId: number;
-  contractId: number;
+  fromUser: {
+    userId: number;
+    username: string;
+  };
+  toUser: {
+    userId: number;
+    username: string;
+  };
+  contract: {
+    contractId: number;
+  };
   ratingValue: number;
-  flagIssues: boolean;
+  flagIssues: false;
   comment: string;
 }
 
@@ -57,6 +65,10 @@ export default function DriverProfilePage() {
 
   const [driver, setDriver] = useState<Driver | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const handleRatingClick = (ratingId: number) => {
+    router.push(`${BASE_URL}/app/ratings/${ratingId}`);
+  };
 
   useEffect(() => {
     if (!id || typeof id !== "string") return;
@@ -112,7 +124,7 @@ export default function DriverProfilePage() {
               Authorization: token,
               UserId: requestingUserId,
             },
-          }
+          },
         );
         console.log("Received ratings response:", ratingsRes.data); // Log ratings response
 
@@ -131,25 +143,31 @@ export default function DriverProfilePage() {
           ratings: fetchedRatings,
           car: driverRes.data.carDTO
             ? {
-                makeModel: driverRes.data.carDTO.carModel || "Unknown Model",
-                licensePlate: driverRes.data.carDTO.licensePlate || "Unknown Plate",
-                weightCapacity:
-                  (driverRes.data.carDTO.weightCapacity?.toString() ?? "0.0"),
-                volumeCapacity:
-                  (driverRes.data.carDTO.volumeCapacity?.toString() ?? "0.0"),
-              }
+              makeModel: driverRes.data.carDTO.carModel || "Unknown Model",
+              licensePlate: driverRes.data.carDTO.licensePlate ||
+                "Unknown Plate",
+              weightCapacity:
+                (driverRes.data.carDTO.weightCapacity?.toString() ?? "0.0"),
+              volumeCapacity:
+                (driverRes.data.carDTO.volumeCapacity?.toString() ?? "0.0"),
+            }
             : null,
         };
         console.log("Final driver data state:", driverData); // Log final state object
 
         setDriver(driverData);
-
       } catch (error: unknown) {
-        const err = error as Error & { response?: { data?: { message?: string }, status?: number } };
+        const err = error as Error & {
+          response?: { data?: { message?: string }; status?: number };
+        };
         if (err.response?.status === 404) {
-          message.error(`Driver details might be available, but ratings could not be found.`);
+          message.error(
+            `Driver details might be available, but ratings could not be found.`,
+          );
           // Log specific 404 case
-          console.warn('404 Error fetching ratings, driver data might be partial.'); 
+          console.warn(
+            "404 Error fetching ratings, driver data might be partial.",
+          );
           // Check if driver exists but ratings are empty (due to 404 on ratings fetch)
           if (driver && !driver.ratings.length) {
             // Keep existing driver data if ratings fetch failed but driver exists
@@ -157,7 +175,10 @@ export default function DriverProfilePage() {
             setDriver(null);
           }
         } else {
-          message.error(err.response?.data?.message || err.message || "Failed to load driver profile.");
+          message.error(
+            err.response?.data?.message || err.message ||
+              "Failed to load driver profile.",
+          );
           setDriver(null);
         }
         console.error("Error fetching driver data or ratings:", error); // Log general error
@@ -172,7 +193,14 @@ export default function DriverProfilePage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 120px)' }}> 
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "calc(100vh - 120px)",
+        }}
+      >
         <Spin size="large" />
       </div>
     );
@@ -184,67 +212,99 @@ export default function DriverProfilePage() {
         status="404"
         title="404"
         subTitle="Sorry, the driver you visited does not exist."
-        extra={<Button type="primary" onClick={() => router.back()}>Go Back</Button>}
+        extra={
+          <Button type="primary" onClick={() => router.back()}>Go Back</Button>
+        }
       />
     );
   }
 
   const averageRating = driver?.ratings && driver.ratings.length > 0
-    ? driver.ratings.reduce((acc, r) => acc + r.ratingValue, 0) / driver.ratings.length
+    ? driver.ratings.reduce((acc, r) => acc + r.ratingValue, 0) /
+      driver.ratings.length
     : 0;
 
   const ratingsCount = driver?.ratings?.length || 0;
 
   return (
-    <div style={{ padding: '24px', background: '#fff', minHeight: 'calc(100vh - 64px)' }}>
+    <div
+      style={{
+        padding: "24px",
+        background: "#fff",
+        minHeight: "calc(100vh - 64px)",
+      }}
+    >
       <Row gutter={[24, 24]}>
-        <Col xs={24} sm={24} md={8} lg={6} style={{ textAlign: 'center' }}>
+        <Col xs={24} sm={24} md={8} lg={6} style={{ textAlign: "center" }}>
           <Avatar
             size={150}
-            src={driver.profilePicture ? `${BASE_URL}/api/v1/files/download?filePath=${driver.profilePicture}` : undefined}
+            src={driver.profilePicture
+              ? `${BASE_URL}/api/v1/files/download?filePath=${driver.profilePicture}`
+              : undefined}
             icon={!driver.profilePicture ? <UserOutlined /> : undefined}
             alt={`${driver.username}'s profile picture`}
-            style={{ marginBottom: '16px', border: '4px solid #f0f0f0' }}
+            style={{ marginBottom: "16px", border: "4px solid #f0f0f0" }}
           />
-          <Typography.Title level={3} style={{ marginBottom: '4px' }}>{driver.username}</Typography.Title>
+          <Typography.Title level={3} style={{ marginBottom: "4px" }}>
+            {driver.username}
+          </Typography.Title>
           <Typography.Text type="secondary">Driver</Typography.Text>
           <Divider />
           <Typography.Text>Average Rating:</Typography.Text>
           <br />
-          <Rate disabled allowHalf value={averageRating} style={{ marginTop: '8px', fontSize: '18px' }} />
-          <Typography.Text style={{ marginLeft: '8px' }}> ({ratingsCount} ratings)</Typography.Text>
+          <Rate
+            disabled
+            allowHalf
+            value={averageRating}
+            style={{ marginTop: "8px", fontSize: "18px" }}
+          />
+          <Typography.Text style={{ marginLeft: "8px" }}>
+            ({ratingsCount} ratings)
+          </Typography.Text>
         </Col>
 
         <Col xs={24} sm={24} md={16} lg={18}>
-          <Card title="Ratings & Comments" variant="borderless" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.09)' }}>
-            {driver?.ratings && driver.ratings.length > 0 ? (
-              <Carousel autoplay dotPosition="bottom">
-                {driver.ratings.map((rating, index) => ( 
-                  <div key={rating.ratingId || index} style={{ padding: '10px' }}> 
-                    <Card
-                      type="inner"
-                      title={`Rated by: User ID ${rating.fromUserId}`} 
-                      extra={<Rate value={rating.ratingValue} disabled />}
-                      style={{ margin: '0 auto', width: '95%' }}
+          <Card
+            title="Ratings & Comments"
+            variant="borderless"
+            style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.09)" }}
+          >
+            {driver?.ratings && driver.ratings.length > 0
+              ? (
+                <Carousel autoplay dotPosition="bottom">
+                  {driver.ratings.map((rating, index) => (
+                    <div
+                      key={rating.ratingId || index}
+                      style={{ padding: "10px" }}
+                      onClick={() => handleRatingClick(rating.ratingId)}
                     >
-                      <Typography.Paragraph 
-                        ellipsis={{ rows: 2, expandable: true, symbol: 'more' }}
-                        style={{ marginBottom: 0 }}
+                      <Card
+                        type="inner"
+                        title={`Rated by: ${rating.fromUser.username}`}
+                        extra={<Rate value={rating.ratingValue} disabled />}
+                        style={{ margin: "0 auto", width: "95%" }}
                       >
-                        {rating.comment || "No comment provided."}
-                      </Typography.Paragraph>
-                    </Card>
-                  </div>
-                ))}
-              </Carousel>
-            ) : (
-              <Empty description="No ratings yet." />
-            )}
+                        <Typography.Paragraph
+                          ellipsis={{
+                            rows: 2,
+                            expandable: true,
+                            symbol: "more",
+                          }}
+                          style={{ marginBottom: 0 }}
+                        >
+                          {rating.comment || "No comment provided."}
+                        </Typography.Paragraph>
+                      </Card>
+                    </div>
+                  ))}
+                </Carousel>
+              )
+              : <Empty description="No ratings yet." />}
           </Card>
         </Col>
       </Row>
 
-      <Row justify="center" style={{ marginTop: '32px' }}>
+      <Row justify="center" style={{ marginTop: "32px" }}>
         <Col>
           <Button
             type="default"

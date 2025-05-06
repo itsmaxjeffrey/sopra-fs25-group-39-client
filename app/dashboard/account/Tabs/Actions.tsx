@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Form, Input, Modal, Typography, message } from "antd";
+import { Button, Form, Input, message, Modal, Typography } from "antd";
 import styles from "../Account.module.css";
 import { useApi } from "@/hooks/useApi";
 import { useRouter } from "next/navigation";
@@ -36,7 +36,11 @@ const ActionsTab = () => {
           form.resetFields();
         } catch (error: unknown) {
           console.error("Password change failed:", error);
-          const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error instanceof Error ? error.message : "Failed to change password. Please try again.");
+          const errorMessage =
+            (error as { response?: { data?: { message?: string } } })?.response
+              ?.data?.message || (error instanceof Error
+                ? error.message
+                : "Failed to change password. Please try again.");
           message.error(errorMessage);
         } finally {
           setLoading(false);
@@ -67,7 +71,11 @@ const ActionsTab = () => {
         setDeleteModalOpen(false);
       } catch (error: unknown) {
         console.error("Account deletion failed:", error);
-        const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error instanceof Error ? error.message : "Failed to delete account. Please try again.");
+        const errorMessage =
+          (error as { response?: { data?: { message?: string } } })?.response
+            ?.data?.message || (error instanceof Error
+              ? error.message
+              : "Failed to delete account. Please try again.");
         message.error(errorMessage);
       } finally {
         setLoading(false);
@@ -171,7 +179,8 @@ const ActionsTab = () => {
         confirmLoading={loading}
       >
         <p>
-          Are you sure you want to delete your account? This action cannot be undone.
+          Are you sure you want to delete your account? This action cannot be
+          undone.
         </p>
       </Modal>
     </div>

@@ -1,6 +1,6 @@
 "use client";
-import '@ant-design/v5-patch-for-react-19';
-import React, { useRef, useState, useEffect } from "react";
+import "@ant-design/v5-patch-for-react-19";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
   Col,
@@ -12,8 +12,8 @@ import {
   Spin,
   Upload,
 } from "antd";
-import { UploadChangeParam } from 'antd/es/upload';
-import { UploadFile } from 'antd';
+import { UploadChangeParam } from "antd/es/upload";
+import { UploadFile } from "antd";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -60,17 +60,29 @@ interface LocationInputProps {
 
 const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
   const autoRef = useRef<google.maps.places.Autocomplete | null>(null);
-  const [inputValue, setInputValue] = useState(value?.formattedAddress || '');
-  console.log("LocationInput rendered. Initial value:", value, "Initial inputValue:", inputValue);
+  const [inputValue, setInputValue] = useState(value?.formattedAddress || "");
+  console.log(
+    "LocationInput rendered. Initial value:",
+    value,
+    "Initial inputValue:",
+    inputValue,
+  );
 
   useEffect(() => {
-    console.log("LocationInput useEffect triggered. value:", value, "inputValue:", inputValue);
+    console.log(
+      "LocationInput useEffect triggered. value:",
+      value,
+      "inputValue:",
+      inputValue,
+    );
     if (value && value.formattedAddress !== inputValue) {
       console.log("useEffect: Updating inputValue from value prop");
       setInputValue(value.formattedAddress);
     } else if (!value && inputValue) {
-      console.log("useEffect: Clearing inputValue because value prop is null/undefined");
-      setInputValue('');
+      console.log(
+        "useEffect: Clearing inputValue because value prop is null/undefined",
+      );
+      setInputValue("");
     }
   }, [value, inputValue]); // Added inputValue to dependency array
 
@@ -85,12 +97,17 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
         longitude: place.geometry.location.lng(),
         formattedAddress: place.formatted_address,
       };
-      console.log("Valid place selected. Updating input and calling onChange with:", newLocation);
+      console.log(
+        "Valid place selected. Updating input and calling onChange with:",
+        newLocation,
+      );
       setInputValue(newLocation.formattedAddress);
       onChange?.(newLocation);
     } else {
-      console.log("Invalid place or place cleared. Clearing input and calling onChange(null).");
-      setInputValue('');
+      console.log(
+        "Invalid place or place cleared. Clearing input and calling onChange(null).",
+      );
+      setInputValue("");
       onChange?.(null);
     }
   };
@@ -101,7 +118,9 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
     setInputValue(currentInputText);
   };
 
-  const handleAutocompleteLoad = (autocomplete: google.maps.places.Autocomplete) => {
+  const handleAutocompleteLoad = (
+    autocomplete: google.maps.places.Autocomplete,
+  ) => {
     console.log("Autocomplete loaded:", autocomplete);
     autoRef.current = autocomplete;
   };
@@ -110,7 +129,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
     <Autocomplete
       onLoad={handleAutocompleteLoad} // Use specific handler
       onPlaceChanged={handlePlaceChanged}
-      fields={['geometry', 'formatted_address']}
+      fields={["geometry", "formatted_address"]}
     >
       <Input
         placeholder="Enter address and select from suggestions"
@@ -130,14 +149,22 @@ const normFile = (e: UploadChangeParam<UploadFile>) => { // Use UploadChangePara
 };
 
 const Driver = () => {
-  const [driverLicenseFilePath, setDriverLicenseFilePath] = useState<string | null>(null);
-  const [insuranceProofFilePath, setInsuranceProofFilePath] = useState<string | null>(null);
+  const [driverLicenseFilePath, setDriverLicenseFilePath] = useState<
+    string | null
+  >(null);
+  const [insuranceProofFilePath, setInsuranceProofFilePath] = useState<
+    string | null
+  >(null);
   const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
   const [profileFileList, setProfileFileList] = useState<UploadFile[]>([]);
-  const [formStepOneData, setFormStepOneData] = useState<StepOneData | null>(null);
+  const [formStepOneData, setFormStepOneData] = useState<StepOneData | null>(
+    null,
+  );
   const [step, setStep] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalState, setModalState] = useState<"loading" | "success" | "error">("loading");
+  const [modalState, setModalState] = useState<"loading" | "success" | "error">(
+    "loading",
+  );
   const [errorMessage, setErrorMessage] = useState("");
   const [preferredRange, setPreferredRange] = useState<number | null>(null);
   const [formStepTwo] = Form.useForm();
@@ -178,7 +205,9 @@ const Driver = () => {
     setStep(2);
   };
 
-  const handleStepTwoFinish = async (values: StepTwoData & { location: Location | null }) => {
+  const handleStepTwoFinish = async (
+    values: StepTwoData & { location: Location | null },
+  ) => {
     const {
       vehicleModel,
       licensePlate,
@@ -233,10 +262,19 @@ const Driver = () => {
 
   const renderStepTwoContent = () => {
     if (loadError) {
-      return <div>Error loading Google Maps API. Please check your API key and network connection.</div>;
+      return (
+        <div>
+          Error loading Google Maps API. Please check your API key and network
+          connection.
+        </div>
+      );
     }
     if (!isLoaded) {
-      return <Spin tip="Loading Maps..."><div style={{ height: '300px' }} /></Spin>;
+      return (
+        <Spin tip="Loading Maps...">
+          <div style={{ height: "300px" }} />
+        </Spin>
+      );
     }
     return (
       <Form form={formStepTwo} layout="vertical" onFinish={handleStepTwoFinish}>
@@ -282,35 +320,48 @@ const Driver = () => {
               <Form.Item
                 label="Preferred Range (in km)"
                 name="preferredRange"
-                rules={[{ required: true, message: 'Please enter your preferred range' }]}
+                rules={[{
+                  required: true,
+                  message: "Please enter your preferred range",
+                }]}
               >
                 <Input
                   type="number"
                   placeholder="e.g., 50"
-                  value={preferredRange ?? ''}
-                  onChange={(e) => setPreferredRange(Number(e.target.value) || null)}
+                  value={preferredRange ?? ""}
+                  onChange={(e) =>
+                    setPreferredRange(Number(e.target.value) || null)}
                 />
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item 
-                label="Location" 
+              <Form.Item
+                label="Location"
                 name="location"
                 rules={[
-                  { required: true, message: 'Please enter and select your address' },
-                  { validator: (_, value) => 
-                      value && typeof value === 'object' && value.latitude && value.longitude
+                  {
+                    required: true,
+                    message: "Please enter and select your address",
+                  },
+                  {
+                    validator: (_, value) =>
+                      value && typeof value === "object" && value.latitude &&
+                        value.longitude
                         ? Promise.resolve()
-                        : Promise.reject(new Error('Please select a valid address from the suggestions'))
-                  }
+                        : Promise.reject(
+                          new Error(
+                            "Please select a valid address from the suggestions",
+                          ),
+                        ),
+                  },
                 ]}
               >
                 <LocationInput />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item 
-                label="Driver’s License" 
+              <Form.Item
+                label="Driver’s License"
                 name="driversLicense"
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
@@ -318,7 +369,8 @@ const Driver = () => {
                 <Upload
                   listType="picture"
                   maxCount={1}
-                  beforeUpload={() => false}
+                  beforeUpload={() =>
+                    false}
                   onChange={async ({ fileList }) => {
                     const file = fileList[0]?.originFileObj;
                     if (file) {
@@ -332,7 +384,8 @@ const Driver = () => {
                       setDriverLicenseFilePath(null);
                     }
                   }}
-                  onRemove={() => setDriverLicenseFilePath(null)}
+                  onRemove={() =>
+                    setDriverLicenseFilePath(null)}
                 >
                   <Button icon={<UploadOutlined />}>
                     Upload Picture (optional)
@@ -341,8 +394,8 @@ const Driver = () => {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item 
-                label="Proof of Insurance" 
+              <Form.Item
+                label="Proof of Insurance"
                 name="insuranceProof"
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
@@ -350,7 +403,8 @@ const Driver = () => {
                 <Upload
                   listType="picture"
                   maxCount={1}
-                  beforeUpload={() => false}
+                  beforeUpload={() =>
+                    false}
                   onChange={async ({ fileList }) => {
                     const file = fileList[0]?.originFileObj;
                     if (file) {
@@ -381,7 +435,7 @@ const Driver = () => {
             style={{ marginRight: 12 }}
             onClick={() => setStep(1)}
           >
-            Back 
+            Back
           </Button>
           <Button type="primary" htmlType="submit">
             Register
@@ -401,7 +455,10 @@ const Driver = () => {
                 <Form.Item
                   label="First Name"
                   name="firstName"
-                  rules={[{ required: true, message: "Please enter your first name" }]}
+                  rules={[{
+                    required: true,
+                    message: "Please enter your first name",
+                  }]}
                 >
                   <Input placeholder="Anna" />
                 </Form.Item>
@@ -410,7 +467,10 @@ const Driver = () => {
                 <Form.Item
                   label="Last Name"
                   name="lastName"
-                  rules={[{ required: true, message: "Please enter your last name" }]}
+                  rules={[{
+                    required: true,
+                    message: "Please enter your last name",
+                  }]}
                 >
                   <Input placeholder="Miller" />
                 </Form.Item>
@@ -419,7 +479,10 @@ const Driver = () => {
                 <Form.Item
                   label="Username"
                   name="username"
-                  rules={[{ required: true, message: "Please enter a username" }]}
+                  rules={[{
+                    required: true,
+                    message: "Please enter a username",
+                  }]}
                 >
                   <Input placeholder="Anna" />
                 </Form.Item>
@@ -428,7 +491,10 @@ const Driver = () => {
                 <Form.Item
                   label="Birthdate"
                   name="birthDate"
-                  rules={[{ required: true, message: "Please select your birthdate" }]}
+                  rules={[{
+                    required: true,
+                    message: "Please select your birthdate",
+                  }]}
                 >
                   <DatePicker style={{ width: "100%" }} />
                 </Form.Item>
@@ -438,8 +504,14 @@ const Driver = () => {
                   label="Email Address"
                   name="email"
                   rules={[
-                    { required: true, message: "Please enter an email address" },
-                    { type: 'email', message: "Please enter a valid email address" },
+                    {
+                      required: true,
+                      message: "Please enter an email address",
+                    },
+                    {
+                      type: "email",
+                      message: "Please enter a valid email address",
+                    },
                   ]}
                 >
                   <Input placeholder="anna.miller@uzh.ch" />
@@ -450,8 +522,14 @@ const Driver = () => {
                   label="Phone Number"
                   name="phoneNumber"
                   rules={[
-                    { required: true, message: "Please enter your phone number" },
-                    { pattern: /^\+?[0-9\s\-]{7,20}$/, message: "Invalid phone number format" },
+                    {
+                      required: true,
+                      message: "Please enter your phone number",
+                    },
+                    {
+                      pattern: /^\+?[0-9\s\-]{7,20}$/,
+                      message: "Invalid phone number format",
+                    },
                   ]}
                 >
                   <Input placeholder="+41 79 123 45 67" />
@@ -464,8 +542,10 @@ const Driver = () => {
                   rules={[
                     { required: true, message: "Please enter a password" },
                     {
-                      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%#*?&]{8,}$/,
-                      message: "Min 8 chars: uppercase, lowercase, number, special char (@$!%*?&)",
+                      pattern:
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%#*?&]{8,}$/,
+                      message:
+                        "Min 8 chars: uppercase, lowercase, number, special char (@$!%*?&)",
                     },
                   ]}
                   hasFeedback
@@ -486,7 +566,9 @@ const Driver = () => {
                         if (!value || getFieldValue("password") === value) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error("Passwords do not match"));
+                        return Promise.reject(
+                          new Error("Passwords do not match"),
+                        );
                       },
                     }),
                   ]}
@@ -495,8 +577,8 @@ const Driver = () => {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item 
-                  label="Profile Picture" 
+                <Form.Item
+                  label="Profile Picture"
                   name="profilePicture"
                   valuePropName="fileList"
                   getValueFromEvent={normFile}
@@ -515,7 +597,10 @@ const Driver = () => {
                           const filePath = await uploadFile(file, "profile");
                           setUploadedFilePath(filePath);
                         } catch (error) {
-                          console.error("Profile picture upload failed:", error);
+                          console.error(
+                            "Profile picture upload failed:",
+                            error,
+                          );
                           setProfileFileList([]);
                           setUploadedFilePath(null);
                         }
@@ -573,7 +658,7 @@ const Driver = () => {
             <div className={styles.registerError}>
               <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
               <p>Registration Failed</p>
-              <p style={{ color: '#888', fontSize: 'small' }}>{errorMessage}</p>
+              <p style={{ color: "#888", fontSize: "small" }}>{errorMessage}</p>
               <Button onClick={() => setModalVisible(false)}>Try Again</Button>
             </div>
           )}

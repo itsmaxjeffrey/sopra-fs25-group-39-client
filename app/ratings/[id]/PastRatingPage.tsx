@@ -3,36 +3,67 @@
 import React, { useEffect, useState } from "react";
 import { Button, Image, Input, Rate } from "antd";
 import "antd/dist/antd.css";
+import { getApiDomain } from "@/utils/domain";
+import { useRouter } from "next/router";
 
 interface User {
+  userId: number;
   username: string;
-  profilePictureUrl: string;
+  profilePicturePath: string;
 }
 
 interface Contract {
-  userId: number;
-  description: string;
+  contractId: number;
+  title: string;
+  contractDescription: string;
   // Extend as needed
 }
 
 interface Rating {
-  fromUser: User;
-  toUser: User;
-  contract: Contract;
+  ratingId: number;
+  fromUser: {
+    userId: number;
+    username: string;
+  };
+  toUser: {
+    userId: number;
+    username: string;
+  };
+  contract: {
+    contractId: number;
+  };
   ratingValue: number;
-  flagIssues: boolean;
+  flagIssues: false;
   comment: string;
 }
 
 const RatingPage: React.FC = () => {
   const [rating, setRating] = useState<Rating | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [contract, setContract] = useState<Contract | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const BASE_URL = getApiDomain();
+  const router = useRouter();
+  const { ratingId } = router.query;
 
   useEffect(() => {
     const fetchRating = async () => {
+      if (!ratingId) {
+        // ratingId might be undefined during the initial render
+        setError("Rating ID is missing.");
+        return;
+      }
+
       try {
+        const token = localStorage.getItem("token") || "";
+        const requestingUserId = localStorage.getItem("userId") || "";
         // Perform an actual API call
-        const response = await fetch(`/api/v1/ratings/TODO`); // Update to your actual API endpoint
+        const response = await fetch(`${BASE_URL}/api/v1/ratings/${ratingId}`, { // Pass options object as second argument
+          headers: {
+            Authorization: token,
+            UserId: requestingUserId,
+          },
+        });
         if (response.ok) {
           const data: Rating = await response.json();
           setRating(data);
@@ -47,8 +78,74 @@ const RatingPage: React.FC = () => {
       }
     };
 
+    const fetchUser = async () => {
+      if (!rating.fromUser.userId) {
+        setError("User ID is missing.");
+        return;
+      }
+      try {
+        const token = localStorage.getItem("token") || "";
+        const requestingUserId = localStorage.getItem("userId") || "";
+
+        const response = await fetch(
+          `${BASE_URL}/api/v1/users/${rating.fromUser.userId}`,
+          { // Pass options object as second argument
+            headers: {
+              Authorization: token,
+              UserId: requestingUserId,
+            },
+          },
+        );
+        if (response.ok) {
+          const data: User = await response.json();
+          setUser(data);
+        } else if (response.status === 404) {
+          setError("User not found.");
+        } else {
+          setError("An error occurred while fetching the user details.");
+        }
+      } catch (err) {
+        console.error("Error fetching the user details:", err);
+        setError("An error occurred while fetching the user details.");
+      }
+    };
+
+    const fetchContract = async () => {
+      if (!rating.contract.contractId) {
+        setError("Contract ID is missing.");
+        return;
+      }
+      try {
+        const token = localStorage.getItem("token") || "";
+        const requestingUserId = localStorage.getItem("userId") || "";
+
+        const response = await fetch(
+          `${BASE_URL}/api/v1/contracts/${rating.contract.contractId}`,
+          { // Pass options object as second argument
+            headers: {
+              Authorization: token,
+              UserId: requestingUserId,
+            },
+          },
+        );
+        if (response.ok) {
+          const data: Contract = await response.json();
+          setContract(data);
+        } else if (response.status === 404) {
+          setError("Contract not found.");
+        } else {
+          setError("An error occurred while fetching the contract details.");
+        }
+      } catch (err) {
+        console.error("Error fetching the contract details:", err);
+        setError("An error occurred while fetching the contract details.");
+      }
+    };
+
     fetchRating();
-  }, [rating?.contract.userId]);
+    fetchUser();
+    fetchContract();
+  }, [ratingId, BASE_URL, rating.contract.contractId, rating.fromUser.userId]);
 
   if (error) {
     return <div>{error}</div>;
@@ -69,7 +166,7 @@ const RatingPage: React.FC = () => {
     >
       <h1>{rating.fromUser.username}&apos;s Rating</h1>
       <Image
-        src={rating.fromUser.profilePictureUrl}
+        src={user.profilePicturePath}
         alt="Requester Profile"
         style={{
           borderRadius: "50%",
@@ -84,7 +181,7 @@ const RatingPage: React.FC = () => {
 
       <h3>Contract Information</h3>
       <Input.TextArea
-        value={rating.contract.description}
+        value={contract.contractDescription}
         readOnly
         style={{
           width: "80%",
@@ -102,7 +199,11 @@ const RatingPage: React.FC = () => {
           resize: "none",
         }}
       />
-      <Button type="primary" style={{ marginTop: "20px" }}>
+      <Button
+        type="primary"
+        onClick={() => router.back()}
+        style={{ marginTop: "20px" }}
+      >
         Return
       </Button>
     </div>

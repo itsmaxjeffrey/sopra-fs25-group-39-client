@@ -1,5 +1,5 @@
 "use client";
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
@@ -9,11 +9,11 @@ import {
   Image,
   Input,
   InputNumber,
+  message, // Import message
   Modal,
   Row,
   Spin,
   Switch,
-  message, // Import message
 } from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styles from "./Edit.module.css";
@@ -130,8 +130,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       router.push("/dashboard");
     } catch (error: any) {
       console.error("Cancel failed:", error);
-      const errorMessage =
-        error.response?.data?.message ||
+      const errorMessage = error.response?.data?.message ||
         "Failed to cancel the proposal. Please try again.";
       message.error(errorMessage);
     }
@@ -146,7 +145,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
     const payload = {
       title: values.title,
       contractDescription: values.description,
-      moveDateTime: values.moveDate?.toISOString(),
+      moveDateTime: values.moveDate?.format("YYYY-MM-DDTHH:mm:ss"),
       fromLocation: {
         latitude: fromCoords.lat,
         longitude: fromCoords.lng,
@@ -177,7 +176,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
             Authorization: localStorage.getItem("token") || "",
             UserId: localStorage.getItem("userId") || "",
           },
-        }
+        },
       );
       console.log("PUT response:", response.data);
       setChanged(false);
@@ -185,7 +184,8 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
     } catch (err: any) {
       console.error("PUT failed:", err.response?.data || err.message);
       // Add error message
-      const errorMessage = err.response?.data?.message || "Failed to update proposal.";
+      const errorMessage = err.response?.data?.message ||
+        "Failed to update proposal.";
       message.error(errorMessage);
     }
   };

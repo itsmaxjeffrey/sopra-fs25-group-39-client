@@ -1,5 +1,5 @@
 "use client";
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -26,12 +26,15 @@ const Sidebar = (
       console.log("UserId:", userId, "Token:", token);
       if (userId && token) {
         try {
-          const response = await axios.get(`${BASE_URL}/api/v1/users/${userId}`, { // Use BASE_URL
-            headers: {
-              UserId: `${userId}`,
-              Authorization: `${token}`,
+          const response = await axios.get(
+            `${BASE_URL}/api/v1/users/${userId}`,
+            { // Use BASE_URL
+              headers: {
+                UserId: `${userId}`,
+                Authorization: `${token}`,
+              },
             },
-          });
+          );
           const data = response.data as { userAccountType: string };
           setAccountType(data.userAccountType);
         } catch (error) {
@@ -56,7 +59,7 @@ const Sidebar = (
 
     try {
       await axios.post(
-        `${BASE_URL}/api/v1/auth/logout`, 
+        `${BASE_URL}/api/v1/auth/logout`,
         {},
         {
           headers: {
@@ -70,28 +73,29 @@ const Sidebar = (
       message.success("Successfully logged out!"); // Add success message
     } catch (error: unknown) { // Use unknown for caught errors
       console.error("Failed to log out:", error);
-      const errorMessage = error instanceof Error ? error.message : "Logout failed. Please try again.";
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Logout failed. Please try again.";
 
       // Structural check for Axios error
       let finalErrorMessage = errorMessage;
       if (
         error &&
-        typeof error === 'object' &&
-        'isAxiosError' in error && 
-        error.isAxiosError === true && 
-        'response' in error && 
+        typeof error === "object" &&
+        "isAxiosError" in error &&
+        error.isAxiosError === true &&
+        "response" in error &&
         error.response &&
-        typeof error.response === 'object' &&
-        'data' in error.response &&
+        typeof error.response === "object" &&
+        "data" in error.response &&
         error.response.data &&
-        typeof error.response.data === 'object' &&
-        'message' in error.response.data &&
-        typeof error.response.data.message === 'string'
+        typeof error.response.data === "object" &&
+        "message" in error.response.data &&
+        typeof error.response.data.message === "string"
       ) {
         finalErrorMessage = error.response.data.message;
       }
       message.error(finalErrorMessage);
-
     } finally {
       // Clear storage and redirect regardless of API call success/failure
       localStorage.removeItem("token");
