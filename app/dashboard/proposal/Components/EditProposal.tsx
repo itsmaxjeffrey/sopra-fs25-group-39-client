@@ -192,6 +192,11 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
     }
   };
 
+  // Disable cancel button if moveDate is within 72 hours from now
+  const isWithin72Hours = form.getFieldValue("moveDate")
+    ? dayjs(form.getFieldValue("moveDate")).diff(dayjs(), "hour") < 72
+    : false;
+
   return (
     <div className={styles.wrapper}>
       {/* Bild Upload */}
@@ -403,6 +408,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
                 danger
                 type="primary"
                 onClick={() => setIsCancelModalOpen(true)}
+                disabled={isWithin72Hours}
               >
                 Cancel Proposal
               </Button>
@@ -456,7 +462,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
         centered
       >
         <p>Are you sure you want to cancel this proposal?</p>
-        <p>THis will also delete the proposal!</p>
+        <p>This will also delete the proposal!</p>
         <p>This action cannot be undone.</p>
       </Modal>
     </div>

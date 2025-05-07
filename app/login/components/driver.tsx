@@ -51,7 +51,7 @@ interface Location {
 }
 
 const BASE_URL = getApiDomain();
-const libraries: ("places")[] = ["places"];
+const libraries: "places"[] = ["places"];
 
 interface LocationInputProps {
   value?: Location | null; // Value passed from Form.Item (should be the Location object)
@@ -65,7 +65,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
     "LocationInput rendered. Initial value:",
     value,
     "Initial inputValue:",
-    inputValue,
+    inputValue
   );
 
   useEffect(() => {
@@ -91,13 +91,13 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
       };
       console.log(
         "Valid place selected. Updating input and calling onChange with:",
-        newLocation,
+        newLocation
       );
       setInputValue(newLocation.formattedAddress);
       onChange?.(newLocation);
     } else {
       console.log(
-        "Invalid place or place cleared. Clearing input and calling onChange(null).",
+        "Invalid place or place cleared. Clearing input and calling onChange(null)."
       );
       setInputValue("");
       onChange?.(null);
@@ -111,7 +111,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
   };
 
   const handleAutocompleteLoad = (
-    autocomplete: google.maps.places.Autocomplete,
+    autocomplete: google.maps.places.Autocomplete
   ) => {
     console.log("Autocomplete loaded:", autocomplete);
     autoRef.current = autocomplete;
@@ -130,10 +130,11 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
       />
     </Autocomplete>
   );
-}; 
+};
 
 // Helper function to normalize the event object for Form.Item
-const normFile = (e: UploadChangeParam<UploadFile>) => { // Use UploadChangeParam<UploadFile>
+const normFile = (e: UploadChangeParam<UploadFile>) => {
+  // Use UploadChangeParam<UploadFile>
   if (Array.isArray(e)) {
     return e;
   }
@@ -150,16 +151,48 @@ const Driver = () => {
   const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
   const [profileFileList, setProfileFileList] = useState<UploadFile[]>([]);
   const [formStepOneData, setFormStepOneData] = useState<StepOneData | null>(
-    null,
+    null
   );
   const [step, setStep] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
-    "loading",
+    "loading"
   );
   const [errorMessage, setErrorMessage] = useState("");
   const [preferredRange, setPreferredRange] = useState<number | null>(null);
   const [formStepTwo] = Form.useForm();
+
+  // Username availability check states and function
+  const [usernameStatus, setUsernameStatus] = useState<
+    "" | "success" | "error"
+  >("");
+  const [usernameHelp, setUsernameHelp] = useState<string | null>(null);
+
+  const checkUsernameAvailability = async (username: string) => {
+    if (username.length < 4) {
+      setUsernameStatus("");
+      setUsernameHelp(null);
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${BASE_URL}//api/v1/auth/check-username/${username}`
+      );
+
+      if (response.data.isTaken == false) {
+        setUsernameStatus("success");
+        setUsernameHelp("Username is available");
+      } else {
+        setUsernameStatus("error");
+        setUsernameHelp("Username is already taken");
+      }
+    } catch (error) {
+      console.error("Username check failed", error);
+      setUsernameStatus("error");
+      setUsernameHelp("Could not check username. Try again.");
+    }
+  };
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -177,7 +210,7 @@ const Driver = () => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-        },
+        }
       );
 
       const filePath = (response.data as { filePath: string }).filePath;
@@ -198,7 +231,7 @@ const Driver = () => {
   };
 
   const handleStepTwoFinish = async (
-    values: StepTwoData & { location: Location | null },
+    values: StepTwoData & { location: Location | null }
   ) => {
     const {
       vehicleModel,
@@ -313,17 +346,20 @@ const Driver = () => {
               <Form.Item
                 label="Preferred Range (in km)"
                 name="preferredRange"
-                rules={[{
-                  required: true,
-                  message: "Please enter your preferred range",
-                }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter your preferred range",
+                  },
+                ]}
               >
                 <Input
                   type="number"
                   placeholder="e.g., 50"
                   value={preferredRange ?? ""}
                   onChange={(e) =>
-                    setPreferredRange(Number(e.target.value) || null)}
+                    setPreferredRange(Number(e.target.value) || null)
+                  }
                 />
               </Form.Item>
             </Col>
@@ -338,14 +374,16 @@ const Driver = () => {
                   },
                   {
                     validator: (_, value) =>
-                      value && typeof value === "object" && value.latitude &&
-                        value.longitude
+                      value &&
+                      typeof value === "object" &&
+                      value.latitude &&
+                      value.longitude
                         ? Promise.resolve()
                         : Promise.reject(
-                          new Error(
-                            "Please select a valid address from the suggestions",
+                            new Error(
+                              "Please select a valid address from the suggestions"
+                            )
                           ),
-                        ),
                   },
                 ]}
               >
@@ -362,8 +400,7 @@ const Driver = () => {
                 <Upload
                   listType="picture"
                   maxCount={1}
-                  beforeUpload={() =>
-                    false}
+                  beforeUpload={() => false}
                   onChange={async ({ fileList }) => {
                     const file = fileList[0]?.originFileObj;
                     if (file) {
@@ -377,8 +414,7 @@ const Driver = () => {
                       setDriverLicenseFilePath(null);
                     }
                   }}
-                  onRemove={() =>
-                    setDriverLicenseFilePath(null)}
+                  onRemove={() => setDriverLicenseFilePath(null)}
                 >
                   <Button icon={<UploadOutlined />}>
                     Upload Picture (optional)
@@ -396,8 +432,7 @@ const Driver = () => {
                 <Upload
                   listType="picture"
                   maxCount={1}
-                  beforeUpload={() =>
-                    false}
+                  beforeUpload={() => false}
                   onChange={async ({ fileList }) => {
                     const file = fileList[0]?.originFileObj;
                     if (file) {
@@ -423,11 +458,7 @@ const Driver = () => {
         </div>
 
         <Form.Item className={styles.stepControls}>
-          <Button
-            danger
-            style={{ marginRight: 12 }}
-            onClick={() => setStep(1)}
-          >
+          <Button danger style={{ marginRight: 12 }} onClick={() => setStep(1)}>
             Back
           </Button>
           <Button type="primary" htmlType="submit">
@@ -448,10 +479,12 @@ const Driver = () => {
                 <Form.Item
                   label="First Name"
                   name="firstName"
-                  rules={[{
-                    required: true,
-                    message: "Please enter your first name",
-                  }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter your first name",
+                    },
+                  ]}
                 >
                   <Input placeholder="Anna" />
                 </Form.Item>
@@ -460,10 +493,12 @@ const Driver = () => {
                 <Form.Item
                   label="Last Name"
                   name="lastName"
-                  rules={[{
-                    required: true,
-                    message: "Please enter your last name",
-                  }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter your last name",
+                    },
+                  ]}
                 >
                   <Input placeholder="Miller" />
                 </Form.Item>
@@ -472,22 +507,33 @@ const Driver = () => {
                 <Form.Item
                   label="Username"
                   name="username"
-                  rules={[{
-                    required: true,
-                    message: "Please enter a username",
-                  }]}
+                  rules={[
+                    { required: true, message: "Please enter a username" },
+                    {
+                      min: 4,
+                      message: "Username must be at least 4 characters",
+                    },
+                  ]}
+                  validateTrigger={["onChange", "onBlur"]}
+                  validateStatus={usernameStatus}
+                  help={usernameHelp}
                 >
-                  <Input placeholder="Anna" />
+                  <Input
+                    placeholder="Anna"
+                    onChange={(e) => checkUsernameAvailability(e.target.value)}
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
                   label="Birthdate"
                   name="birthDate"
-                  rules={[{
-                    required: true,
-                    message: "Please select your birthdate",
-                  }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select your birthdate",
+                    },
+                  ]}
                 >
                   <DatePicker style={{ width: "100%" }} />
                 </Form.Item>
@@ -560,7 +606,7 @@ const Driver = () => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("Passwords do not match"),
+                          new Error("Passwords do not match")
                         );
                       },
                     }),
@@ -592,7 +638,7 @@ const Driver = () => {
                         } catch (error) {
                           console.error(
                             "Profile picture upload failed:",
-                            error,
+                            error
                           );
                           setProfileFileList([]);
                           setUploadedFilePath(null);
@@ -621,7 +667,9 @@ const Driver = () => {
             </Row>
           </div>
           <Form.Item className={styles.stepControls}>
-            <Button type="primary" htmlType="submit">Next</Button>
+            <Button type="primary" htmlType="submit">
+              Next
+            </Button>
           </Form.Item>
         </Form>
       )}

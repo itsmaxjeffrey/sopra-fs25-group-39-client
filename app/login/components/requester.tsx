@@ -1,6 +1,6 @@
 "use client";
 import "@ant-design/v5-patch-for-react-19";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Col,
@@ -49,6 +49,41 @@ const Requester = () => {
   );
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Username validation state
+  const [usernameStatus, setUsernameStatus] = useState<"success" | "error" | undefined>();
+  const [usernameHelp, setUsernameHelp] = useState<string | undefined>();
+
+  const [form] = Form.useForm();
+  const username = Form.useWatch("username", form);
+
+  useEffect(() => {
+    const checkUsername = async () => {
+      if (!username || username.length < 4) {
+        setUsernameStatus(undefined);
+        setUsernameHelp(undefined);
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `${BASE_URL}//api/v1/auth/check-username/${username}`
+        );
+  
+        if (response.data.isTaken == false) {
+          setUsernameStatus("success");
+          setUsernameHelp("Username is available");
+        } else {
+          setUsernameStatus("error");
+          setUsernameHelp("Username is already taken");
+        }
+      } catch (error) {
+        console.error("Username check failed", error);
+        setUsernameStatus("error");
+        setUsernameHelp("Could not check username. Try again.");
+      }
+    };
+    checkUsername();
+  }, [username]);
+
   const uploadFile = async (file: File, type: string) => {
     const formData = new FormData();
     formData.append("file", file); // Attach the file
@@ -80,6 +115,7 @@ const Requester = () => {
   return (
     <div className={styles.driverContainer}>
       <Form
+        form={form}
         layout="vertical"
         onFinish={async (values) => {
           const {
@@ -155,7 +191,11 @@ const Requester = () => {
                   name="username"
                   rules={[
                     { required: true, message: "Please enter a username" },
+                    { min: 4, message: "Username must be at least 4 characters" },
                   ]}
+                  validateTrigger={["onChange", "onBlur"]}
+                  validateStatus={usernameStatus}
+                  help={usernameHelp}
                 >
                   <Input placeholder="Anna" />
                 </Form.Item>
