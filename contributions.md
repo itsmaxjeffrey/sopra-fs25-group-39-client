@@ -165,7 +165,25 @@ _Easter Break_
 | **@xdecentralix**  | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@dariohug**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@dariohug**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@fksm2003**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [07.07.2025]   | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/90f5afae1adc260a478773e0aacce53478cd1320] | [72h contract cancellation rule] | [A requester cannot cancel or edit a contract 72h before the move- options deactivated. Moving Datetime & atm difference < 72h => disable] |
+| **@fksm2003**      | [07.05.2025]   | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/90f5afae1adc260a478773e0aacce53478cd1320] | [Immediate check if username is taken, and corresponding error message. ] | [Otherwise user (driver/requester) needs to fill in the entire page and only after the submission this would have been checked. Leading to tidious work for user due to data loss. Now working with BE => GET endpoint, searches in Database if Username is taken, if yes, return unavailable.] |
+| **@itsmaxjeffrey** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+
+
+---
+
+## Contributions Week 6 - 06.05.2025 to 12.05.2025
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **@ojg9**          | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@ojg9**          | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@xdecentralix**  | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@fksm2003**      | [20.05.2025]   | [-] | [Joker] | [-] |
+| **@fksm2003**      | [20.05.2025]   | [-] | [Joker] | [-] |
 | **@itsmaxjeffrey** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@itsmaxjeffrey** | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
