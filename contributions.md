@@ -167,13 +167,12 @@ _Easter Break_
 | **@dariohug**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@fksm2003**      | [07.07.2025]   | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/90f5afae1adc260a478773e0aacce53478cd1320] | [72h contract cancellation rule] | [A requester cannot cancel or edit a contract 72h before the move- options deactivated. Moving Datetime & atm difference < 72h => disable] |
 | **@fksm2003**      | [07.05.2025]   | [https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/90f5afae1adc260a478773e0aacce53478cd1320] | [Immediate check if username is taken, and corresponding error message. ] | [Otherwise user (driver/requester) needs to fill in the entire page and only after the submission this would have been checked. Leading to tidious work for user due to data loss. Now working with BE => GET endpoint, searches in Database if Username is taken, if yes, return unavailable.] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-
+| **@itsmaxjeffrey** | [06.05.2025]   | O [bugfix: 1.driver-rating page was not accessible by the requester 2.manpower couldn't be 0 or empty(def:0) 3. edit proposal page expected a field called collateral in the backend, but front-end didn't provide that yet.](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/fe79d0f770cb561392ba24dfaedade51f72c310c) O [bugfix: 1.optimzied performace by editing isLaoding 2.added some more dummy test data creation to the bash script(local) and changed polling to every 30 seconds, to reduce server load](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/fe79d0f770cb561392ba24dfaedade51f72c310c) O [bugfix: adjusted the sidebar buttons to be clickable on the whole button, instead of only on the text](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/60917a42442a6af67fac40b2f2accc39128fbf60) O [bugfix3: locked-in contract page shows all the fields(before it was missing half the data)](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/a3f5cbc7fe9591c404f7baea5f544c0a1f8afa38)| performance was very slow and buttons where not easy to click on. | it makes the app faster and optimizes performance. also a driver can now see all the info of locked-in contracts |
+| **@itsmaxjeffrey** | [07.05.2025]   | O [commit1:username-availability-endpoint](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-server/commit/dc4130af46251d070bf794db0138cd560cdca4db) O [commit2: added more user-feedback in the front-end](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/860e5abf49097ef1f4c29eec9d59590468337865) | 1.a user can check if the username is taken during registeration without having to submit the complete form. 2. The user will recieve better feedback if a process fails.| [1. a user doesn't have to fulfill all fields and submit the complete form to see if a username is taken 2.The user can understand whether a process was succesful or not. ] |
 
 ---
 
-## Contributions Week 6 - 06.05.2025 to 12.05.2025
+## Contributions Week 6 - 13.05.2025 to 20.05.2025
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
@@ -185,5 +184,5 @@ _Easter Break_
 | **@dariohug**      | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@fksm2003**      | [20.05.2025]   | [-] | [Joker] | [-] |
 | **@fksm2003**      | [20.05.2025]   | [-] | [Joker] | [-] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@itsmaxjeffrey** | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@itsmaxjeffrey** | [20.05.2025]   | [-] | [Joker] | [-] |
+| **@itsmaxjeffrey** | [20.05.2025]   | [-] | [Joker] | [-] |
