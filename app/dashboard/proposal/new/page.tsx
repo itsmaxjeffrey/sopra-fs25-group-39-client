@@ -26,6 +26,7 @@ import { Autocomplete } from "@react-google-maps/api";
 import styles from "./New.module.css";
 import dayjs from "dayjs";
 import { getApiDomain } from "@/utils/domain";
+import type { UploadFile } from "antd/es/upload/interface"; // Import UploadFile type
 
 const BASE_URL = getApiDomain();
 
@@ -36,7 +37,7 @@ const NewProposalFormPage = () => {
   const [form] = Form.useForm();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
-    "loading",
+    "loading"
   );
   const [errorMessage, setErrorMessage] = useState("");
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
@@ -67,7 +68,7 @@ const NewProposalFormPage = () => {
             UserId: `${userId}`,
             Authorization: `${token}`,
           },
-        },
+        }
       );
 
       if (!response.data.filePath) {
@@ -128,7 +129,7 @@ const NewProposalFormPage = () => {
     try {
       console.log(
         "Payload From Address:",
-        payload.fromLocation.formattedAddress,
+        payload.fromLocation.formattedAddress
       );
       console.log("Payload To Address:", payload.toLocation.formattedAddress);
       console.log("WOULD SEND:", JSON.stringify(payload, null, 2));
@@ -146,7 +147,8 @@ const NewProposalFormPage = () => {
       const backendMessage = err.response?.data?.message;
       setErrorMessage(
         backendMessage ||
-          (err.message || "Something went wrong while creating your proposal."),
+          err.message ||
+          "Something went wrong while creating your proposal."
       );
       setModalState("error");
     }
@@ -157,44 +159,87 @@ const NewProposalFormPage = () => {
       {/* Image Upload Section */}
       <div className={styles.imageUpload}>
         <div className={styles.imageRow}>
-          {[0, 1, 2].map((idx) => (
-            <div key={idx} className={styles.imageBox}>
-              <Upload
-                listType="picture-card"
-                maxCount={1}
-                beforeUpload={(file) => {
-                  handleUpload(file, idx);
-                  return false;
-                }}
-                onRemove={() => {
-                  const newPaths = [...uploadedPaths];
-                  newPaths[idx] = null;
-                  setUploadedPaths(newPaths);
-                }}
-                showUploadList={false}
-              >
-                {uploadedPaths[idx]
-                  ? (
-                    <Image
-                      src={`${BASE_URL}/api/v1/files/download?filePath=${
-                        uploadedPaths[idx]
-                      }`}
-                      alt={`upload-${idx}`}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  )
-                  : (
+          {[0, 1, 2].map((idx) => {
+            const currentPath = uploadedPaths[idx];
+            const antdFileList: UploadFile[] = currentPath
+              ? [
+                  {
+                    uid: `file-${idx}-${currentPath}`, // Unique ID for the file
+                    name:
+                      currentPath.substring(currentPath.lastIndexOf("/") + 1) ||
+                      `image-${idx}.png`, // Filename
+                    status: "done", // Status of the file
+                    url: `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`, // URL for preview
+                    thumbUrl: `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`, // URL for thumbnail
+                  },
+                ]
+              : [];
+
+            return (
+              <div key={idx} className={styles.imageBox}>
+                <Upload
+                  listType="picture-card"
+                  fileList={antdFileList} // Controlled fileList
+                  maxCount={1}
+                  beforeUpload={(file) => {
+                    handleUpload(file, idx);
+                    return false; // Prevent antd default upload
+                  }}
+                  onRemove={async (file) => {
+                    // file parameter is the AntD UploadFile object
+                    const pathToRemove = uploadedPaths[idx];
+
+                    if (!pathToRemove) return true; // Should not happen if remove icon is visible
+
+                    // Optimistically update UI by modifying uploadedPaths
+                    const newPaths = [...uploadedPaths];
+                    newPaths[idx] = null;
+                    setUploadedPaths(newPaths);
+
+                    // Call backend to delete the file
+                    const token = localStorage.getItem("token");
+                    const userId = localStorage.getItem("userId");
+                    if (token && userId) {
+                      try {
+                        await axios.delete(
+                          `${BASE_URL}/api/v1/files/delete?filePath=${pathToRemove}`,
+                          {
+                            headers: {
+                              UserId: `${userId}`,
+                              Authorization: `${token}`,
+                            },
+                          }
+                        );
+                        console.log("File deleted from server:", pathToRemove);
+                      } catch (error) {
+                        console.error(
+                          "Error deleting file from server:",
+                          pathToRemove,
+                          error
+                        );
+                        // Optionally, handle UI revert or user notification here
+                        // For now, we'll allow the UI removal to persist
+                      }
+                    } else {
+                      console.error(
+                        "Authentication details missing, cannot delete file from server."
+                      );
+                    }
+                    return true; // Confirm removal from AntD's list
+                  }}
+                  // showUploadList is true by default for picture-card
+                  // Ant Design's default preview (on eye icon click) will use the 'url' from antdFileList.
+                >
+                  {/* Conditionally render the upload trigger (camera icon) */}
+                  {antdFileList.length === 0 ? (
                     <div className={styles.cameraIcon}>
                       <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
                     </div>
-                  )}
-              </Upload>
-            </div>
-          ))}
+                  ) : null}
+                </Upload>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -233,7 +278,8 @@ const NewProposalFormPage = () => {
                 style={{ width: "100%" }}
                 showTime={{ format: "HH:mm", showSecond: false }}
                 disabledDate={(current) =>
-                  current && current < dayjs().startOf("minute")}
+                  current && current < dayjs().startOf("minute")
+                }
               />
             </Form.Item>
           </Col>
