@@ -6,7 +6,6 @@ import {
   Col,
   DatePicker,
   Form,
-  Image,
   Input,
   InputNumber,
   message, // Import message
@@ -14,8 +13,10 @@ import {
   Row,
   Spin,
   Switch,
+  Upload, // Added Upload
 } from "antd";
-import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import type { UploadFile } from "antd/es/upload/interface"; // Added UploadFile type
+import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons"; // Removed UploadOutlined
 import styles from "./Edit.module.css";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -43,7 +44,11 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const [imagePaths, setImagePaths] = useState<string[]>([]);
+  const [imagePaths, setImagePaths] = useState<(string | null)[]>([
+    null,
+    null,
+    null,
+  ]); // Ensure 3 slots, initialized to null
 
   const fetchContract = async () => {
     try {
@@ -55,18 +60,16 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
         {
           headers: {
             Authorization: localStorage.getItem("token") || "",
-            "userId": localStorage.getItem("userId") || "",
+            userId: localStorage.getItem("userId") || "",
           },
-        },
+        }
       );
 
-      // Access the contract object from the response
       const data = res.data.contract;
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
 
-      // Populate the form with the contract data
       form.setFieldsValue({
         title: data.title,
         description: data.contractDescription,
@@ -84,7 +87,6 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
         weight: data.weight,
       });
 
-      // Update state with additional data
       setFromCoords({
         address: data.fromLocation?.formattedAddress || "",
         lat: data.fromLocation?.latitude,
@@ -95,7 +97,14 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
         lat: data.toLocation?.latitude,
         lng: data.toLocation?.longitude,
       });
-      setImagePaths(data.contractPhotos || []);
+
+      // Ensure imagePaths has 3 elements, padding with null if necessary
+      const photosFromServer = data.contractPhotos || [];
+      const newImagePaths: (string | null)[] = [null, null, null];
+      for (let i = 0; i < Math.min(photosFromServer.length, 3); i++) {
+        newImagePaths[i] = photosFromServer[i];
+      }
+      setImagePaths(newImagePaths);
 
       // Reset error and modal states
       setError(false);
@@ -130,7 +139,8 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       router.push("/dashboard");
     } catch (error: any) {
       console.error("Cancel failed:", error);
-      const errorMessage = error.response?.data?.message ||
+      const errorMessage =
+        error.response?.data?.message ||
         "Failed to cancel the proposal. Please try again.";
       message.error(errorMessage);
     }
@@ -139,7 +149,81 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, proposalId]);
+  }, [proposalId]); // form removed from deps as per original, ensure this is intended
+
+  const handleImageUpload = async (file: File, idx: number) => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    if (!token || !userId) {
+      message.error("Authentication details missing. Cannot upload file.");
+      return false;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", "proposal");
+
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/v1/files/upload`,
+        formData,
+        {
+          headers: {
+            UserId: `${userId}`,
+            Authorization: `${token}`,
+          },
+        }
+      );
+
+      if (!response.data.filePath) {
+        throw new Error("File path is missing in the response");
+      }
+
+      const newPaths = [...imagePaths];
+      newPaths[idx] = response.data.filePath;
+      setImagePaths(newPaths);
+      setChanged(true);
+      message.success(`Image ${idx + 1} uploaded successfully!`);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      message.error("Error uploading file. Please try again.");
+    }
+    return false; // Prevent antd default upload
+  };
+
+  const handleImageDelete = async (idx: number) => {
+    const pathToDelete = imagePaths[idx];
+    if (!pathToDelete) return;
+
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    if (!token || !userId) {
+      message.error("Authentication details missing. Cannot delete file.");
+      return;
+    }
+
+    try {
+      await axios.delete(
+        `${BASE_URL}/api/v1/files/delete?filePath=${pathToDelete}`,
+        {
+          headers: {
+            UserId: `${userId}`,
+            Authorization: `${token}`,
+          },
+        }
+      );
+
+      const newPaths = [...imagePaths];
+      newPaths[idx] = null;
+      setImagePaths(newPaths);
+      setChanged(true);
+      message.success(`Image ${idx + 1} deleted successfully!`);
+    } catch (error) {
+      console.error("Error deleting file from server:", error);
+      message.error("Error deleting file from server. Please try again.");
+      // Optionally, do not clear the image from UI if server deletion fails
+    }
+  };
 
   const onFinish = async (values: any) => {
     const payload = {
@@ -165,6 +249,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       manPower: parseInt(values.manPower) || 0, // Ensure it's a number, default to 0
       price: parseFloat(values.price),
       weight: Number(values.weight),
+      contractPhotos: imagePaths.filter((path) => path !== null) as string[], // Added contractPhotos
     };
 
     try {
@@ -176,7 +261,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
             Authorization: localStorage.getItem("token") || "",
             UserId: localStorage.getItem("userId") || "",
           },
-        },
+        }
       );
       console.log("PUT response:", response.data);
       setChanged(false);
@@ -186,8 +271,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       // Add error message
       const backendMessage = err.response?.data?.message;
       message.error(
-        backendMessage ||
-          (err.message || "Failed to update proposal."),
+        backendMessage || err.message || "Failed to update proposal."
       );
     }
   };
@@ -202,29 +286,49 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       {/* Bild Upload */}
       <div className={styles.imageUpload}>
         <div className={styles.imageRow}>
-          {[0, 1, 2].map((idx) => (
-            <div key={idx} className={styles.imageBox}>
-              {imagePaths[idx]
-                ? (
-                  <Image
-                    src={`${BASE_URL}/api/v1/files/download?filePath=${
-                      imagePaths[idx]
-                    }`}
-                    alt={`upload-${idx}`}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                )
-                : (
-                  <div className={styles.cameraIcon}>
-                    <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-                  </div>
-                )}
-            </div>
-          ))}
+          {[0, 1, 2].map((idx) => {
+            const currentPath = imagePaths[idx];
+            const antdFileList: UploadFile[] = currentPath
+              ? [
+                  {
+                    uid: `file-${idx}-${currentPath}`,
+                    name:
+                      currentPath.substring(currentPath.lastIndexOf("/") + 1) ||
+                      `image-${idx}.png`,
+                    status: "done",
+                    url: `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`,
+                    thumbUrl: `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`,
+                  },
+                ]
+              : [];
+
+            return (
+              <div key={idx} className={styles.imageBox}>
+                <Upload
+                  listType="picture-card"
+                  fileList={antdFileList}
+                  maxCount={1}
+                  beforeUpload={(file) => handleImageUpload(file, idx)}
+                  onRemove={async () => {
+                    // Modified onRemove
+                    // The actual deletion logic (state update, backend call) is in handleImageDelete
+                    await handleImageDelete(idx);
+                    // After handleImageDelete has updated imagePaths, the component will re-render.
+                    // antdFileList for this slot will become [].
+                    // Returning true tells AntD to proceed with removing the item from its display.
+                    return true;
+                  }}
+                  // To show preview from AntD, ensure 'url' is in fileList item
+                >
+                  {antdFileList.length === 0 ? (
+                    <div className={styles.cameraIcon}>
+                      <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
+                    </div>
+                  ) : null}
+                </Upload>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -254,7 +358,8 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
                 style={{ width: "100%" }}
                 showTime={{ format: "HH:mm", showSecond: false }}
                 disabledDate={(current) =>
-                  current && current < dayjs().startOf("minute")}
+                  current && current < dayjs().startOf("minute")
+                }
               />
             </Form.Item>
           </Col>
@@ -418,38 +523,34 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       </Form>
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>
-          {loading
-            ? (
-              <div style={{ padding: 64 }}>
-                <Spin size="large" />
-              </div>
-            )
-            : error
-            ? (
-              <div className={styles.registerError}>
-                <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-                <p>
-                  EditProposal: Something went wrong while fetching the proposal
-                  details.
-                </p>
-                <Row justify="center" gutter={16}>
-                  <Col>
-                    <Button
-                      type="primary"
-                      onClick={() => router.push("/dashboard/proposal/new")}
-                    >
-                      Create New
-                    </Button>
-                  </Col>
-                  <Col>
-                    <Button onClick={() => router.push("/dashboard")}>
-                      Back to Overview
-                    </Button>
-                  </Col>
-                </Row>
-              </div>
-            )
-            : null}
+          {loading ? (
+            <div style={{ padding: 64 }}>
+              <Spin size="large" />
+            </div>
+          ) : error ? (
+            <div className={styles.registerError}>
+              <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
+              <p>
+                EditProposal: Something went wrong while fetching the proposal
+                details.
+              </p>
+              <Row justify="center" gutter={16}>
+                <Col>
+                  <Button
+                    type="primary"
+                    onClick={() => router.push("/dashboard/proposal/new")}
+                  >
+                    Create New
+                  </Button>
+                </Col>
+                <Col>
+                  <Button onClick={() => router.push("/dashboard")}>
+                    Back to Overview
+                  </Button>
+                </Col>
+              </Row>
+            </div>
+          ) : null}
         </div>
       </Modal>
       <Modal
