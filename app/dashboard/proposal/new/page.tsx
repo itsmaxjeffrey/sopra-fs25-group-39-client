@@ -7,7 +7,6 @@ import {
   Col,
   DatePicker,
   Form,
-  Image,
   Input,
   InputNumber,
   Modal,
@@ -181,11 +180,11 @@ const NewProposalFormPage = () => {
                   listType="picture-card"
                   fileList={antdFileList} // Controlled fileList
                   maxCount={1}
-                  beforeUpload={(file) => {
-                    handleUpload(file, idx);
+                  beforeUpload={(uploadedFile) => {
+                    handleUpload(uploadedFile, idx);
                     return false; // Prevent antd default upload
                   }}
-                  onRemove={async (file) => {
+                  onRemove={async () => {
                     // file parameter is the AntD UploadFile object
                     const pathToRemove = uploadedPaths[idx];
 

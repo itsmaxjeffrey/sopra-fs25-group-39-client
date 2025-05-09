@@ -1,20 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import {
-  Button,
-  DatePicker,
-  Image,
-  Input,
-  message,
-  Typography,
-  Upload,
-} from "antd"; // Import message
-import {
-  CameraOutlined,
-  UploadOutlined,
-  DeleteOutlined,
-  EyeOutlined,
-} from "@ant-design/icons"; // Added DeleteOutlined and EyeOutlined
+import React, { useEffect } from "react";
+import { Button, DatePicker, Input, message, Typography, Upload } from "antd"; // Import message
+import { CameraOutlined } from "@ant-design/icons"; // Added DeleteOutlined and EyeOutlined
 import dayjs from "dayjs";
 import styles from "../Account.module.css";
 import { getApiDomain } from "@/utils/domain";
@@ -169,15 +156,23 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
       return;
     }
 
+    // Prepare data for saving. Ensure profilePicturePath is null if undefined or empty.
+    const dataToSave: UserData = {
+      ...editedData,
+      profilePicturePath: editedData.profilePicturePath || null,
+    };
+
     try {
       // Assuming apiService.put returns the updated user data
       const responseData = await apiService.put<UserData>(
         `/api/v1/users/${userId}`,
-        editedData
+        dataToSave // Send the modified dataToSave
       );
 
       console.log("User data saved successfully:", responseData); // Log the response data
       setChanged(false);
+      // Optionally, update editedData with responseData if it contains the full updated user object
+      // setEditedData(responseData);
       message.success("User data saved successfully!");
     } catch (error: unknown) {
       // Use unknown for caught errors

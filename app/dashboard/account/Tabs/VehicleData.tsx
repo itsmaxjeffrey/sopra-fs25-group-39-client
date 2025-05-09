@@ -1,13 +1,8 @@
 "use client";
 import "@ant-design/v5-patch-for-react-19";
-import React, { useState } from "react"; // Ensure useState is imported
-import { Button, Image, Input, message, Typography, Upload } from "antd"; // Ensure message is imported
-import {
-  FileImageOutlined,
-  UploadOutlined,
-  DeleteOutlined,
-  EyeOutlined,
-} from "@ant-design/icons"; // Added DeleteOutlined and EyeOutlined
+import React from "react"; // Ensure useState is imported
+import { Button, Input, message, Typography, Upload } from "antd"; // Ensure message is imported
+import { UploadOutlined } from "@ant-design/icons"; // Added DeleteOutlined and EyeOutlined
 import styles from "../Account.module.css";
 import { getApiDomain } from "@/utils/domain";
 import { useApi } from "@/hooks/useApi"; // Import useApi
@@ -16,7 +11,7 @@ import axios from "axios"; // Import axios for delete operation
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const BASE_URL = getApiDomain();
 
