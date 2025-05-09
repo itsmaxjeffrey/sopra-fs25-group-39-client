@@ -9,11 +9,18 @@ import {
   Typography,
   Upload,
 } from "antd"; // Import message
-import { CameraOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  CameraOutlined,
+  UploadOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+} from "@ant-design/icons"; // Added DeleteOutlined and EyeOutlined
 import dayjs from "dayjs";
 import styles from "../Account.module.css";
 import { getApiDomain } from "@/utils/domain";
 import { useApi } from "@/hooks/useApi"; // Import useApi
+import type { UploadFile } from "antd/es/upload/interface"; // Import UploadFile type
+import axios from "axios"; // Import axios for delete operation
 
 const BASE_URL = getApiDomain();
 
@@ -45,7 +52,6 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
   setChanged,
 }) => {
   const apiService = useApi(); // Use the hook
-  const [, setImageKey] = useState(0); // State to force re-render of the image
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -102,7 +108,6 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
           profilePicturePath: data.filePath,
         });
         setChanged(true);
-        setImageKey((prev) => prev + 1); // Force re-render of the image
       } else {
         throw new Error("File path is missing in the response");
       }
@@ -111,6 +116,49 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
     }
 
     return false; // Prevent default upload behavior
+  };
+
+  const handleDeleteProfilePicture = async () => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    const pathToDelete = editedData?.profilePicturePath;
+
+    setEditedData((prevData) => ({
+      ...prevData,
+      profilePicturePath: undefined, // Clear the path in UI
+    }));
+    setChanged(true);
+
+    if (pathToDelete && token && userId) {
+      try {
+        await axios.delete(
+          `${BASE_URL}/api/v1/files/delete?filePath=${pathToDelete}`,
+          {
+            headers: {
+              UserId: `${userId}`,
+              Authorization: `${token}`,
+            },
+          }
+        );
+        message.success("Profile picture deleted successfully.");
+        console.log("File deleted from server:", pathToDelete);
+      } catch (error) {
+        console.error(
+          "Error deleting profile picture from server:",
+          pathToDelete,
+          error
+        );
+        message.error("Error deleting profile picture from server.");
+        // Optionally revert UI: setEditedData back to include pathToDelete if server fails
+      }
+    } else if (pathToDelete) {
+      console.error(
+        "Authentication details missing, cannot delete profile picture from server."
+      );
+      message.error(
+        "Authentication details missing. Cannot delete profile picture from server."
+      );
+    }
   };
 
   const handleSave = async () => {
@@ -125,13 +173,14 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
       // Assuming apiService.put returns the updated user data
       const responseData = await apiService.put<UserData>(
         `/api/v1/users/${userId}`,
-        editedData,
+        editedData
       );
 
       console.log("User data saved successfully:", responseData); // Log the response data
       setChanged(false);
       message.success("User data saved successfully!");
-    } catch (error: unknown) { // Use unknown for caught errors
+    } catch (error: unknown) {
+      // Use unknown for caught errors
       console.error("Error saving user data:", error);
       // Add type check for error properties
       const errorMessage =
@@ -142,31 +191,39 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
     }
   };
 
+  const profilePictureFileList: UploadFile[] = editedData?.profilePicturePath
+    ? [
+        {
+          uid: `profile-${editedData.profilePicturePath}`,
+          name:
+            editedData.profilePicturePath.substring(
+              editedData.profilePicturePath.lastIndexOf("/") + 1
+            ) || "profile.png",
+          status: "done",
+          url: `${BASE_URL}/api/v1/files/download?filePath=${editedData.profilePicturePath}`,
+          thumbUrl: `${BASE_URL}/api/v1/files/download?filePath=${editedData.profilePicturePath}`,
+        },
+      ]
+    : [];
+
   return (
     <div className={styles.tabContent}>
       <Title level={5}>Personal Information</Title>
       <div className={styles.profilePicSection}>
-        {editedData?.profilePicturePath
-          ? (
-            <Image
-              width={100}
-              height={100}
-              src={`${BASE_URL}/api/v1/files/download?filePath=${editedData.profilePicturePath}`}
-              alt="Profile"
-              style={{ borderRadius: "50%", objectFit: "cover" }}
-            />
-          )
-          : (
-            <div className={styles.profilePicPlaceholder}>
-              <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
+        <Upload
+          listType="picture-card"
+          fileList={profilePictureFileList}
+          maxCount={1}
+          beforeUpload={handleUpload}
+          onRemove={handleDeleteProfilePicture}
+          // Ant Design's default preview will use the 'url' from fileList
+        >
+          {profilePictureFileList.length === 0 ? (
+            <div>
+              <CameraOutlined />
+              <div style={{ marginTop: 8 }}>Upload Picture</div>
             </div>
-          )}
-        <Upload showUploadList={false} beforeUpload={handleUpload}>
-          <Button icon={<UploadOutlined />}>
-            {editedData?.profilePicturePath
-              ? "Replace Picture"
-              : "Upload Picture"}
-          </Button>
+          ) : null}
         </Upload>
       </div>
       <div className={styles.formGrid}>
