@@ -78,7 +78,7 @@ export default function DriverProfilePage() {
   const [loading, setLoading] = useState(true);
 
   const handleRatingClick = (ratingId: number) => {
-    router.push(`${BASE_URL}/app/ratings/${ratingId}`);
+    router.push(`/ratings/${ratingId}`);
   };
 
   useEffect(() => {
