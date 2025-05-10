@@ -194,6 +194,67 @@ const Driver = () => {
     }
   };
 
+  const [emailStatus, setEmailStatus] = useState<"" | "success" | "error">("");
+  const [emailHelp, setEmailHelp] = useState<string | null>(null);
+
+  const checkEmailAvailability = async (email: string) => {
+    if (!email.includes("@")) {
+      setEmailStatus("");
+      setEmailHelp(null);
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${BASE_URL}//api/v1/auth/check-email/${email}`
+      );
+
+      if (response.data.isTaken == false) {
+        setEmailStatus("success");
+        setEmailHelp("Email is available");
+      } else {
+        setEmailStatus("error");
+        setEmailHelp("Email is already taken");
+      }
+    } catch (error) {
+      console.error("Email check failed", error);
+      setEmailStatus("error");
+      setEmailHelp("Could not check email. Try again.");
+    }
+  };
+
+  const [phoneNumberStatus, setPhoneNumberStatus] = useState<"" | "success" | "error">("");
+  const [phoneNumberHelp, setPhoneNumberHelp] = useState<string | null>(null);
+
+  const checkPhoneNumberAvailability = async (phoneNumber: string) => {
+    // Normalize the phone number by removing whitespace
+    const normalizedPhoneNumber = phoneNumber.replace(/\s+/g, "");
+
+    if (normalizedPhoneNumber.length < 7) {
+      setPhoneNumberStatus("");
+      setPhoneNumberHelp(null);
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/api/v1/auth/check-phonenumber/${normalizedPhoneNumber}`
+      );
+
+      if (response.data.isTaken == false) {
+        setPhoneNumberStatus("success");
+        setPhoneNumberHelp("Phone number is available");
+      } else {
+        setPhoneNumberStatus("error");
+        setPhoneNumberHelp("Phone number is already taken");
+      }
+    } catch (error) {
+      console.error("Phone number check failed", error);
+      setPhoneNumberStatus("error");
+      setPhoneNumberHelp("Could not check phone number. Try again.");
+    }
+  };
+
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
     libraries: libraries,
@@ -253,11 +314,13 @@ const Driver = () => {
 
     try {
       const profilePicturePath = uploadedFilePath;
+      const normalizedPhoneNumber = formStepOneData?.phoneNumber.replace(/\s+/g, "");
 
       await axios.post(`${BASE_URL}/api/v1/auth/register`, {
         user: {
           userAccountType: "DRIVER",
           ...formStepOneData,
+          phoneNumber: normalizedPhoneNumber, // Use normalized phone number
           profilePicturePath,
           driverLicensePath: driverLicenseFilePath,
           driverInsurancePath: insuranceProofFilePath,
@@ -552,8 +615,14 @@ const Driver = () => {
                       message: "Please enter a valid email address",
                     },
                   ]}
+                  validateTrigger={["onChange", "onBlur"]}
+                  validateStatus={emailStatus}
+                  help={emailHelp}
                 >
-                  <Input placeholder="anna.miller@uzh.ch" />
+                  <Input
+                    placeholder="anna.miller@uzh.ch"
+                    onChange={(e) => checkEmailAvailability(e.target.value)}
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -570,8 +639,16 @@ const Driver = () => {
                       message: "Invalid phone number format",
                     },
                   ]}
+                  validateTrigger={["onChange", "onBlur"]}
+                  validateStatus={phoneNumberStatus}
+                  help={phoneNumberHelp}
                 >
-                  <Input placeholder="+41 79 123 45 67" />
+                  <Input
+                    placeholder="+41 79 123 45 67"
+                    onChange={(e) =>
+                      checkPhoneNumberAvailability(e.target.value)
+                    }
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>

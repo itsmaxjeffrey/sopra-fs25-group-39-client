@@ -53,7 +53,15 @@ const Requester = () => {
   const [usernameStatus, setUsernameStatus] = useState<"success" | "error" | undefined>();
   const [usernameHelp, setUsernameHelp] = useState<string | undefined>();
 
+  const [emailStatus, setEmailStatus] = useState<"success" | "error" | undefined>();
+  const [emailHelp, setEmailHelp] = useState<string | undefined>();
   const [form] = Form.useForm();
+  const email = Form.useWatch("email", form);
+
+  const [phoneNumberStatus, setPhoneNumberStatus] = useState<"success" | "error" | undefined>();
+  const [phoneNumberHelp, setPhoneNumberHelp] = useState<string | undefined>();
+  const phoneNumber = Form.useWatch("phoneNumber", form);
+
   const username = Form.useWatch("username", form);
 
   useEffect(() => {
@@ -83,6 +91,64 @@ const Requester = () => {
     };
     checkUsername();
   }, [username]);
+
+  useEffect(() => {
+    const checkEmail = async () => {
+      if (!email || !email.includes("@")) {
+        setEmailStatus(undefined);
+        setEmailHelp(undefined);
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/api/v1/auth/check-email/${email}`
+        );
+
+        if (response.data.isTaken == false) {
+          setEmailStatus("success");
+          setEmailHelp("Email is available");
+        } else {
+          setEmailStatus("error");
+          setEmailHelp("Email is already taken");
+        }
+      } catch (error) {
+        console.error("Email check failed", error);
+        setEmailStatus("error");
+        setEmailHelp("Could not check email. Try again.");
+      }
+    };
+    checkEmail();
+  }, [email]);
+
+  useEffect(() => {
+    const checkPhoneNumber = async () => {
+      const normalizedPhoneNumber = phoneNumber?.replace(/\s+/g, "");
+
+      if (!normalizedPhoneNumber || normalizedPhoneNumber.length < 7) {
+        setPhoneNumberStatus(undefined);
+        setPhoneNumberHelp(undefined);
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/api/v1/auth/check-phonenumber/${normalizedPhoneNumber}`
+        );
+
+        if (response.data.isTaken == false) {
+          setPhoneNumberStatus("success");
+          setPhoneNumberHelp("Phone number is available");
+        } else {
+          setPhoneNumberStatus("error");
+          setPhoneNumberHelp("Phone number is already taken");
+        }
+      } catch (error) {
+        console.error("Phone number check failed", error);
+        setPhoneNumberStatus("error");
+        setPhoneNumberHelp("Could not check phone number. Try again.");
+      }
+    };
+    checkPhoneNumber();
+  }, [phoneNumber]);
 
   const uploadFile = async (file: File, type: string) => {
     const formData = new FormData();
@@ -133,6 +199,7 @@ const Requester = () => {
 
           try {
             const profilePicturePath = uploadedFilePath;
+            const normalizedPhoneNumber = phoneNumber.replace(/\s+/g, "");
 
             await axios.post(`${BASE_URL}/api/v1/auth/register`, {
               user: {
@@ -141,7 +208,7 @@ const Requester = () => {
                 lastName,
                 birthDate: birthDate ? birthDate.format("YYYY-MM-DD") : null,
                 email,
-                phoneNumber,
+                phoneNumber: normalizedPhoneNumber, // Use normalized phone number
                 username,
                 password,
                 profilePicturePath,
@@ -225,6 +292,9 @@ const Requester = () => {
                       message: "Please enter a valid email address",
                     },
                   ]}
+                  validateTrigger={["onChange", "onBlur"]}
+                  validateStatus={emailStatus}
+                  help={emailHelp}
                 >
                   <Input placeholder="anna.miller@uzh.ch" />
                 </Form.Item>
@@ -244,6 +314,9 @@ const Requester = () => {
                         "Please enter a valid phone number (e.g. +41 79 123 45 67)",
                     },
                   ]}
+                  validateTrigger={["onChange", "onBlur"]}
+                  validateStatus={phoneNumberStatus}
+                  help={phoneNumberHelp}
                 >
                   <Input placeholder="e.g. +41 79 123 45 67" />
                 </Form.Item>
