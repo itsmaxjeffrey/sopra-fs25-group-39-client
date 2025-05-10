@@ -55,11 +55,69 @@ const OfferProposal = ({ proposalId }: Props) => {
       firstName: string;
       lastName: string;
     };
+    averageRating?: number; // Added to store fetched rating
+  }
+
+
+  interface Rating {
+    ratingId: number;
+    fromUser: { userId: number; username: string };
+    toUser: { userId: number; username: string };
+    contract: { contractId: number };
+    ratingValue: number;
+    flagIssues: boolean;
+    comment: string;
   }
 
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loadingOffers, setLoadingOffers] = useState(true);
   const [errorOffers, setErrorOffers] = useState(false);
+
+  const fetchDriverAverageRating = async (driverId: number): Promise<number> => {
+    try {
+      const token = localStorage.getItem("token") || "";
+      const requestingUserId = localStorage.getItem("userId") || "";
+
+      if (!token || !requestingUserId) {
+        console.warn(`Authentication details missing for fetching ratings for driver ${driverId}.`);
+        return 0; // Default to 0 if auth details are missing
+      }
+
+      const ratingsRes = await axios.get<{ ratings: Rating[] } | Rating[]>(
+        `${BASE_URL}/api/v1/ratings/users/${driverId}/ratings`,
+        {
+          headers: {
+            Authorization: token,
+            UserId: requestingUserId,
+          },
+        },
+      );
+
+      let fetchedRatings: Rating[] = [];
+      if (Array.isArray(ratingsRes.data)) {
+        fetchedRatings = ratingsRes.data;
+      } else if (ratingsRes.data && Array.isArray((ratingsRes.data as { ratings: Rating[] }).ratings)) {
+        fetchedRatings = (ratingsRes.data as { ratings: Rating[] }).ratings;
+      }
+
+      if (fetchedRatings.length === 0) {
+        return 0; // No ratings found
+      }
+
+      const totalRating = fetchedRatings.reduce((acc, r) => acc + r.ratingValue, 0);
+      const average = totalRating / fetchedRatings.length;
+      return parseFloat(average.toFixed(1)); // Return average rounded to one decimal place
+    } catch (error: any) {
+      // Check if the error is a 404, meaning no ratings exist for the user
+      if (error.response && error.response.status === 404) {
+        console.log(`No ratings found for driver ${driverId}.`);
+        return 0; // Return 0 if no ratings are found (404)
+      }
+      console.error(`Error fetching ratings for driver ${driverId}:`, error);
+      return 0; // Default to 0 in case of other errors
+    }
+  };
+
 
   const fetchContract = useCallback(async () => {
     try {
@@ -195,7 +253,13 @@ const OfferProposal = ({ proposalId }: Props) => {
 
         console.log("Offers API Response:", res.data);
         if (Array.isArray(res.data.offers)) {
-          setOffers(res.data.offers);
+          const offersWithRatings = await Promise.all(
+            res.data.offers.map(async (offer) => {
+              const rating = await fetchDriverAverageRating(offer.driver.userId);
+              return { ...offer, averageRating: rating };
+            }),
+          );
+          setOffers(offersWithRatings);
         } else {
           console.error("API response for offers is not an array:", res.data);
           setOffers([]);
@@ -208,7 +272,7 @@ const OfferProposal = ({ proposalId }: Props) => {
         setLoadingOffers(false);
       }
     };
-
+    
     fetchOffers();
   }, [form, proposalId, BASE_URL, fetchContract]);
 
@@ -422,7 +486,7 @@ const OfferProposal = ({ proposalId }: Props) => {
                   driverName={`${offer.driver.firstName} ${offer.driver.lastName}`}
                   driverId={String(offer.driver.userId)}
                   price={offer.contract.price}
-                  rating={0}
+                  rating={offer.averageRating || 0} // Pass the fetched rating
                   onAccept={handleAcceptOffer}
                 />
               ))
