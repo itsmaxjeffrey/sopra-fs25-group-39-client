@@ -9,7 +9,6 @@ import {
   Avatar,
   Button,
   Card,
-  Carousel,
   Col,
   Divider,
   Empty,
@@ -284,18 +283,19 @@ export default function DriverProfilePage() {
           >
             {driver?.ratings && driver.ratings.length > 0
               ? (
-                <Carousel autoplay dotPosition="bottom">
+                // Replace Carousel with a scrollable div
+                <div style={{ maxHeight: '400px', overflowY: 'auto', paddingRight: '10px' }}> {/* Added paddingRight for scrollbar visibility */}
                   {driver.ratings.map((rating, index) => (
                     <div
-                      key={rating.ratingId || index} // Ensure ratingId is unique, or use index as fallback
-                      style={{ padding: "10px", cursor: "pointer" }} // Added cursor pointer
+                      key={rating.ratingId || index}
+                      style={{ marginBottom: '16px', cursor: 'pointer' }} // Added marginBottom for spacing
                       onClick={() => handleRatingClick(rating.ratingId)}
                     >
                       <Card
                         type="inner"
                         title={`Rated by: ${rating.fromUsername || "Anonymous"}`}
                         extra={<Rate value={rating.ratingValue} disabled />}
-                        style={{ margin: "0 auto", width: "95%" }}
+                        style={{ margin: "0 auto", width: "100%" }} // Changed width to 100% for better fit
                       >
                         <Typography.Paragraph
                           ellipsis={{
@@ -310,7 +310,7 @@ export default function DriverProfilePage() {
                       </Card>
                     </div>
                   ))}
-                </Carousel>
+                </div>
               )
               : <Empty description="No ratings yet." />}
           </Card>
