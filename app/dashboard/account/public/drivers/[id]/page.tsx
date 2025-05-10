@@ -26,21 +26,32 @@ import { getApiDomain } from "@/utils/domain"; // Import the function
 
 const BASE_URL = getApiDomain(); // Define BASE_URL
 
+// Interface for the raw rating object from the API
+interface ApiRating {
+  ratingId: number;
+  fromUserId: number;
+  toUserId: number;
+  contractId: number;
+  ratingValue: number;
+  flagIssues: boolean;
+  comment: string;
+}
+
+// Interface for User details fetched for fromUsername
+interface UserDetails {
+  userId: number;
+  username: string;
+  // Add other fields if needed, though only username is used here
+}
+
 interface Rating {
   ratingId: number;
-  fromUser: {
-    userId: number;
-    username: string;
-  };
-  toUser: {
-    userId: number;
-    username: string;
-  };
-  contract: {
-    contractId: number;
-  };
+  fromUserId: number; // Changed from fromUser object
+  fromUsername?: string; // Added to store fetched username
+  toUserId: number; // Changed from toUser object
+  contractId: number; // Changed from contract object
   ratingValue: number;
-  flagIssues: false;
+  flagIssues: boolean; // Changed from literal false to boolean
   comment: string;
 }
 
@@ -55,7 +66,7 @@ interface Driver {
   userId: number;
   username: string;
   profilePicture: string;
-  ratings: Rating[];
+  ratings: Rating[]; // This will use the updated Rating interface
   car: Car | null;
 }
 
@@ -74,6 +85,10 @@ export default function DriverProfilePage() {
     if (!id || typeof id !== "string") return;
 
     console.log("Driver ID:", id, typeof id); // Debugging the ID
+
+    // Define ApiRating and UserDetails interfaces inside useEffect if preferred, or keep them outside
+    // interface ApiRating { ... }
+    // interface UserDetails { ... }
 
     const fetchDriverAndRatings = async () => {
       setLoading(true);
@@ -117,7 +132,8 @@ export default function DriverProfilePage() {
         }
 
         console.log("Fetching ratings...");
-        const ratingsRes = await axios.get<{ ratings: Rating[] } | Rating[]>(
+        // Expecting response like { ratings: ApiRating[] } based on logs
+        const ratingsApiResponse = await axios.get<{ ratings: ApiRating[] }>(
           `${BASE_URL}/api/v1/ratings/users/${id}/ratings`,
           {
             headers: {
@@ -126,21 +142,55 @@ export default function DriverProfilePage() {
             },
           },
         );
-        console.log("Received ratings response:", ratingsRes.data); // Log ratings response
+        console.log("Received ratings API response:", ratingsApiResponse.data);
 
-        let fetchedRatings: Rating[] = [];
-        if (Array.isArray(ratingsRes.data)) {
-          fetchedRatings = ratingsRes.data;
-        } else if (ratingsRes.data && Array.isArray(ratingsRes.data.ratings)) {
-          fetchedRatings = ratingsRes.data.ratings;
-        }
-        console.log("Processed ratings:", fetchedRatings); // Log processed ratings
+        const rawApiRatings: ApiRating[] = ratingsApiResponse.data.ratings || [];
+        console.log("Raw API ratings:", rawApiRatings);
+
+        // Fetch usernames for each rating
+        const ratingsWithUsernames: Rating[] = await Promise.all(
+          rawApiRatings.map(async (apiRating) => {
+            let fromUsername = "Anonymous"; // Default username
+            try {
+              const userRes = await axios.get<UserDetails>(
+                `${BASE_URL}/api/v1/users/${apiRating.fromUserId}`,
+                {
+                  headers: {
+                    Authorization: token,
+                    UserId: requestingUserId,
+                  },
+                },
+              );
+              if (userRes.data && userRes.data.username) {
+                fromUsername = userRes.data.username;
+              }
+            } catch (userError) {
+              console.error(
+                `Failed to fetch username for userId ${apiRating.fromUserId}:`,
+                userError,
+              );
+              // Keep default username "Anonymous"
+            }
+            // Transform ApiRating to our internal Rating structure
+            return {
+              ratingId: apiRating.ratingId,
+              fromUserId: apiRating.fromUserId,
+              fromUsername: fromUsername,
+              toUserId: apiRating.toUserId,
+              contractId: apiRating.contractId,
+              ratingValue: apiRating.ratingValue,
+              flagIssues: apiRating.flagIssues,
+              comment: apiRating.comment,
+            };
+          }),
+        );
+        console.log("Processed ratings with usernames:", ratingsWithUsernames);
 
         const driverData: Driver = {
           userId: driverRes.data.userId,
           username: driverRes.data.username,
           profilePicture: driverRes.data.profilePicturePath,
-          ratings: fetchedRatings,
+          ratings: ratingsWithUsernames, // Use the enriched ratings
           car: driverRes.data.carDTO
             ? {
               makeModel: driverRes.data.carDTO.carModel || "Unknown Model",
@@ -280,7 +330,7 @@ export default function DriverProfilePage() {
                     >
                       <Card
                         type="inner"
-                        title={`Rated by: ${rating.fromUser?.username || "Anonymous"}`}
+                        title={`Rated by: ${rating.fromUsername || "Anonymous"}`}
                         extra={<Rate value={rating.ratingValue} disabled />}
                         style={{ margin: "0 auto", width: "95%" }}
                       >
