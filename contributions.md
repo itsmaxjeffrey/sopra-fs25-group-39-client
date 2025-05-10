@@ -199,8 +199,13 @@ _Easter Break_
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **@ojg9**          | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@ojg9**          | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@ojg9**          | 10.05.2025   | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/7777419e6e4f8f7fe1244dd76614da30e5360c1c | linted and formatted | Made it possible to deploy successfully |
+| **@ojg9**          | 10.05.2025    | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/f14c3a273b8ae822b43c7de9b3b5cdd95c38b293 | Changes to include phone Number on the OfferCard | Allows the User to see the phone number of his driver so that he can contact him|
+| **@ojg9**          | 10.05.2025    | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/5fff1f5d2b77e8c693b3f9c7353b08d1037680b2 | Changed carousel to a static div container on public driver profile | Looks better and makes better use of the space |
+| **@ojg9**          | 10.05.2025    | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/a10c3866994d3011c267cbeb94bb51a0be1347ac | Made ratings Page prettier | Enhances the user experience and makes it more readable |
+| **@ojg9**          | 10.05.2025    | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/b5e3a26bf1633656d59ca26b2e04ccdc3306da4d | Made PastRatingsPage work | So that a user can look at a rating in detail and to get ridd of 404 errors |
+| **@ojg9**          | 10.05.2025    | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/527c986d8883d42246aa41f68d0e97efbfcb7246 | Made sure usernames of raters in Public Driver Overview is displayed correctly | So that Users can see the name of the people who rated a driver|
+| **@ojg9**          | 10.05.2025    | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/cb8378b9c1516c41a3669661b8fac8577f282303 | DriverCard on OfferProposal page now shows the average rating of the drivers | So that the user can see the average rating directly when choosing a Driver |
 | **@xdecentralix**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@xdecentralix**  | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@dariohug**      | [10.05.2025]   | [[Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/346140d40e7c1762d71c23f2ab12680c82ea10d6)] | [Check the Phonenumber and emailadress for uniqueness before registration request] | [more convinient for users] |
