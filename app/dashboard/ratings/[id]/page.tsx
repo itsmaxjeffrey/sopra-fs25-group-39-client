@@ -80,6 +80,7 @@ const RatingPage: React.FC = () => {
     const fetchContractData = async (contractId: number, token: string, requestingUserId: string) => {
       if (!contractId) {
         console.warn("Contract ID is missing for fetching contract data.");
+        setContract(null); // Ensure contract is null if ID is missing
         return;
       }
       try {
@@ -93,15 +94,27 @@ const RatingPage: React.FC = () => {
           },
         );
         if (response.ok) {
-          const contractData: Contract = await response.json();
-          setContract(contractData);
+          const responseData = await response.json();
+          // Assuming the contract data is nested under a 'contract' key, similar to other API responses.
+          // If the API returns the contract object directly at the root, this line should be:
+          // const actualContractData: Contract = responseData;
+          const actualContractData: Contract = responseData.contract; 
+          if (actualContractData && typeof actualContractData === 'object') {
+            setContract(actualContractData);
+          } else {
+            console.error("Fetched contract data is not in the expected format:", responseData);
+            setContract(null);
+          }
         } else if (response.status === 404) {
           console.warn(`Contract not found: ${contractId}`);
+          setContract(null);
         } else {
           console.error(`An error occurred while fetching contract details for ${contractId}. Status: ${response.status}`);
+          setContract(null);
         }
       } catch (err) {
         console.error("Error fetching contract details:", err);
+        setContract(null);
       }
     };
 
@@ -233,63 +246,94 @@ const RatingPage: React.FC = () => {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "20px",
-      }}
-    >
-      <h1>{user?.username || "Rater (Unknown)"}&apos;s Rating</h1>
-      <Image
-        src={user?.profilePicturePath || "/default-avatar.png"} 
-        alt={`${user?.username || "Rater"}'s Profile`}
-        style={{
-          borderRadius: "50%",
-          width: "150px",
-          height: "150px",
-          objectFit: "cover",
-          marginBottom: "20px",
-        }}
-      />
-      <h2>Rated Driver: {toUser?.username || "Driver (Unknown)"}</h2>
-      <h3>Rating of Driver:</h3>
-      <Rate value={rating.ratingValue} disabled />
+    // Removed the outer div with display: "flex" and minHeight: "100vh"
+    // This div now becomes the root element returned by the page, fitting into DashboardLayout's <main>
+    <div style={{ flex: 1, padding: "40px", display: "flex", flexDirection: "column", alignItems: "center", overflowY: "auto" }}>
+      {/* Card for Rating Details */}
+      <div style={{ 
+        width: "100%", 
+        maxWidth: "800px", 
+        background: "#fff", 
+        padding: "24px", 
+        borderRadius: "8px", 
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        display: "flex", // Added for centering children
+        flexDirection: "column", // Added
+        alignItems: "center" // Added to center children horizontally
+      }}>
+        {/* Title moved inside the card */}
+        <h1 style={{ width: "100%", textAlign: 'center', marginBottom: "30px", fontSize: "24px" }}>
+          {user?.username || "Rater (Unknown)"}'s Rating
+        </h1>
 
-      <h3>Contract Information</h3>
-      <Input.TextArea
-        value={contract?.contractDescription || "Contract details not available."} // Added fallback and optional chaining
-        readOnly
-        autoSize={{ minRows: 3, maxRows: 6 }}
-        style={{
-          width: "80%",
-          maxWidth: "600px",
-          marginBottom: "20px",
-          resize: "none",
-        }}
-      />
-      <h3>Comment</h3>
-      <Input.TextArea
-        value={rating.comment || "No comment provided."} // Added fallback
-        readOnly
-        autoSize={{ minRows: 3, maxRows: 6 }}
-        style={{
-          width: "80%",
-          maxWidth: "600px",
-          marginBottom: "20px",
-          resize: "none",
-        }}
-      />
-      <Button
-        type="primary"
-        onClick={() => router.back()}
-        style={{ marginTop: "20px" }}
-      >
-        Return
-      </Button>
+        {/* Image container - conditionally rendered */}
+        {user?.profilePicturePath && (
+          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+            <Image
+              src={`${BASE_URL}/api/v1/files/download?filePath=${user.profilePicturePath}`}
+              alt={`${user?.username || "Rater"}'s Profile`}
+              style={{
+                borderRadius: "50%",
+                width: "120px",
+                height: "120px",
+                objectFit: "cover",
+                border: "3px solid #eee"
+              }}
+              preview={false}
+            />
+          </div>
+        )}
+
+        {/* Rated Driver Name - will be centered */}
+        <h2 style={{ textAlign: 'center', marginTop: '12px', marginBottom: '24px' }}>
+          Rated Driver: {toUser?.username || "Driver (Unknown)"}
+        </h2>
+
+        {/* Rating Stars - will be centered */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
+          <h3 style={{ marginRight: '8px', marginBottom: '0' }}>Rating of Driver:</h3>
+          <Rate value={rating.ratingValue} disabled />
+        </div>
+    
+        {/* Contract Information Title - aligned with TextAreas */}
+        <h3 style={{ width: "80%", maxWidth: "600px", textAlign: 'left', marginBottom: '8px' }}>Contract Information</h3>
+        <Input.TextArea
+          value={contract?.contractDescription || "Contract details not available."}
+          readOnly
+          autoSize={{ minRows: 3, maxRows: 6 }}
+          style={{
+            width: "80%", // Will be centered due to parent card's alignItems: 'center'
+            maxWidth: "600px",
+            marginBottom: "20px",
+            resize: "none",
+          }}
+        />
+
+        {/* Comment Title - aligned with TextAreas */}
+        <h3 style={{ width: "80%", maxWidth: "600px", textAlign: 'left', marginBottom: '8px' }}>Comment</h3>
+        <Input.TextArea
+          value={rating.comment || "No comment provided."}
+          readOnly
+          autoSize={{ minRows: 3, maxRows: 6 }}
+          style={{
+            width: "80%", // Will be centered
+            maxWidth: "600px",
+            marginBottom: "20px",
+            resize: "none",
+          }}
+        />
+
+        {/* Return Button - will be centered due to parent card's alignItems: 'center' */}
+        <Button
+          type="primary"
+          onClick={() => router.back()}
+          style={{ marginTop: "20px" }}
+        >
+          Return
+        </Button>
+      </div>
     </div>
   );
-};
+}
 
 export default RatingPage;

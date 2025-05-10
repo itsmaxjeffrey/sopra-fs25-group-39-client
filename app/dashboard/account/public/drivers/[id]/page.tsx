@@ -76,170 +76,132 @@ export default function DriverProfilePage() {
 
   const [driver, setDriver] = useState<Driver | null>(null);
   const [loading, setLoading] = useState(true);
+  // Removed error state as specific errors are handled with messages
+  // and driver state being null.
 
   const handleRatingClick = (ratingId: number) => {
-    router.push(`/ratings/${ratingId}`);
+    router.push(`/dashboard/ratings/${ratingId}`);
   };
 
   useEffect(() => {
-    if (!id || typeof id !== "string") return;
-
-    console.log("Driver ID:", id, typeof id); // Debugging the ID
-
-    // Define ApiRating and UserDetails interfaces inside useEffect if preferred, or keep them outside
-    // interface ApiRating { ... }
-    // interface UserDetails { ... }
+    if (!id || typeof id !== "string") {
+      setLoading(false);
+      // Optionally set an error message or redirect if ID is invalid
+      message.error("Invalid driver ID.");
+      return;
+    }
 
     const fetchDriverAndRatings = async () => {
       setLoading(true);
-      console.log(`Fetching data for driver ID: ${id}`); // Log start
+      const token = localStorage.getItem("token") || "";
+      const requestingUserId = localStorage.getItem("userId") || "";
+
+      if (!token || !requestingUserId) {
+        message.error("Authentication details missing. Please log in again.");
+        setLoading(false);
+        setDriver(null);
+        return;
+      }
+
+      let fetchedDriverDetails: {
+        userId: number;
+        username: string;
+        profilePicturePath: string;
+        carDTO?: {
+          carModel?: string;
+          licensePlate?: string;
+          weightCapacity?: number;
+          volumeCapacity?: number;
+        };
+      } | null = null;
+
       try {
-        const token = localStorage.getItem("token") || "";
-        const requestingUserId = localStorage.getItem("userId") || "";
-
-        if (!token || !requestingUserId) {
-          message.error("Authentication details missing. Please log in again.");
-          setLoading(false);
-          console.error("Auth details missing in localStorage"); // Log auth error
-          return;
-        }
-
-        console.log("Fetching driver details...");
-        const driverRes = await axios.get<{
-          userId: number;
-          username: string;
-          profilePicturePath: string;
-          carDTO?: {
-            carModel?: string;
-            licensePlate?: string;
-            weightCapacity?: number;
-            volumeCapacity?: number;
-          };
-        }>(
+        // 1. Fetch Driver Details
+        const driverRes = await axios.get<typeof fetchedDriverDetails>(
           `${BASE_URL}/api/v1/users/${id}`,
-          {
-            headers: {
-              Authorization: token,
-              UserId: requestingUserId,
-            },
-          },
+          { headers: { Authorization: token, UserId: requestingUserId } },
         );
-        console.log("Received driver details response:", driverRes.data); // Log driver response
 
         if (!driverRes.data || !driverRes.data.userId) {
-          console.error("Invalid driver data received:", driverRes.data); // Log invalid data
           throw new Error("Invalid driver data received");
         }
+        fetchedDriverDetails = driverRes.data;
 
-        console.log("Fetching ratings...");
-        // Expecting response like { ratings: ApiRating[] } based on logs
-        const ratingsApiResponse = await axios.get<{ ratings: ApiRating[] }>(
-          `${BASE_URL}/api/v1/ratings/users/${id}/ratings`,
-          {
-            headers: {
-              Authorization: token,
-              UserId: requestingUserId,
-            },
-          },
-        );
-        console.log("Received ratings API response:", ratingsApiResponse.data);
-
-        const rawApiRatings: ApiRating[] = ratingsApiResponse.data.ratings || [];
-        console.log("Raw API ratings:", rawApiRatings);
-
-        // Fetch usernames for each rating
-        const ratingsWithUsernames: Rating[] = await Promise.all(
-          rawApiRatings.map(async (apiRating) => {
-            let fromUsername = "Anonymous"; // Default username
-            try {
-              const userRes = await axios.get<UserDetails>(
-                `${BASE_URL}/api/v1/users/${apiRating.fromUserId}`,
-                {
-                  headers: {
-                    Authorization: token,
-                    UserId: requestingUserId,
-                  },
-                },
-              );
-              if (userRes.data && userRes.data.username) {
-                fromUsername = userRes.data.username;
-              }
-            } catch (userError) {
-              console.error(
-                `Failed to fetch username for userId ${apiRating.fromUserId}:`,
-                userError,
-              );
-              // Keep default username "Anonymous"
-            }
-            // Transform ApiRating to our internal Rating structure
-            return {
-              ratingId: apiRating.ratingId,
-              fromUserId: apiRating.fromUserId,
-              fromUsername: fromUsername,
-              toUserId: apiRating.toUserId,
-              contractId: apiRating.contractId,
-              ratingValue: apiRating.ratingValue,
-              flagIssues: apiRating.flagIssues,
-              comment: apiRating.comment,
-            };
-          }),
-        );
-        console.log("Processed ratings with usernames:", ratingsWithUsernames);
-
-        const driverData: Driver = {
-          userId: driverRes.data.userId,
-          username: driverRes.data.username,
-          profilePicture: driverRes.data.profilePicturePath,
-          ratings: ratingsWithUsernames, // Use the enriched ratings
-          car: driverRes.data.carDTO
+        // Initialize driver object (without ratings yet)
+        const provisionalDriver: Driver = {
+          userId: fetchedDriverDetails.userId,
+          username: fetchedDriverDetails.username,
+          profilePicture: fetchedDriverDetails.profilePicturePath,
+          ratings: [], // Initialize with empty ratings
+          car: fetchedDriverDetails.carDTO
             ? {
-              makeModel: driverRes.data.carDTO.carModel || "Unknown Model",
-              licensePlate: driverRes.data.carDTO.licensePlate ||
-                "Unknown Plate",
-              weightCapacity:
-                (driverRes.data.carDTO.weightCapacity?.toString() ?? "0.0"),
-              volumeCapacity:
-                (driverRes.data.carDTO.volumeCapacity?.toString() ?? "0.0"),
-            }
+                makeModel: fetchedDriverDetails.carDTO.carModel || "Unknown Model",
+                licensePlate: fetchedDriverDetails.carDTO.licensePlate || "Unknown Plate",
+                weightCapacity: (fetchedDriverDetails.carDTO.weightCapacity?.toString() ?? "0.0"),
+                volumeCapacity: (fetchedDriverDetails.carDTO.volumeCapacity?.toString() ?? "0.0"),
+              }
             : null,
         };
-        console.log("Final driver data state:", driverData); // Log final state object
 
-        setDriver(driverData);
-      } catch (error: unknown) {
-        const err = error as Error & {
-          response?: { data?: { message?: string }; status?: number };
-        };
-        if (err.response?.status === 404) {
-          message.error(
-            `Driver details might be available, but ratings could not be found.`,
+        // 2. Fetch Ratings
+        try {
+          const ratingsApiResponse = await axios.get<{ ratings: ApiRating[] }>(
+            `${BASE_URL}/api/v1/ratings/users/${id}/ratings`,
+            { headers: { Authorization: token, UserId: requestingUserId } },
           );
-          // Log specific 404 case
-          console.warn(
-            "404 Error fetching ratings, driver data might be partial.",
+          
+          const rawApiRatings: ApiRating[] = ratingsApiResponse.data.ratings || [];
+          
+          const ratingsWithUsernames: Rating[] = await Promise.all(
+            rawApiRatings.map(async (apiRating) => {
+              let fromUsername = "Anonymous";
+              try {
+                const userRes = await axios.get<UserDetails>(
+                  `${BASE_URL}/api/v1/users/${apiRating.fromUserId}`,
+                  { headers: { Authorization: token, UserId: requestingUserId } },
+                );
+                if (userRes.data && userRes.data.username) {
+                  fromUsername = userRes.data.username;
+                }
+              } catch (userError) {
+                console.error(`Failed to fetch username for userId ${apiRating.fromUserId}:`, userError);
+              }
+              return {
+                ratingId: apiRating.ratingId,
+                fromUserId: apiRating.fromUserId,
+                fromUsername: fromUsername,
+                toUserId: apiRating.toUserId,
+                contractId: apiRating.contractId,
+                ratingValue: apiRating.ratingValue,
+                flagIssues: apiRating.flagIssues,
+                comment: apiRating.comment,
+              };
+            }),
           );
-          // Check if driver exists but ratings are empty (due to 404 on ratings fetch)
-          if (driver && !driver.ratings.length) {
-            // Keep existing driver data if ratings fetch failed but driver exists
+          provisionalDriver.ratings = ratingsWithUsernames;
+        } catch (ratingsError: any) {
+          console.warn("Failed to fetch ratings:", ratingsError);
+          if (ratingsError.response?.status === 404) {
+            message.info("Driver details loaded. No ratings found for this driver.");
           } else {
-            setDriver(null);
+            message.error("Could not load ratings for the driver.");
           }
-        } else {
-          message.error(
-            err.response?.data?.message || err.message ||
-              "Failed to load driver profile.",
-          );
-          setDriver(null);
+          // provisionalDriver.ratings remains empty
         }
-        console.error("Error fetching driver data or ratings:", error); // Log general error
+        setDriver(provisionalDriver);
+
+      } catch (error: unknown) {
+        const err = error as Error & { response?: { data?: { message?: string }; status?: number } };
+        message.error(err.response?.data?.message || err.message || "Failed to load driver profile.");
+        setDriver(null);
+        console.error("Error fetching driver data:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchDriverAndRatings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]); // Keep only 'id' as dependency, disable warning for driver dependency
+  }, [id]); // Only 'id' as dependency
 
   if (loading) {
     return (
@@ -248,7 +210,7 @@ export default function DriverProfilePage() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "calc(100vh - 120px)",
+          height: "100%", // Changed from calc(100vh - 120px) to fit layout
         }}
       >
         <Spin size="large" />
@@ -261,7 +223,7 @@ export default function DriverProfilePage() {
       <Result
         status="404"
         title="404"
-        subTitle="Sorry, the driver you visited does not exist."
+        subTitle="Sorry, the driver you visited does not exist or could not be loaded."
         extra={
           <Button type="primary" onClick={() => router.back()}>Go Back</Button>
         }
@@ -279,9 +241,10 @@ export default function DriverProfilePage() {
   return (
     <div
       style={{
-        padding: "24px",
-        background: "#fff",
-        minHeight: "calc(100vh - 64px)",
+        padding: "24px", // Keep padding
+        background: "#fff", // Keep background
+        // minHeight removed, height will be managed by parent flex item (main in layout)
+        // The main tag in DashboardLayout has overflowY: "auto"
       }}
     >
       <Row gutter={[24, 24]}>
@@ -324,8 +287,8 @@ export default function DriverProfilePage() {
                 <Carousel autoplay dotPosition="bottom">
                   {driver.ratings.map((rating, index) => (
                     <div
-                      key={rating.ratingId || index}
-                      style={{ padding: "10px" }}
+                      key={rating.ratingId || index} // Ensure ratingId is unique, or use index as fallback
+                      style={{ padding: "10px", cursor: "pointer" }} // Added cursor pointer
                       onClick={() => handleRatingClick(rating.ratingId)}
                     >
                       <Card
