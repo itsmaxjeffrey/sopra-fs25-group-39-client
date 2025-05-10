@@ -54,6 +54,7 @@ const OfferProposal = ({ proposalId }: Props) => {
       userId: number;
       firstName: string;
       lastName: string;
+      phoneNumber?: string; // Added phoneNumber
     };
     averageRating?: number; // Added to store fetched rating
   }
@@ -241,25 +242,61 @@ const OfferProposal = ({ proposalId }: Props) => {
     fetchContract();
     const fetchOffers = async () => {
       try {
-        const res = await axios.get<{ offers: Offer[] }>(
+        const token = localStorage.getItem("token") || "";
+        const requestingUserId = localStorage.getItem("userId") || "";
+
+        if (!token || !requestingUserId) {
+          console.error("Authentication details missing for fetching offers.");
+          setErrorOffers(true);
+          setLoadingOffers(false);
+          return;
+        }
+
+        const res = await axios.get<{ offers: any[] }>( // Use any[] for base offers initially
           `${BASE_URL}/api/v1/contracts/${proposalId}/offers`,
           {
             headers: {
-              Authorization: localStorage.getItem("token") || "",
-              "UserId": localStorage.getItem("userId") || "",
+              Authorization: token,
+              UserId: requestingUserId,
             },
           },
         );
 
         console.log("Offers API Response:", res.data);
         if (Array.isArray(res.data.offers)) {
-          const offersWithRatings = await Promise.all(
-            res.data.offers.map(async (offer) => {
-              const rating = await fetchDriverAverageRating(offer.driver.userId);
-              return { ...offer, averageRating: rating };
+          const offersWithDetails = await Promise.all(
+            res.data.offers.map(async (baseOffer) => {
+              const rating = await fetchDriverAverageRating(baseOffer.driver.userId);
+              
+              let phoneNumber: string | undefined;
+              try {
+                // Fetch full user details to get phone number
+                const userDetailsResponse = await axios.get<any>( // Define a more specific type if API contract is known
+                  `${BASE_URL}/api/v1/users/${baseOffer.driver.userId}`,
+                  {
+                    headers: {
+                      Authorization: token,
+                      UserId: requestingUserId,
+                    },
+                  }
+                );
+                // Assuming the user details endpoint returns phoneNumber directly on the response data
+                phoneNumber = userDetailsResponse.data?.phoneNumber; 
+              } catch (userError) {
+                console.error(`Error fetching user details for driver ${baseOffer.driver.userId}:`, userError);
+              }
+
+              return { 
+                ...baseOffer, 
+                driver: {
+                  ...baseOffer.driver,
+                  phoneNumber: phoneNumber, // Add phoneNumber to the driver object
+                },
+                averageRating: rating 
+              };
             }),
           );
-          setOffers(offersWithRatings);
+          setOffers(offersWithDetails as Offer[]); // Cast to Offer[] after enrichment
         } else {
           console.error("API response for offers is not an array:", res.data);
           setOffers([]);
@@ -486,7 +523,8 @@ const OfferProposal = ({ proposalId }: Props) => {
                   driverName={`${offer.driver.firstName} ${offer.driver.lastName}`}
                   driverId={String(offer.driver.userId)}
                   price={offer.contract.price}
-                  rating={offer.averageRating || 0} // Pass the fetched rating
+                  rating={offer.averageRating || 0} 
+                  driverPhoneNumber={offer.driver.phoneNumber} 
                   onAccept={handleAcceptOffer}
                 />
               ))

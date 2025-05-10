@@ -29,6 +29,7 @@ interface DriverInfo {
   userId: number;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   // Add other relevant driver fields if available, e.g., averageRating
 }
 
@@ -398,11 +399,11 @@ const AcceptedProposal = ({ proposalId }: Props) => {
                 : driverInfo
                 ? (
                   <OfferCard
-                    offerId={-1} // Dummy offerId
+                    offerId={-1} // Placeholder, as this is not an offer
                     driverName={`${driverInfo.firstName} ${driverInfo.lastName}`}
                     driverId={String(driverInfo.userId)}
                     price={form.getFieldValue("price")} // Price from contract
-                    rating={0} // Placeholder rating
+                    driverPhoneNumber={driverInfo.phoneNumber} 
                   />
                 )
                 : <p>No driver assigned or found.</p>}

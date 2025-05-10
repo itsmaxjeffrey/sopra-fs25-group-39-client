@@ -11,12 +11,13 @@ interface OfferCardProps {
   driverName: string;
   driverId: string;
   price: number;
-  rating: number;
+  rating?: number; // Rating is optional
+  driverPhoneNumber?: string; // Added new prop
   onAccept?: (offerId: number) => void; // Make onAccept optional
 }
 
 const OfferCard: React.FC<OfferCardProps> = (
-  { offerId, driverName, driverId, price, rating, onAccept }, // Destructure new props
+  { offerId, driverName, driverId, price, rating, driverPhoneNumber, onAccept }, // Destructure new props
 ) => {
   return (
     <div className={styles.card}>
@@ -37,10 +38,19 @@ const OfferCard: React.FC<OfferCardProps> = (
         <span>Price:</span>
         <span className={styles.price}>{price.toFixed(2)} CHF</span>
       </div>
+      {/* Conditionally render the rating row */}
+      {typeof rating === 'number' && (
+        <div className={styles.row}>
+          <span>Avg. Rating of Driver:</span>
+          <span className={styles.stars}>
+            <Rate disabled defaultValue={rating} />
+          </span>
+        </div>
+      )}
       <div className={styles.row}>
-        <span>Avg. Rating of Driver:</span>
-        <span className={styles.stars}>
-          <Rate disabled defaultValue={rating} />
+        <span>Phone:</span>
+        <span className={styles.price}> 
+          {driverPhoneNumber || "Not available"}
         </span>
       </div>
       {/* Conditionally render Accept Button */}
