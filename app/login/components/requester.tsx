@@ -1,6 +1,6 @@
 "use client";
 import "@ant-design/v5-patch-for-react-19";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
@@ -50,7 +50,9 @@ const Requester = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   // Username validation state
-  const [usernameStatus, setUsernameStatus] = useState<"success" | "error" | undefined>();
+  const [usernameStatus, setUsernameStatus] = useState<
+    "success" | "error" | undefined
+  >();
   const [usernameHelp, setUsernameHelp] = useState<string | undefined>();
 
   const [form] = Form.useForm();
@@ -65,9 +67,9 @@ const Requester = () => {
       }
       try {
         const response = await axios.get(
-          `${BASE_URL}//api/v1/auth/check-username/${username}`
+          `${BASE_URL}//api/v1/auth/check-username/${username}`,
         );
-  
+
         if (response.data.isTaken == false) {
           setUsernameStatus("success");
           setUsernameHelp("Username is available");
@@ -191,7 +193,10 @@ const Requester = () => {
                   name="username"
                   rules={[
                     { required: true, message: "Please enter a username" },
-                    { min: 4, message: "Username must be at least 4 characters" },
+                    {
+                      min: 4,
+                      message: "Username must be at least 4 characters",
+                    },
                   ]}
                   validateTrigger={["onChange", "onBlur"]}
                   validateStatus={usernameStatus}

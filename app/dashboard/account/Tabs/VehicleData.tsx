@@ -86,7 +86,7 @@ const VehicleData: React.FC<VehicleDataProps> = ({
         message.success(
           `${
             type.charAt(0).toUpperCase() + type.slice(1)
-          } uploaded successfully!`
+          } uploaded successfully!`,
         );
       } else {
         throw new Error("File path missing in response");
@@ -128,12 +128,12 @@ const VehicleData: React.FC<VehicleDataProps> = ({
               UserId: `${userId}`,
               Authorization: `${token}`,
             },
-          }
+          },
         );
         message.success(
           `${
             type.charAt(0).toUpperCase() + type.slice(1)
-          } deleted successfully.`
+          } deleted successfully.`,
         );
         console.log("File deleted from server:", pathToDelete);
       } catch (error) {
@@ -144,10 +144,10 @@ const VehicleData: React.FC<VehicleDataProps> = ({
       }
     } else if (pathToDelete) {
       console.error(
-        "Authentication details missing, cannot delete file from server."
+        "Authentication details missing, cannot delete file from server.",
       );
       message.error(
-        "Authentication details missing. Cannot delete file from server."
+        "Authentication details missing. Cannot delete file from server.",
       );
     }
   };
@@ -172,14 +172,14 @@ const VehicleData: React.FC<VehicleDataProps> = ({
 
     console.log(
       "Data being sent to backend:",
-      JSON.stringify(dataToSend, null, 2)
+      JSON.stringify(dataToSend, null, 2),
     );
 
     try {
       // Send the dataToSend, which is guaranteed to have 'car' if vehicle data exists
       const response = (await apiService.put(
         `/api/v1/users/${userId}`,
-        dataToSend
+        dataToSend,
       )) as { data: any }; // Keep response for logging/potential future use
 
       console.log("Server response after save:", response.data); // Log server response
@@ -190,8 +190,7 @@ const VehicleData: React.FC<VehicleDataProps> = ({
       setEditedData(dataToSend); // Use the successfully sent data to update the UI state immediately
     } catch (error: any) {
       console.error("Error saving vehicle data:", error);
-      const errorMessage =
-        error.response?.data?.message ||
+      const errorMessage = error.response?.data?.message ||
         error.message ||
         "Error saving vehicle data.";
       message.error(errorMessage);
@@ -217,11 +216,11 @@ const VehicleData: React.FC<VehicleDataProps> = ({
 
   const licenseFileList = createFileList(
     editedData?.driverLicensePath,
-    "license"
+    "license",
   );
   const insuranceFileList = createFileList(
     editedData?.driverInsurancePath,
-    "insurance"
+    "insurance",
   );
 
   return (
@@ -336,12 +335,14 @@ const VehicleData: React.FC<VehicleDataProps> = ({
             onRemove={() => handleDelete("license")}
             // Ant Design's default preview will use the 'url' from fileList
           >
-            {licenseFileList.length === 0 ? (
-              <div>
-                <UploadOutlined />
-                <div style={{ marginTop: 8 }}>Upload License</div>
-              </div>
-            ) : null}
+            {licenseFileList.length === 0
+              ? (
+                <div>
+                  <UploadOutlined />
+                  <div style={{ marginTop: 8 }}>Upload License</div>
+                </div>
+              )
+              : null}
           </Upload>
         </div>
 
@@ -356,12 +357,14 @@ const VehicleData: React.FC<VehicleDataProps> = ({
             onRemove={() => handleDelete("insurance")}
             // Ant Design's default preview will use the 'url' from fileList
           >
-            {insuranceFileList.length === 0 ? (
-              <div>
-                <UploadOutlined />
-                <div style={{ marginTop: 8 }}>Upload Insurance</div>
-              </div>
-            ) : null}
+            {insuranceFileList.length === 0
+              ? (
+                <div>
+                  <UploadOutlined />
+                  <div style={{ marginTop: 8 }}>Upload Insurance</div>
+                </div>
+              )
+              : null}
           </Upload>
         </div>
       </div>

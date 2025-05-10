@@ -65,7 +65,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
     "LocationInput rendered. Initial value:",
     value,
     "Initial inputValue:",
-    inputValue
+    inputValue,
   );
 
   useEffect(() => {
@@ -91,13 +91,13 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
       };
       console.log(
         "Valid place selected. Updating input and calling onChange with:",
-        newLocation
+        newLocation,
       );
       setInputValue(newLocation.formattedAddress);
       onChange?.(newLocation);
     } else {
       console.log(
-        "Invalid place or place cleared. Clearing input and calling onChange(null)."
+        "Invalid place or place cleared. Clearing input and calling onChange(null).",
       );
       setInputValue("");
       onChange?.(null);
@@ -111,7 +111,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
   };
 
   const handleAutocompleteLoad = (
-    autocomplete: google.maps.places.Autocomplete
+    autocomplete: google.maps.places.Autocomplete,
   ) => {
     console.log("Autocomplete loaded:", autocomplete);
     autoRef.current = autocomplete;
@@ -151,12 +151,12 @@ const Driver = () => {
   const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
   const [profileFileList, setProfileFileList] = useState<UploadFile[]>([]);
   const [formStepOneData, setFormStepOneData] = useState<StepOneData | null>(
-    null
+    null,
   );
   const [step, setStep] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
-    "loading"
+    "loading",
   );
   const [errorMessage, setErrorMessage] = useState("");
   const [preferredRange, setPreferredRange] = useState<number | null>(null);
@@ -177,7 +177,7 @@ const Driver = () => {
 
     try {
       const response = await axios.get(
-        `${BASE_URL}//api/v1/auth/check-username/${username}`
+        `${BASE_URL}//api/v1/auth/check-username/${username}`,
       );
 
       if (response.data.isTaken == false) {
@@ -210,7 +210,7 @@ const Driver = () => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-        }
+        },
       );
 
       const filePath = (response.data as { filePath: string }).filePath;
@@ -231,7 +231,7 @@ const Driver = () => {
   };
 
   const handleStepTwoFinish = async (
-    values: StepTwoData & { location: Location | null }
+    values: StepTwoData & { location: Location | null },
   ) => {
     const {
       vehicleModel,
@@ -358,8 +358,7 @@ const Driver = () => {
                   placeholder="e.g., 50"
                   value={preferredRange ?? ""}
                   onChange={(e) =>
-                    setPreferredRange(Number(e.target.value) || null)
-                  }
+                    setPreferredRange(Number(e.target.value) || null)}
                 />
               </Form.Item>
             </Col>
@@ -375,15 +374,15 @@ const Driver = () => {
                   {
                     validator: (_, value) =>
                       value &&
-                      typeof value === "object" &&
-                      value.latitude &&
-                      value.longitude
+                        typeof value === "object" &&
+                        value.latitude &&
+                        value.longitude
                         ? Promise.resolve()
                         : Promise.reject(
-                            new Error(
-                              "Please select a valid address from the suggestions"
-                            )
+                          new Error(
+                            "Please select a valid address from the suggestions",
                           ),
+                        ),
                   },
                 ]}
               >
@@ -400,7 +399,8 @@ const Driver = () => {
                 <Upload
                   listType="picture"
                   maxCount={1}
-                  beforeUpload={() => false}
+                  beforeUpload={() =>
+                    false}
                   onChange={async ({ fileList }) => {
                     const file = fileList[0]?.originFileObj;
                     if (file) {
@@ -414,7 +414,8 @@ const Driver = () => {
                       setDriverLicenseFilePath(null);
                     }
                   }}
-                  onRemove={() => setDriverLicenseFilePath(null)}
+                  onRemove={() =>
+                    setDriverLicenseFilePath(null)}
                 >
                   <Button icon={<UploadOutlined />}>
                     Upload Picture (optional)
@@ -432,7 +433,8 @@ const Driver = () => {
                 <Upload
                   listType="picture"
                   maxCount={1}
-                  beforeUpload={() => false}
+                  beforeUpload={() =>
+                    false}
                   onChange={async ({ fileList }) => {
                     const file = fileList[0]?.originFileObj;
                     if (file) {
@@ -606,7 +608,7 @@ const Driver = () => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error("Passwords do not match")
+                          new Error("Passwords do not match"),
                         );
                       },
                     }),
@@ -638,7 +640,7 @@ const Driver = () => {
                         } catch (error) {
                           console.error(
                             "Profile picture upload failed:",
-                            error
+                            error,
                           );
                           setProfileFileList([]);
                           setUploadedFilePath(null);

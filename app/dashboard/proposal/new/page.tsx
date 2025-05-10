@@ -36,7 +36,7 @@ const NewProposalFormPage = () => {
   const [form] = Form.useForm();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalState, setModalState] = useState<"loading" | "success" | "error">(
-    "loading"
+    "loading",
   );
   const [errorMessage, setErrorMessage] = useState("");
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
@@ -67,7 +67,7 @@ const NewProposalFormPage = () => {
             UserId: `${userId}`,
             Authorization: `${token}`,
           },
-        }
+        },
       );
 
       if (!response.data.filePath) {
@@ -128,7 +128,7 @@ const NewProposalFormPage = () => {
     try {
       console.log(
         "Payload From Address:",
-        payload.fromLocation.formattedAddress
+        payload.fromLocation.formattedAddress,
       );
       console.log("Payload To Address:", payload.toLocation.formattedAddress);
       console.log("WOULD SEND:", JSON.stringify(payload, null, 2));
@@ -147,7 +147,7 @@ const NewProposalFormPage = () => {
       setErrorMessage(
         backendMessage ||
           err.message ||
-          "Something went wrong while creating your proposal."
+          "Something went wrong while creating your proposal.",
       );
       setModalState("error");
     }
@@ -162,16 +162,18 @@ const NewProposalFormPage = () => {
             const currentPath = uploadedPaths[idx];
             const antdFileList: UploadFile[] = currentPath
               ? [
-                  {
-                    uid: `file-${idx}-${currentPath}`, // Unique ID for the file
-                    name:
-                      currentPath.substring(currentPath.lastIndexOf("/") + 1) ||
-                      `image-${idx}.png`, // Filename
-                    status: "done", // Status of the file
-                    url: `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`, // URL for preview
-                    thumbUrl: `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`, // URL for thumbnail
-                  },
-                ]
+                {
+                  uid: `file-${idx}-${currentPath}`, // Unique ID for the file
+                  name:
+                    currentPath.substring(currentPath.lastIndexOf("/") + 1) ||
+                    `image-${idx}.png`, // Filename
+                  status: "done", // Status of the file
+                  url:
+                    `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`, // URL for preview
+                  thumbUrl:
+                    `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`, // URL for thumbnail
+                },
+              ]
               : [];
 
             return (
@@ -207,21 +209,21 @@ const NewProposalFormPage = () => {
                               UserId: `${userId}`,
                               Authorization: `${token}`,
                             },
-                          }
+                          },
                         );
                         console.log("File deleted from server:", pathToRemove);
                       } catch (error) {
                         console.error(
                           "Error deleting file from server:",
                           pathToRemove,
-                          error
+                          error,
                         );
                         // Optionally, handle UI revert or user notification here
                         // For now, we'll allow the UI removal to persist
                       }
                     } else {
                       console.error(
-                        "Authentication details missing, cannot delete file from server."
+                        "Authentication details missing, cannot delete file from server.",
                       );
                     }
                     return true; // Confirm removal from AntD's list
@@ -230,11 +232,15 @@ const NewProposalFormPage = () => {
                   // Ant Design's default preview (on eye icon click) will use the 'url' from antdFileList.
                 >
                   {/* Conditionally render the upload trigger (camera icon) */}
-                  {antdFileList.length === 0 ? (
-                    <div className={styles.cameraIcon}>
-                      <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-                    </div>
-                  ) : null}
+                  {antdFileList.length === 0
+                    ? (
+                      <div className={styles.cameraIcon}>
+                        <CameraOutlined
+                          style={{ fontSize: 28, color: "#999" }}
+                        />
+                      </div>
+                    )
+                    : null}
                 </Upload>
               </div>
             );
@@ -277,8 +283,7 @@ const NewProposalFormPage = () => {
                 style={{ width: "100%" }}
                 showTime={{ format: "HH:mm", showSecond: false }}
                 disabledDate={(current) =>
-                  current && current < dayjs().startOf("minute")
-                }
+                  current && current < dayjs().startOf("minute")}
               />
             </Form.Item>
           </Col>

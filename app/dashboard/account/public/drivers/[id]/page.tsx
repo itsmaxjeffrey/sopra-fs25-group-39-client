@@ -134,11 +134,17 @@ export default function DriverProfilePage() {
           ratings: [], // Initialize with empty ratings
           car: fetchedDriverDetails.carDTO
             ? {
-                makeModel: fetchedDriverDetails.carDTO.carModel || "Unknown Model",
-                licensePlate: fetchedDriverDetails.carDTO.licensePlate || "Unknown Plate",
-                weightCapacity: (fetchedDriverDetails.carDTO.weightCapacity?.toString() ?? "0.0"),
-                volumeCapacity: (fetchedDriverDetails.carDTO.volumeCapacity?.toString() ?? "0.0"),
-              }
+              makeModel: fetchedDriverDetails.carDTO.carModel ||
+                "Unknown Model",
+              licensePlate: fetchedDriverDetails.carDTO.licensePlate ||
+                "Unknown Plate",
+              weightCapacity:
+                (fetchedDriverDetails.carDTO.weightCapacity?.toString() ??
+                  "0.0"),
+              volumeCapacity:
+                (fetchedDriverDetails.carDTO.volumeCapacity?.toString() ??
+                  "0.0"),
+            }
             : null,
         };
 
@@ -148,22 +154,28 @@ export default function DriverProfilePage() {
             `${BASE_URL}/api/v1/ratings/users/${id}/ratings`,
             { headers: { Authorization: token, UserId: requestingUserId } },
           );
-          
-          const rawApiRatings: ApiRating[] = ratingsApiResponse.data.ratings || [];
-          
+
+          const rawApiRatings: ApiRating[] = ratingsApiResponse.data.ratings ||
+            [];
+
           const ratingsWithUsernames: Rating[] = await Promise.all(
             rawApiRatings.map(async (apiRating) => {
               let fromUsername = "Anonymous";
               try {
                 const userRes = await axios.get<UserDetails>(
                   `${BASE_URL}/api/v1/users/${apiRating.fromUserId}`,
-                  { headers: { Authorization: token, UserId: requestingUserId } },
+                  {
+                    headers: { Authorization: token, UserId: requestingUserId },
+                  },
                 );
                 if (userRes.data && userRes.data.username) {
                   fromUsername = userRes.data.username;
                 }
               } catch (userError) {
-                console.error(`Failed to fetch username for userId ${apiRating.fromUserId}:`, userError);
+                console.error(
+                  `Failed to fetch username for userId ${apiRating.fromUserId}:`,
+                  userError,
+                );
               }
               return {
                 ratingId: apiRating.ratingId,
@@ -178,20 +190,27 @@ export default function DriverProfilePage() {
             }),
           );
           provisionalDriver.ratings = ratingsWithUsernames;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (ratingsError: any) {
           console.warn("Failed to fetch ratings:", ratingsError);
           if (ratingsError.response?.status === 404) {
-            message.info("Driver details loaded. No ratings found for this driver.");
+            message.info(
+              "Driver details loaded. No ratings found for this driver.",
+            );
           } else {
             message.error("Could not load ratings for the driver.");
           }
           // provisionalDriver.ratings remains empty
         }
         setDriver(provisionalDriver);
-
       } catch (error: unknown) {
-        const err = error as Error & { response?: { data?: { message?: string }; status?: number } };
-        message.error(err.response?.data?.message || err.message || "Failed to load driver profile.");
+        const err = error as Error & {
+          response?: { data?: { message?: string }; status?: number };
+        };
+        message.error(
+          err.response?.data?.message || err.message ||
+            "Failed to load driver profile.",
+        );
         setDriver(null);
         console.error("Error fetching driver data:", error);
       } finally {
@@ -284,16 +303,25 @@ export default function DriverProfilePage() {
             {driver?.ratings && driver.ratings.length > 0
               ? (
                 // Replace Carousel with a scrollable div
-                <div style={{ maxHeight: '400px', overflowY: 'auto', paddingRight: '10px' }}> {/* Added paddingRight for scrollbar visibility */}
+                <div
+                  style={{
+                    maxHeight: "400px",
+                    overflowY: "auto",
+                    paddingRight: "10px",
+                  }}
+                >
+                  {/* Added paddingRight for scrollbar visibility */}
                   {driver.ratings.map((rating, index) => (
                     <div
                       key={rating.ratingId || index}
-                      style={{ marginBottom: '16px', cursor: 'pointer' }} // Added marginBottom for spacing
+                      style={{ marginBottom: "16px", cursor: "pointer" }} // Added marginBottom for spacing
                       onClick={() => handleRatingClick(rating.ratingId)}
                     >
                       <Card
                         type="inner"
-                        title={`Rated by: ${rating.fromUsername || "Anonymous"}`}
+                        title={`Rated by: ${
+                          rating.fromUsername || "Anonymous"
+                        }`}
                         extra={<Rate value={rating.ratingValue} disabled />}
                         style={{ margin: "0 auto", width: "100%" }} // Changed width to 100% for better fit
                       >

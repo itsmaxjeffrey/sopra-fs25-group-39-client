@@ -403,7 +403,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
                     driverName={`${driverInfo.firstName} ${driverInfo.lastName}`}
                     driverId={String(driverInfo.userId)}
                     price={form.getFieldValue("price")} // Price from contract
-                    driverPhoneNumber={driverInfo.phoneNumber} 
+                    driverPhoneNumber={driverInfo.phoneNumber}
                   />
                 )
                 : <p>No driver assigned or found.</p>}

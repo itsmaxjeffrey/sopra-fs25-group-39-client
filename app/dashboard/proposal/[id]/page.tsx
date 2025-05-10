@@ -59,16 +59,20 @@ const Page = () => {
         // 1. Fetch contract details (needed for all types to determine requester)
         const contractResponse = await axios.get(
           `${BASE_URL}/api/v1/contracts/${id}`,
-          { headers: { Authorization: token, UserId: userIdString } }
+          { headers: { Authorization: token, UserId: userIdString } },
         );
         const proposalData = contractResponse.data?.contract; // Assuming path based on existing interfaces/usage
 
-        if (!proposalData || typeof proposalData.requesterId === 'undefined') {
-          console.error("Essential contract data (like requesterId) is missing from response:", proposalData);
+        if (!proposalData || typeof proposalData.requesterId === "undefined") {
+          console.error(
+            "Essential contract data (like requesterId) is missing from response:",
+            proposalData,
+          );
           throw new Error("Invalid contract data received.");
         }
-        
-        const isCurrentUserTheRequester = proposalData.requesterId === currentUserId;
+
+        const isCurrentUserTheRequester =
+          proposalData.requesterId === currentUserId;
         setIsRequester(isCurrentUserTheRequester);
 
         // 2. Determine if the current user (if a driver) has made an offer.
@@ -77,12 +81,17 @@ const Page = () => {
           // REQUESTED/VIEW types mean they are looking at a proposal they *could* offer on.
           // In those cases, they wouldn't have an existing offer relevant for this page's routing logic.
           if (type !== "REQUESTED" && type !== "VIEW") {
-            const offersResponse = await axios.get(`${BASE_URL}/api/v1/offers`, {
-              headers: { Authorization: token, UserId: userIdString },
-              params: { contractId: id }, // Fetch all offers for the contract
-            });
+            const offersResponse = await axios.get(
+              `${BASE_URL}/api/v1/offers`,
+              {
+                headers: { Authorization: token, UserId: userIdString },
+                params: { contractId: id }, // Fetch all offers for the contract
+              },
+            );
             const offers = offersResponse.data?.offers; // Assuming path based on existing interfaces/usage
-            const driverOffer = offers?.find((o: OfferInArray) => o.driver?.userId === currentUserId);
+            const driverOffer = offers?.find((o: OfferInArray) =>
+              o.driver?.userId === currentUserId
+            );
             setHasUserOffered(!!driverOffer);
           } else {
             setHasUserOffered(false); // Driver viewing a new/generic proposal, hasn't offered yet in this context.
@@ -92,9 +101,11 @@ const Page = () => {
           // Components like OfferProposal will fetch and display all offers separately.
           setHasUserOffered(false);
         }
-
       } catch (error) {
-        console.error(`Error fetching details for proposal ${id}, type ${type}:`, error);
+        console.error(
+          `Error fetching details for proposal ${id}, type ${type}:`,
+          error,
+        );
         setIsRequester(null); // Indicate error or unknown state
         setHasUserOffered(null); // Indicate error or unknown state
         // Consider setting a user-facing error message state here

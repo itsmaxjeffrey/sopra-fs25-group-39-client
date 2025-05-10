@@ -59,7 +59,6 @@ const OfferProposal = ({ proposalId }: Props) => {
     averageRating?: number; // Added to store fetched rating
   }
 
-
   interface Rating {
     ratingId: number;
     fromUser: { userId: number; username: string };
@@ -74,13 +73,17 @@ const OfferProposal = ({ proposalId }: Props) => {
   const [loadingOffers, setLoadingOffers] = useState(true);
   const [errorOffers, setErrorOffers] = useState(false);
 
-  const fetchDriverAverageRating = async (driverId: number): Promise<number> => {
+  const fetchDriverAverageRating = async (
+    driverId: number,
+  ): Promise<number> => {
     try {
       const token = localStorage.getItem("token") || "";
       const requestingUserId = localStorage.getItem("userId") || "";
 
       if (!token || !requestingUserId) {
-        console.warn(`Authentication details missing for fetching ratings for driver ${driverId}.`);
+        console.warn(
+          `Authentication details missing for fetching ratings for driver ${driverId}.`,
+        );
         return 0; // Default to 0 if auth details are missing
       }
 
@@ -97,7 +100,10 @@ const OfferProposal = ({ proposalId }: Props) => {
       let fetchedRatings: Rating[] = [];
       if (Array.isArray(ratingsRes.data)) {
         fetchedRatings = ratingsRes.data;
-      } else if (ratingsRes.data && Array.isArray((ratingsRes.data as { ratings: Rating[] }).ratings)) {
+      } else if (
+        ratingsRes.data &&
+        Array.isArray((ratingsRes.data as { ratings: Rating[] }).ratings)
+      ) {
         fetchedRatings = (ratingsRes.data as { ratings: Rating[] }).ratings;
       }
 
@@ -105,7 +111,10 @@ const OfferProposal = ({ proposalId }: Props) => {
         return 0; // No ratings found
       }
 
-      const totalRating = fetchedRatings.reduce((acc, r) => acc + r.ratingValue, 0);
+      const totalRating = fetchedRatings.reduce(
+        (acc, r) => acc + r.ratingValue,
+        0,
+      );
       const average = totalRating / fetchedRatings.length;
       return parseFloat(average.toFixed(1)); // Return average rounded to one decimal place
     } catch (error: any) {
@@ -118,7 +127,6 @@ const OfferProposal = ({ proposalId }: Props) => {
       return 0; // Default to 0 in case of other errors
     }
   };
-
 
   const fetchContract = useCallback(async () => {
     try {
@@ -266,8 +274,10 @@ const OfferProposal = ({ proposalId }: Props) => {
         if (Array.isArray(res.data.offers)) {
           const offersWithDetails = await Promise.all(
             res.data.offers.map(async (baseOffer) => {
-              const rating = await fetchDriverAverageRating(baseOffer.driver.userId);
-              
+              const rating = await fetchDriverAverageRating(
+                baseOffer.driver.userId,
+              );
+
               let phoneNumber: string | undefined;
               try {
                 // Fetch full user details to get phone number
@@ -278,21 +288,24 @@ const OfferProposal = ({ proposalId }: Props) => {
                       Authorization: token,
                       UserId: requestingUserId,
                     },
-                  }
+                  },
                 );
                 // Assuming the user details endpoint returns phoneNumber directly on the response data
-                phoneNumber = userDetailsResponse.data?.phoneNumber; 
+                phoneNumber = userDetailsResponse.data?.phoneNumber;
               } catch (userError) {
-                console.error(`Error fetching user details for driver ${baseOffer.driver.userId}:`, userError);
+                console.error(
+                  `Error fetching user details for driver ${baseOffer.driver.userId}:`,
+                  userError,
+                );
               }
 
-              return { 
-                ...baseOffer, 
+              return {
+                ...baseOffer,
                 driver: {
                   ...baseOffer.driver,
                   phoneNumber: phoneNumber, // Add phoneNumber to the driver object
                 },
-                averageRating: rating 
+                averageRating: rating,
               };
             }),
           );
@@ -309,8 +322,9 @@ const OfferProposal = ({ proposalId }: Props) => {
         setLoadingOffers(false);
       }
     };
-    
+
     fetchOffers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, proposalId, BASE_URL, fetchContract]);
 
   return (
@@ -523,8 +537,8 @@ const OfferProposal = ({ proposalId }: Props) => {
                   driverName={`${offer.driver.firstName} ${offer.driver.lastName}`}
                   driverId={String(offer.driver.userId)}
                   price={offer.contract.price}
-                  rating={offer.averageRating || 0} 
-                  driverPhoneNumber={offer.driver.phoneNumber} 
+                  rating={offer.averageRating || 0}
+                  driverPhoneNumber={offer.driver.phoneNumber}
                   onAccept={handleAcceptOffer}
                 />
               ))

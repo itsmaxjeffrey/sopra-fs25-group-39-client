@@ -99,16 +99,22 @@ const ProposalsOverview = () => {
             )
             .then((res) => res.data.contract)
             .catch((err) => {
-              console.error(`Failed to fetch contract ${offer.contract.contractId}:`, err);
+              console.error(
+                `Failed to fetch contract ${offer.contract.contractId}:`,
+                err,
+              );
               return null;
-            }),
+            })
         );
-        const pendingContractsDetails = (await Promise.all(pendingContractPromises)).filter(
-          (contract): contract is Proposal => contract !== null,
-        );
+        const pendingContractsDetails =
+          (await Promise.all(pendingContractPromises)).filter(
+            (contract): contract is Proposal => contract !== null,
+          );
         setDriverPendingOfferContracts(
           pendingContractsDetails.sort(
-            (a, b) => new Date(b.creationDateTime).getTime() - new Date(a.creationDateTime).getTime(),
+            (a, b) =>
+              new Date(b.creationDateTime).getTime() -
+              new Date(a.creationDateTime).getTime(),
           ),
         );
 
@@ -124,16 +130,23 @@ const ProposalsOverview = () => {
           acceptedResponseData &&
           typeof acceptedResponseData === "object" &&
           "contracts" in acceptedResponseData &&
-          Array.isArray((acceptedResponseData as AcceptedContractsResponse).contracts)
+          Array.isArray(
+            (acceptedResponseData as AcceptedContractsResponse).contracts,
+          )
         ) {
-          acceptedContracts = (acceptedResponseData as AcceptedContractsResponse).contracts;
+          acceptedContracts =
+            (acceptedResponseData as AcceptedContractsResponse).contracts;
         }
 
-        acceptedContracts = acceptedContracts.filter((c) => c.contractStatus === "ACCEPTED");
+        acceptedContracts = acceptedContracts.filter((c) =>
+          c.contractStatus === "ACCEPTED"
+        );
 
         setDriverAcceptedContracts(
           acceptedContracts.sort(
-            (a, b) => new Date(b.creationDateTime).getTime() - new Date(a.creationDateTime).getTime(),
+            (a, b) =>
+              new Date(b.creationDateTime).getTime() -
+              new Date(a.creationDateTime).getTime(),
           ),
         );
       } catch (err) {

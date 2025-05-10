@@ -74,7 +74,9 @@ const ActionsTab = () => {
 
     (async () => {
       try {
-        await apiService.post(`/api/v1/auth/users/${userId}`, { email: confirmEmail });
+        await apiService.post(`/api/v1/auth/users/${userId}`, {
+          email: confirmEmail,
+        });
         message.success("Account deleted successfully.");
         localStorage.clear();
         router.push("/login");

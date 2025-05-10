@@ -62,7 +62,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
             Authorization: localStorage.getItem("token") || "",
             userId: localStorage.getItem("userId") || "",
           },
-        }
+        },
       );
 
       const data = res.data.contract;
@@ -139,8 +139,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       router.push("/dashboard");
     } catch (error: any) {
       console.error("Cancel failed:", error);
-      const errorMessage =
-        error.response?.data?.message ||
+      const errorMessage = error.response?.data?.message ||
         "Failed to cancel the proposal. Please try again.";
       message.error(errorMessage);
     }
@@ -172,7 +171,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
             UserId: `${userId}`,
             Authorization: `${token}`,
           },
-        }
+        },
       );
 
       if (!response.data.filePath) {
@@ -210,7 +209,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
             UserId: `${userId}`,
             Authorization: `${token}`,
           },
-        }
+        },
       );
 
       const newPaths = [...imagePaths];
@@ -261,7 +260,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
             Authorization: localStorage.getItem("token") || "",
             UserId: localStorage.getItem("userId") || "",
           },
-        }
+        },
       );
       console.log("PUT response:", response.data);
       setChanged(false);
@@ -271,7 +270,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       // Add error message
       const backendMessage = err.response?.data?.message;
       message.error(
-        backendMessage || err.message || "Failed to update proposal."
+        backendMessage || err.message || "Failed to update proposal.",
       );
     }
   };
@@ -290,16 +289,18 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
             const currentPath = imagePaths[idx];
             const antdFileList: UploadFile[] = currentPath
               ? [
-                  {
-                    uid: `file-${idx}-${currentPath}`,
-                    name:
-                      currentPath.substring(currentPath.lastIndexOf("/") + 1) ||
-                      `image-${idx}.png`,
-                    status: "done",
-                    url: `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`,
-                    thumbUrl: `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`,
-                  },
-                ]
+                {
+                  uid: `file-${idx}-${currentPath}`,
+                  name:
+                    currentPath.substring(currentPath.lastIndexOf("/") + 1) ||
+                    `image-${idx}.png`,
+                  status: "done",
+                  url:
+                    `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`,
+                  thumbUrl:
+                    `${BASE_URL}/api/v1/files/download?filePath=${currentPath}`,
+                },
+              ]
               : [];
 
             return (
@@ -320,11 +321,15 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
                   }}
                   // To show preview from AntD, ensure 'url' is in fileList item
                 >
-                  {antdFileList.length === 0 ? (
-                    <div className={styles.cameraIcon}>
-                      <CameraOutlined style={{ fontSize: 28, color: "#999" }} />
-                    </div>
-                  ) : null}
+                  {antdFileList.length === 0
+                    ? (
+                      <div className={styles.cameraIcon}>
+                        <CameraOutlined
+                          style={{ fontSize: 28, color: "#999" }}
+                        />
+                      </div>
+                    )
+                    : null}
                 </Upload>
               </div>
             );
@@ -358,8 +363,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
                 style={{ width: "100%" }}
                 showTime={{ format: "HH:mm", showSecond: false }}
                 disabledDate={(current) =>
-                  current && current < dayjs().startOf("minute")
-                }
+                  current && current < dayjs().startOf("minute")}
               />
             </Form.Item>
           </Col>
@@ -523,34 +527,38 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       </Form>
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>
-          {loading ? (
-            <div style={{ padding: 64 }}>
-              <Spin size="large" />
-            </div>
-          ) : error ? (
-            <div className={styles.registerError}>
-              <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-              <p>
-                EditProposal: Something went wrong while fetching the proposal
-                details.
-              </p>
-              <Row justify="center" gutter={16}>
-                <Col>
-                  <Button
-                    type="primary"
-                    onClick={() => router.push("/dashboard/proposal/new")}
-                  >
-                    Create New
-                  </Button>
-                </Col>
-                <Col>
-                  <Button onClick={() => router.push("/dashboard")}>
-                    Back to Overview
-                  </Button>
-                </Col>
-              </Row>
-            </div>
-          ) : null}
+          {loading
+            ? (
+              <div style={{ padding: 64 }}>
+                <Spin size="large" />
+              </div>
+            )
+            : error
+            ? (
+              <div className={styles.registerError}>
+                <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
+                <p>
+                  EditProposal: Something went wrong while fetching the proposal
+                  details.
+                </p>
+                <Row justify="center" gutter={16}>
+                  <Col>
+                    <Button
+                      type="primary"
+                      onClick={() => router.push("/dashboard/proposal/new")}
+                    >
+                      Create New
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button onClick={() => router.push("/dashboard")}>
+                      Back to Overview
+                    </Button>
+                  </Col>
+                </Row>
+              </div>
+            )
+            : null}
         </div>
       </Modal>
       <Modal

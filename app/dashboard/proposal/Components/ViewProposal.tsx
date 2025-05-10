@@ -207,16 +207,29 @@ const ViewProposal = ({ proposalId }: Props) => {
         "An unexpected error occurred. Please try again later.";
       if ((error as AxiosError).response) {
         // Log the full response for debugging
-        console.error("Server Response Data:", (error as AxiosError).response?.data);
-        console.error("Server Response Status:", (error as AxiosError).response?.status);
-        console.error("Server Response Headers:", (error as AxiosError).response?.headers);
+        console.error(
+          "Server Response Data:",
+          (error as AxiosError).response?.data,
+        );
+        console.error(
+          "Server Response Status:",
+          (error as AxiosError).response?.status,
+        );
+        console.error(
+          "Server Response Headers:",
+          (error as AxiosError).response?.headers,
+        );
 
         // Check if the server provided a specific error message
-        const responseData = (error as AxiosError).response?.data as { message?: string };
+        const responseData = (error as AxiosError).response?.data as {
+          message?: string;
+        };
         errorMessage = responseData?.message ||
           ((error as AxiosError).response?.status === 409
             ? "You have already made an offer for this proposal."
-            : `Request failed with status code ${(error as AxiosError).response?.status}. Possible reasons: Offer already exists, or the contract is not available.`);
+            : `Request failed with status code ${
+              (error as AxiosError).response?.status
+            }. Possible reasons: Offer already exists, or the contract is not available.`);
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }

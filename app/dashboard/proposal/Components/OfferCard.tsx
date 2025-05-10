@@ -39,7 +39,7 @@ const OfferCard: React.FC<OfferCardProps> = (
         <span className={styles.price}>{price.toFixed(2)} CHF</span>
       </div>
       {/* Conditionally render the rating row */}
-      {typeof rating === 'number' && (
+      {typeof rating === "number" && (
         <div className={styles.row}>
           <span>Avg. Rating of Driver:</span>
           <span className={styles.stars}>
@@ -49,7 +49,7 @@ const OfferCard: React.FC<OfferCardProps> = (
       )}
       <div className={styles.row}>
         <span>Phone:</span>
-        <span className={styles.price}> 
+        <span className={styles.price}>
           {driverPhoneNumber || "Not available"}
         </span>
       </div>

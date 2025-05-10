@@ -52,7 +52,9 @@ const PastContracts = () => {
         try {
           const token = localStorage.getItem("token");
           if (!token) {
-            console.warn("PastContracts: Token not found. Cannot fetch contracts.");
+            console.warn(
+              "PastContracts: Token not found. Cannot fetch contracts.",
+            );
             setContracts([]);
             setIsLoading(false);
             return;
@@ -152,7 +154,15 @@ const PastContracts = () => {
 
   if (isLoading) {
     return (
-      <div style={{ padding: 24, display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+      <div
+        style={{
+          padding: 24,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "200px",
+        }}
+      >
         <Spin size="large" />
       </div>
     );
@@ -161,9 +171,7 @@ const PastContracts = () => {
   return (
     <div style={{ padding: 24 }}>
       <h1>Past Contracts</h1>
-      {contracts.length === 0 ? (
-        <p>No past contracts found.</p>
-      ) : (
+      {contracts.length === 0 ? <p>No past contracts found.</p> : (
         <Table
           columns={columns}
           dataSource={contracts}
