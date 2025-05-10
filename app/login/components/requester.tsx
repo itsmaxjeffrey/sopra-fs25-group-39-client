@@ -257,9 +257,9 @@ const Requester = () => {
                       required: true,
                       message: "Please enter a password",
                     },
-                    {
+                    { 
                       pattern:
-                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~])[A-Za-z\d!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]{8,}$/,
                       message:
                         "At least 8 characters, uppercase & lowercase letters, a number and a special character",
                     },
