@@ -59,14 +59,8 @@ interface ContractData {
   manPower: number;
   price: number;
   contractPhotos?: string[];
-  requester: {
-    userId: number;
-    // Add other requester fields if needed
-  };
-  driver?: {
-    userId: number;
-    // Add other driver fields if needed
-  };
+  requesterId: number; // Changed from requester: { userId: number; }
+  driverId?: number; // Changed from driver?: { userId: number; } - assuming API returns driverId directly
   requesterPhoneNumber?: string; // Added
   driverPhoneNumber?: string; // Added
   // Add other fields from your actual contract data structure
@@ -119,6 +113,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
+      console.log("fetchContract: Contract data found:", data);
       setContractData(data); // Store the full contract data
 
       form.setFieldsValue({
@@ -160,6 +155,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
   };
 
   const fetchDriverInfo = async () => {
+     console.log("fetchDriverInfo called");
     setLoadingDriver(true);
     setErrorDriver(false);
     try {
@@ -180,6 +176,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
         },
       );
       if (res.data && res.data.driver) {
+        console.log("fetchDriverInfo: Driver data found:", res.data.driver);
         setDriverInfo(res.data.driver);
       } else {
         throw new Error("Driver data not found in response");
@@ -195,7 +192,9 @@ const AcceptedProposal = ({ proposalId }: Props) => {
   useEffect(() => {
     const loadData = async () => {
       await fetchContract();
+       console.log("After fetchContract, error state:", error);
       if (!error) {
+        console.log("Calling fetchDriverInfo");
         await fetchDriverInfo();
       }
     };
@@ -374,21 +373,23 @@ const AcceptedProposal = ({ proposalId }: Props) => {
           </Col>
         </Row>
 
-        {/* Display phone numbers if available */}
-        {contractData?.requesterPhoneNumber && (
-          <Form.Item label="Requester Phone Number">
-            <Input value={contractData.requesterPhoneNumber} disabled />
-          </Form.Item>
-        )}
-        {contractData?.driverPhoneNumber && (
-          <Form.Item label="Driver Phone Number">
-            <Input value={contractData.driverPhoneNumber} disabled />
-          </Form.Item>
-        )}
-
         {/* Conditionally render the Driver section only for the Requester */}
+        {(() => {
+        // DEBUG block
+        console.log("Driver Section Render Check:");
+        console.log("  loggedInUserId:", loggedInUserId);
+        console.log("  contractData exists:", !!contractData);
+        if (contractData) {
+          console.log("  contractData.requesterId:", contractData.requesterId);
+          console.log("  Number(loggedInUserId) === contractData.requesterId:", Number(loggedInUserId) === contractData.requesterId);
+        }
+        console.log("  loadingDriver:", loadingDriver);
+        console.log("  errorDriver:", errorDriver);
+        console.log("  driverInfo:", driverInfo);
+        return null; // This block is just for logging
+      })()}
         {loggedInUserId && contractData &&
-          Number(loggedInUserId) === contractData.requester?.userId && (
+          Number(loggedInUserId) === contractData.requesterId && (
           <>
             <Title level={2}>Your driver:</Title>
             <div className={styles.scrollContainer}>
