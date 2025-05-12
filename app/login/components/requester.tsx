@@ -55,12 +55,16 @@ const Requester = () => {
   >();
   const [usernameHelp, setUsernameHelp] = useState<string | undefined>();
 
-  const [emailStatus, setEmailStatus] = useState<"success" | "error" | undefined>();
+  const [emailStatus, setEmailStatus] = useState<
+    "success" | "error" | undefined
+  >();
   const [emailHelp, setEmailHelp] = useState<string | undefined>();
   const [form] = Form.useForm();
   const email = Form.useWatch("email", form);
 
-  const [phoneNumberStatus, setPhoneNumberStatus] = useState<"success" | "error" | undefined>();
+  const [phoneNumberStatus, setPhoneNumberStatus] = useState<
+    "success" | "error" | undefined
+  >();
   const [phoneNumberHelp, setPhoneNumberHelp] = useState<string | undefined>();
   const phoneNumber = Form.useWatch("phoneNumber", form);
 
@@ -103,7 +107,7 @@ const Requester = () => {
       }
       try {
         const response = await axios.get(
-          `${BASE_URL}/api/v1/auth/check-email/${email}`
+          `${BASE_URL}/api/v1/auth/check-email/${email}`,
         );
 
         if (response.data.isTaken == false) {
@@ -133,7 +137,7 @@ const Requester = () => {
       }
       try {
         const response = await axios.get(
-          `${BASE_URL}/api/v1/auth/check-phonenumber/${normalizedPhoneNumber}`
+          `${BASE_URL}/api/v1/auth/check-phonenumber/${normalizedPhoneNumber}`,
         );
 
         if (response.data.isTaken == false) {
@@ -335,9 +339,9 @@ const Requester = () => {
                       required: true,
                       message: "Please enter a password",
                     },
-                    { 
+                    {
                       pattern:
-                          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~])[A-Za-z\d!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]{8,}$/,
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~])[A-Za-z\d!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]{8,}$/,
                       message:
                         "At least 8 characters, uppercase & lowercase letters, a number and a special character",
                     },

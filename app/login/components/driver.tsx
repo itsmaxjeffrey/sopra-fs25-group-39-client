@@ -206,7 +206,7 @@ const Driver = () => {
 
     try {
       const response = await axios.get(
-        `${BASE_URL}//api/v1/auth/check-email/${email}`
+        `${BASE_URL}//api/v1/auth/check-email/${email}`,
       );
 
       if (response.data.isTaken == false) {
@@ -223,7 +223,9 @@ const Driver = () => {
     }
   };
 
-  const [phoneNumberStatus, setPhoneNumberStatus] = useState<"" | "success" | "error">("");
+  const [phoneNumberStatus, setPhoneNumberStatus] = useState<
+    "" | "success" | "error"
+  >("");
   const [phoneNumberHelp, setPhoneNumberHelp] = useState<string | null>(null);
 
   const checkPhoneNumberAvailability = async (phoneNumber: string) => {
@@ -238,7 +240,7 @@ const Driver = () => {
 
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/v1/auth/check-phonenumber/${normalizedPhoneNumber}`
+        `${BASE_URL}/api/v1/auth/check-phonenumber/${normalizedPhoneNumber}`,
       );
 
       if (response.data.isTaken == false) {
@@ -314,7 +316,10 @@ const Driver = () => {
 
     try {
       const profilePicturePath = uploadedFilePath;
-      const normalizedPhoneNumber = formStepOneData?.phoneNumber.replace(/\s+/g, "");
+      const normalizedPhoneNumber = formStepOneData?.phoneNumber.replace(
+        /\s+/g,
+        "",
+      );
 
       await axios.post(`${BASE_URL}/api/v1/auth/register`, {
         user: {
@@ -648,8 +653,7 @@ const Driver = () => {
                   <Input
                     placeholder="+41 79 123 45 67"
                     onChange={(e) =>
-                      checkPhoneNumberAvailability(e.target.value)
-                    }
+                      checkPhoneNumberAvailability(e.target.value)}
                   />
                 </Form.Item>
               </Col>

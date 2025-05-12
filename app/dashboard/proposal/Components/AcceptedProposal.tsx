@@ -155,7 +155,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
   };
 
   const fetchDriverInfo = async () => {
-     console.log("fetchDriverInfo called");
+    console.log("fetchDriverInfo called");
     setLoadingDriver(true);
     setErrorDriver(false);
     try {
@@ -192,7 +192,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
   useEffect(() => {
     const loadData = async () => {
       await fetchContract();
-       console.log("After fetchContract, error state:", error);
+      console.log("After fetchContract, error state:", error);
       if (!error) {
         console.log("Calling fetchDriverInfo");
         await fetchDriverInfo();
@@ -375,19 +375,25 @@ const AcceptedProposal = ({ proposalId }: Props) => {
 
         {/* Conditionally render the Driver section only for the Requester */}
         {(() => {
-        // DEBUG block
-        console.log("Driver Section Render Check:");
-        console.log("  loggedInUserId:", loggedInUserId);
-        console.log("  contractData exists:", !!contractData);
-        if (contractData) {
-          console.log("  contractData.requesterId:", contractData.requesterId);
-          console.log("  Number(loggedInUserId) === contractData.requesterId:", Number(loggedInUserId) === contractData.requesterId);
-        }
-        console.log("  loadingDriver:", loadingDriver);
-        console.log("  errorDriver:", errorDriver);
-        console.log("  driverInfo:", driverInfo);
-        return null; // This block is just for logging
-      })()}
+          // DEBUG block
+          console.log("Driver Section Render Check:");
+          console.log("  loggedInUserId:", loggedInUserId);
+          console.log("  contractData exists:", !!contractData);
+          if (contractData) {
+            console.log(
+              "  contractData.requesterId:",
+              contractData.requesterId,
+            );
+            console.log(
+              "  Number(loggedInUserId) === contractData.requesterId:",
+              Number(loggedInUserId) === contractData.requesterId,
+            );
+          }
+          console.log("  loadingDriver:", loadingDriver);
+          console.log("  errorDriver:", errorDriver);
+          console.log("  driverInfo:", driverInfo);
+          return null; // This block is just for logging
+        })()}
         {loggedInUserId && contractData &&
           Number(loggedInUserId) === contractData.requesterId && (
           <>
