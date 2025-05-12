@@ -415,7 +415,7 @@ const HomePage = () => {
             />
           </div>
           <div>
-            <label>Max Price ($)</label>
+            <label>Min Price ($)</label>
             <Slider
               min={0}
               max={2000} // Adjust max price
