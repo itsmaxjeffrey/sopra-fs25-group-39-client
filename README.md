@@ -498,14 +498,14 @@ This project is a web-based platform developed as part of the Software Engineeri
       ![Requester FAQ](./readme_illustrations/requester_faq.png)
 2. **Driver**:
    1. **View Available Proposals**:  
-      Allows Drivers to browse and view proposals available for acceptance.  
-      ![View Available Proposals](./readme_illustrations/driver_view_available_proposals.png)
-   2. **Manage Ongoing Contracts**:  
-      Enables Drivers to track and manage their accepted contracts.  
-      ![Manage Ongoing Contracts](./readme_illustrations/driver_manage_ongoing_contracts.png)
-   3. **Update Vehicle Information**:  
-      Provides Drivers with the ability to update their vehicle details.  
-      ![Update Vehicle Information](./readme_illustrations/driver_update_vehicle_information.png)
+      Allows Drivers to browse and view proposals available in the map.  
+      ![View Available Proposals](./readme_illustrations/driver_home_screen_map.png)
+   2. **Account Overview**:  
+      Enables Drivers manage and see their own account.  
+      ![Manage Driver Account](./readme_illustrations/driver_account_overview.png)
+   3. **Manage critical Account settings**:  
+      Lets Drivers Delete their account or change passwords.  
+      ![Manage critical Account Settings](./readme_illustrations/driver_account_actions.png).png)
 
 ## Roadmap for further Improvements
 1. **Real-Time Notifications**: Implement email notifications for updates.

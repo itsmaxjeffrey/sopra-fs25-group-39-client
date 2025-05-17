@@ -103,7 +103,6 @@ const FAQPage = () => {
                   What should I do if I face issues during a delivery?
                 </div>
                 <div className={styles.answer}>
-                  Contact the requester directly using the shared phone number.
                   If needed, report any serious concerns to our support team at
                   support@zueglig.ch
                 </div>
@@ -136,8 +135,8 @@ const FAQPage = () => {
                   What happens after a driver accepts my proposal?
                 </div>
                 <div className={styles.answer}>
-                  You’ll receive a notification and can view all interested
-                  drivers. Confirm the one you trust most.
+                  You’ll see all interested drivers if you go to your pending offers. 
+                  Confirm the one you trust most.
                 </div>
               </div>
               <div className={styles.qaBox}>
