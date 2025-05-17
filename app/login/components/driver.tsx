@@ -409,7 +409,9 @@ const Driver = () => {
                     validator: (_, value) => {
                       if (value && (value < 0 || value > 5000)) {
                         return Promise.reject(
-                          new Error("Weight capacity must be between 0 and 5000 kg"),
+                          new Error(
+                            "Weight capacity must be between 0 and 5000 kg",
+                          ),
                         );
                       }
                       return Promise.resolve();
@@ -437,7 +439,9 @@ const Driver = () => {
                     validator: (_, value) => {
                       if (value && (value < 0 || value > 100)) {
                         return Promise.reject(
-                          new Error("Volume capacity must be between 0 and 100 cubic meters"),
+                          new Error(
+                            "Volume capacity must be between 0 and 100 cubic meters",
+                          ),
                         );
                       }
                       return Promise.resolve();
