@@ -94,7 +94,7 @@ const FAQPage = () => {
                 </div>
                 <div className={styles.answer}>
                   Go to the map view, find a proposal that fits your route, and
-                  click "Accept". The requester will then review and possibly
+                  click &quot;Accept&quot;. The requester will then review and possibly
                   confirm you.
                 </div>
               </div>
@@ -114,7 +114,7 @@ const FAQPage = () => {
                 </div>
                 <div className={styles.answer}>
                   Navigate to your profile page and edit your vehicle details
-                  under the "Vehicle Info" section.
+                  under the &quot;Vehicle Info&quot; section.
                 </div>
               </div>
             </>
@@ -127,7 +127,7 @@ const FAQPage = () => {
                   How do I create a new proposal?
                 </div>
                 <div className={styles.answer}>
-                  Click "New Proposal", then fill in your pickup and drop-off
+                  Click &quot;New Proposal&quot;, then fill in your pickup and drop-off
                   points, item details, and your offered price.
                 </div>
               </div>
