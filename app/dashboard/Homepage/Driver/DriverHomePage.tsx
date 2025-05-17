@@ -320,29 +320,32 @@ const HomePage = () => {
     fetchPendingOffers();
   }, []); // Runs once on mount
 
-  const mapContainerStyle = {
-    width: "100%",
-    height: "calc(100vh - 200px)", // Adjust height to leave space for lists below
-  };
-
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       <div
         style={{
           flexGrow: 1,
-          position: "relative",
-          height: mapContainerStyle.height,
+          position: "relative", // Keep for potential children like the filter button
+          padding: "10px 20px", // Retain padding for this section
+          display: "flex", // Added: Make this a flex container
+          flexDirection: "column", // Added: Arrange title and map vertically
         }}
       >
-        {/* Map Component */}
-        <DriverMap
-          containerStyle={{ width: "100%", height: "100%" }} // Ensure map fills its container
-          filters={filters}
-          onCenterChanged={(lat, lng) => {
-            updateFilter("lat", lat);
-            updateFilter("lng", lng);
-          }}
-        />
+        {/* Title for the map */}
+        <Typography.Title level={3} style={{ textAlign: "left", marginBottom: "10px" }}> {/* Changed: Align left */}
+          Find Available Contracts Near You
+        </Typography.Title>
+        {/* New wrapper for Map Component to handle flex sizing */}
+        <div style={{ flexGrow: 1, position: "relative", width: "100%" }}> {/* Added: Map wrapper takes remaining space */}
+          <DriverMap
+            containerStyle={{ width: "100%", height: "100%" }} // Ensure map fills its new wrapper
+            filters={filters}
+            onCenterChanged={(lat, lng) => {
+              updateFilter("lat", lat);
+              updateFilter("lng", lng);
+            }}
+          />
+        </div>
       </div>
 
       {/* Button to open filter settings drawer (Floating Action Button) */}
