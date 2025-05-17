@@ -11,7 +11,6 @@ import {
   InputNumber,
   Modal,
   Row,
-  Spin,
   Switch,
   Upload,
 } from "antd";
@@ -35,10 +34,12 @@ const NewProposalFormPage = () => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalState, setModalState] = useState<"loading" | "success" | "error">(
-    "loading",
+  // Modal state will now only be 'success' or 'error', or null initially
+  const [modalState, setModalState] = useState<"success" | "error" | null>(
+    null,
   );
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state for button loading
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const fromRef = useRef<any>(null);
@@ -83,9 +84,9 @@ const NewProposalFormPage = () => {
   };
 
   const handleFinish = async (values: any) => {
-    console.log("Submitting values:", values); // Log the raw form values
-    setModalState("loading");
-    setModalVisible(true);
+    console.log("Submitting values:", values);
+    setIsSubmitting(true); // Set button loading state
+    // setModalState("loading") and setModalVisible(true) for loading are removed
 
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
@@ -140,6 +141,7 @@ const NewProposalFormPage = () => {
         withCredentials: true,
       });
       setModalState("success");
+      setModalVisible(true); // Show modal for success
     } catch (err: any) {
       console.error("Creation failed", err);
       // Extract more specific error message if available
@@ -150,6 +152,9 @@ const NewProposalFormPage = () => {
           "Something went wrong while creating your proposal.",
       );
       setModalState("error");
+      setModalVisible(true); // Show modal for error
+    } finally {
+      setIsSubmitting(false); // Reset button loading state
     }
   };
 
@@ -467,26 +472,31 @@ const NewProposalFormPage = () => {
         </Row>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" block>
+          <Button type="primary" htmlType="submit" block loading={isSubmitting}>
             Create Proposal
           </Button>
         </Form.Item>
       </Form>
-      {/* Modal */}
-      <Modal open={modalVisible} footer={null} closable={false} centered>
+      {/* Modal: Now only for success or error */}
+      <Modal 
+        open={modalVisible && (modalState === "success" || modalState === "error")} 
+        footer={null} 
+        closable={false} 
+        centered
+        onCancel={() => { // Define onCancel behavior if needed, e.g., for error modal
+          setModalVisible(false);
+          setModalState(null);
+        }}
+      >
         <div className={styles.registerCenter}>
-          {modalState === "loading" && (
-            <div style={{ padding: 64 }}>
-              <Spin size="large" />
-            </div>
-          )}
+          {/* Loading state removed from modal content */}
           {modalState === "success" && (
             <div className={styles.registerSuccess}>
               <CheckCircleOutlined
                 style={{ fontSize: 48, color: "green", marginBottom: "20px" }}
               />
               <p>Proposal successfully created!</p>
-              <Button type="primary" onClick={() => router.push("/dashboard")}>
+              <Button type="primary" onClick={() => { setModalVisible(false); setModalState(null); router.push("/dashboard");}}>
                 Great!
               </Button>
             </div>
@@ -500,7 +510,7 @@ const NewProposalFormPage = () => {
                 {errorMessage ||
                   "Something went wrong while creating your proposal."}
               </p>
-              <Button onClick={() => setModalVisible(false)}>OK</Button>
+              <Button onClick={() => { setModalVisible(false); setModalState(null); }}>OK</Button>
             </div>
           )}
         </div>

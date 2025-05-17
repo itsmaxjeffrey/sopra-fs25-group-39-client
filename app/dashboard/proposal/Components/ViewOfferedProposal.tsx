@@ -17,7 +17,6 @@ import styles from "./Edit.module.css";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import dayjs from "dayjs";
-import { useParams } from "next/navigation";
 import { getApiDomain } from "@/utils/domain";
 
 const BASE_URL = getApiDomain();
@@ -27,20 +26,20 @@ interface Props {
 }
 
 const ViewOfferedProposal = ({ proposalId }: Props) => {
-  const { id } = useParams(); // Retrieve the proposal ID from the URL
   const router = useRouter();
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [modalVisible, setModalVisible] = useState(true);
+  const [isLoadingContract, setIsLoadingContract] = useState(true);
+  const [fetchContractError, setFetchContractError] = useState<string | null>(null);
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [imagePaths, setImagePaths] = useState<string[]>([]);
 
   const fetchContract = async () => {
+    setIsLoadingContract(true);
+    setFetchContractError(null);
     try {
-      console.log(`proposalId: ${id}`);
-      if (!id) {
+      console.log(`proposalId (from prop): ${proposalId}`);
+      if (!proposalId) {
         throw new Error("Proposal ID is missing");
       }
       const res = await axios.get<{ contract: any }>(
@@ -87,24 +86,18 @@ const ViewOfferedProposal = ({ proposalId }: Props) => {
       });
 
       setImagePaths(data.contractPhotos || []);
-      setError(false);
-      setModalVisible(false);
     } catch (err: any) {
-      setError(true);
       const backendMessage = err.response?.data?.message;
-      Modal.error({
-        title: "Error fetching contract details",
-        content: backendMessage || err.message || "An unknown error occurred",
-      });
+      setFetchContractError(backendMessage || err.message || "An unknown error occurred while fetching contract details.");
     } finally {
-      setLoading(false);
+      setIsLoadingContract(false);
     }
   };
 
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, proposalId]);
+  }, [proposalId]);
 
   return (
     <div className={styles.wrapper}>
@@ -271,31 +264,40 @@ const ViewOfferedProposal = ({ proposalId }: Props) => {
         </Row>
       </Form>
 
-      <Modal open={modalVisible} footer={null} closable={false} centered>
+      {/* Modal: Now only for fetch errors */}
+      <Modal 
+        open={!!fetchContractError} // Modal is open if there is an error message
+        footer={null} 
+        closable={false} // Consider making closable true or providing explicit close in footer
+        centered
+        onCancel={() => { 
+          setFetchContractError(null); 
+          // Decide if navigating away is appropriate or allow user to stay on page
+          // router.push("/dashboard/contract-overview"); 
+        }}
+      >
         <div className={styles.registerCenter}>
-          {loading
-            ? null
-            : error
-            ? (
-              <div className={styles.registerError}>
-                <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-                <p>
-                  ViewOfferedProposal: Something went wrong while fetching the
-                  proposal details.
-                </p>
-                <Row justify="center" gutter={16}>
-                  <Col>
-                    <Button
-                      onClick={() =>
-                        router.push("/dashboard/contract-overview")}
-                    >
-                      Back to Overview
-                    </Button>
-                  </Col>
-                </Row>
-              </div>
-            )
-            : null}
+          {/* Modal content is now only for error display */}
+          {/* No loading condition inside the modal */}
+          <div className={styles.registerError}>
+            <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
+            <p>
+              {/* Use the specific error message from fetchContractError */}
+              {fetchContractError || "Something went wrong while fetching the proposal details."}
+            </p>
+            <Row justify="center" gutter={16}>
+              <Col>
+                <Button
+                  onClick={() => {
+                    setFetchContractError(null); // Clear error
+                    router.push("/dashboard/contract-overview");
+                  }}
+                >
+                  Back to Overview
+                </Button>
+              </Col>
+            </Row>
+          </div>
         </div>
       </Modal>
     </div>
