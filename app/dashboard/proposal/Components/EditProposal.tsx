@@ -11,7 +11,6 @@ import {
   message, // Import message
   Modal,
   Row,
-  Spin,
   Switch,
   Upload, // Added Upload
 } from "antd";
@@ -528,11 +527,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>
           {loading
-            ? (
-              <div style={{ padding: 64 }}>
-                <Spin size="large" />
-              </div>
-            )
+            ? null // Changed: Removed Spin component
             : error
             ? (
               <div className={styles.registerError}>

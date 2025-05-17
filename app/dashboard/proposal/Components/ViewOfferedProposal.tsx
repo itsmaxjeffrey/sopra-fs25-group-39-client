@@ -10,7 +10,6 @@ import {
   InputNumber,
   Modal,
   Row,
-  Spin,
   Switch,
 } from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
@@ -275,11 +274,7 @@ const ViewOfferedProposal = ({ proposalId }: Props) => {
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>
           {loading
-            ? (
-              <div style={{ padding: 64 }}>
-                <Spin size="large" />
-              </div>
-            )
+            ? null
             : error
             ? (
               <div className={styles.registerError}>

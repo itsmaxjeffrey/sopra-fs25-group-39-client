@@ -9,7 +9,6 @@ import {
   Input,
   Modal,
   Row,
-  Spin,
 } from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styles from "./Edit.module.css";
@@ -422,11 +421,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
       <Modal open={modalVisible} footer={null} closable={false} centered>
         <div className={styles.registerCenter}>
           {loading
-            ? (
-              <div style={{ padding: 64 }}>
-                <Spin size="large" />
-              </div>
-            )
+            ? null // Changed: Removed Spin component
             : error
             ? (
               <div className={styles.registerError}>
