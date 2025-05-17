@@ -233,8 +233,9 @@ understanding.
 | **@ojg9**          | 17.05.2025       | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/a2583d4c49102028eb892edc42ada4edd0e55c5e | Updated the DatePicker so that it only allows to set BirthDates which are before on the current day or before. | Improved the user experience as it is no longer possible to select a invalid birthdate. |
 | **@xdecentralix**  | [date]       | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@xdecentralix**  | [date]       | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@dariohug**      | [date]       | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@dariohug**      | [date]       | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@dariohug**      | [17.05.2025]       | [[Link to Commit 1](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/e48f333d140689a3aa66e8c3861a808e477edc34)] | [check if weight and volume capacity are numbers before registration request] | [Makes Registration process more bullet proof by esuring that users can enter incorrect data.] |
+| **@dariohug**      | [17.05.2025]       | [[Link to Commit 2](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/5e0ad99135de9187e2cad0863d2b195fe1528371)] | [Added a FAQ to requester and driver site] | [Makes starting with Zueglig easier for users.] |
+| **@dariohug**      | [17.05.2025]       | [[Link to Commit 3](https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/415051630a61c4cbd0d4aee9fcbf3eb79870dcaa)] | [Extended the README] | [Makes it easier for future engineers to work on the Platform.] |
 | **@fksm2003**      | [20.05.2025] | [-]                | [Joker]                         | [-]                                 |
 | **@fksm2003**      | [20.05.2025] | [-]                | [Joker]                         | [-]                                 |
 | **@itsmaxjeffrey** | [20.05.2025] | [-]                | [Joker]                         | [-]                                 |
