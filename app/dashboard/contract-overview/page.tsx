@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import styles from "./ProposalsOverview.module.css";
 import axios from "axios";
-import { message, Spin } from "antd";
+import { message } from "antd"; // Removed Spin
 import Link from "next/link";
 import {
   CalendarOutlined,
@@ -354,11 +354,7 @@ const ProposalsOverview = () => {
   const username = localStorage.getItem("username");
 
   if (loading) {
-    return (
-      <div className={styles.center}>
-        <Spin size="large" />
-      </div>
-    );
+    return null; // Changed: Removed Spin component, return null
   }
 
   const requesterRequestedContracts = requesterContracts.filter((c) =>

@@ -20,6 +20,7 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import { getApiDomain } from "@/utils/domain";
+import dayjs from "dayjs"; // Import dayjs
 
 const BASE_URL = getApiDomain();
 
@@ -69,6 +70,12 @@ const Requester = () => {
   const phoneNumber = Form.useWatch("phoneNumber", form);
 
   const username = Form.useWatch("username", form);
+
+  const [birthDateStatus, setBirthDateStatus] = useState<
+    "success" | "error" | undefined
+  >();
+  const [birthDateHelp, setBirthDateHelp] = useState<string | undefined>();
+  const birthDate = Form.useWatch("birthDate", form);
 
   useEffect(() => {
     const checkUsername = async () => {
@@ -155,6 +162,21 @@ const Requester = () => {
     };
     checkPhoneNumber();
   }, [phoneNumber]);
+
+  useEffect(() => {
+    if (birthDate) {
+      if (dayjs(birthDate).isAfter(dayjs(), "day")) {
+        setBirthDateStatus("error");
+        setBirthDateHelp("Birthdate cannot be in the future.");
+      } else {
+        setBirthDateStatus(undefined); // Or "success" if you want to show a success state
+        setBirthDateHelp(undefined);
+      }
+    } else {
+      setBirthDateStatus(undefined);
+      setBirthDateHelp(undefined);
+    }
+  }, [birthDate]);
 
   const uploadFile = async (file: File, type: string) => {
     const formData = new FormData();
@@ -283,8 +305,16 @@ const Requester = () => {
                   rules={[
                     { required: true, message: "Please select your birthdate" },
                   ]}
+                  validateStatus={birthDateStatus}
+                  help={birthDateHelp}
                 >
-                  <DatePicker style={{ width: "100%" }} />
+                  <DatePicker
+                    style={{ width: "100%" }}
+                    disabledDate={(current) => {
+                      // Can not select days after today
+                      return current && current > dayjs().endOf("day");
+                    }}
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>

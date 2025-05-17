@@ -11,7 +11,7 @@ import {
   message, // Import message
   Modal,
   Row,
-  Spin,
+  // Spin, // Spin import can be removed if no page-level spinner is used
   Switch,
   Upload, // Added Upload
 } from "antd";
@@ -36,9 +36,11 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [changed, setChanged] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [modalVisible, setModalVisible] = useState(true);
+  // fetchContractError: Stores the error message if fetching initial contract details fails.
+  const [fetchContractError, setFetchContractError] = useState<string | null>(
+    null,
+  );
+  // modalVisible state is removed. Modal visibility is now controlled by fetchContractError.
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
@@ -51,6 +53,8 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
   ]); // Ensure 3 slots, initialized to null
 
   const fetchContract = async () => {
+    // setIsLoadingContract(true); // Removed
+    setFetchContractError(null); // Reset any previous error message
     try {
       if (!proposalId) {
         throw new Error("Proposal ID is missing");
@@ -107,14 +111,16 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       setImagePaths(newImagePaths);
 
       // Reset error and modal states
-      setError(false);
-      setModalVisible(false);
+      // setError(false) and setModalVisible(false) are removed.
       setChanged(false);
-    } catch (error) {
+    } catch (error: any) { // Ensure error is typed if accessing properties like error.message
       console.error("Error fetching contract:", error);
-      setError(true);
+      setFetchContractError(
+        error.message ||
+          "Something went wrong while fetching the proposal details.",
+      ); // Set error message
     } finally {
-      setLoading(false);
+      // setIsLoadingContract(false); // Removed
     }
   };
 
@@ -148,7 +154,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proposalId]); // form removed from deps as per original, ensure this is intended
+  }, [proposalId]);
 
   const handleImageUpload = async (file: File, idx: number) => {
     const token = localStorage.getItem("token");
@@ -279,6 +285,9 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
   const isWithin72Hours = form.getFieldValue("moveDate")
     ? dayjs(form.getFieldValue("moveDate")).diff(dayjs(), "hour") < 72
     : false;
+
+  // No page-level loading spinner is rendered here.
+  // The page structure will be visible while isLoadingContract is true.
 
   return (
     <div className={styles.wrapper}>
@@ -525,40 +534,52 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
           </Row>
         </Form.Item>
       </Form>
-      <Modal open={modalVisible} footer={null} closable={false} centered>
+      {/* Modal: Now only for fetch errors */}
+      <Modal
+        open={!!fetchContractError} // Modal is open if there is an error message
+        footer={null}
+        closable={false} // Consider making closable true or providing explicit close in footer
+        centered
+        onCancel={() => {
+          setFetchContractError(null);
+          // Decide if navigating away is appropriate or allow user to stay on page
+          // router.push("/dashboard");
+        }}
+      >
         <div className={styles.registerCenter}>
-          {loading
-            ? (
-              <div style={{ padding: 64 }}>
-                <Spin size="large" />
-              </div>
-            )
-            : error
-            ? (
-              <div className={styles.registerError}>
-                <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-                <p>
-                  EditProposal: Something went wrong while fetching the proposal
-                  details.
-                </p>
-                <Row justify="center" gutter={16}>
-                  <Col>
-                    <Button
-                      type="primary"
-                      onClick={() => router.push("/dashboard/proposal/new")}
-                    >
-                      Create New
-                    </Button>
-                  </Col>
-                  <Col>
-                    <Button onClick={() => router.push("/dashboard")}>
-                      Back to Overview
-                    </Button>
-                  </Col>
-                </Row>
-              </div>
-            )
-            : null}
+          {/* Modal content is now only for error display */}
+          {/* No loading condition inside the modal */}
+          <div className={styles.registerError}>
+            <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
+            <p>
+              {/* Use the specific error message from fetchContractError */}
+              {fetchContractError ||
+                "Something went wrong while fetching the proposal details."}
+            </p>
+            <Row justify="center" gutter={16}>
+              <Col>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    setFetchContractError(null); // Clear error
+                    router.push("/dashboard/proposal/new");
+                  }}
+                >
+                  Create New
+                </Button>
+              </Col>
+              <Col>
+                <Button
+                  onClick={() => {
+                    setFetchContractError(null);
+                    router.push("/dashboard");
+                  }}
+                >
+                  Back to Overview
+                </Button>
+              </Col>
+            </Row>
+          </div>
         </div>
       </Modal>
       <Modal

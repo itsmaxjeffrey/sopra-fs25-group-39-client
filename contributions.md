@@ -226,8 +226,11 @@ understanding.
 
 | **Student**        | **Date**     | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | ------------ | ------------------ | ------------------------------- | ----------------------------------- |
-| **@ojg9**          | [date]       | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-| **@ojg9**          | [date]       | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **@ojg9**          | 17.05.2025       | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/01e250be9efb89e52626800a211b4fb7eb5236b1 | Implemented a fitting title for the DriverHomePage to indicate what the DriverMap is for. | Imporves the user experience and gives him more information about what the page is for. |
+| **@ojg9**          | 17.05.2025      | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/4ce6ad2f150892f832503fedf3a1800fb0373ce3 | Updated DatePicker in filter on DriverHomePage so that only Date can be selected without time | This imporves the user experience as the filter only sorts for the date and not the time anyways. |
+| **@ojg9**          | 17.05.2025       | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/a0d103695231c4d3d83b2cf53b9e2dbed9a0ead8 | Updated DatePicker and Location props to better describe what the fields are for. | This improves the user experience as it improves the descriptions of what the fields are for. |
+| **@ojg9**          | 17.05.2025       | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/db007cdb69473febf64b4bf885372f760640fe94, https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/bb991fc4d81e3dc9f0d2fcf59ad1f9faa51100ae | Got rid of Loading Spinner Modal on Proposal Pages. | Our TA said that the very short loading spinner modal that was displayed should either be extended or removed. We decided to remove them. |
+| **@ojg9**          | 17.05.2025       | https://github.com/itsmaxjeffrey/sopra-fs25-group-39-client/commit/a2583d4c49102028eb892edc42ada4edd0e55c5e | Updated the DatePicker so that it only allows to set BirthDates which are before on the current day or before. | Improved the user experience as it is no longer possible to select a invalid birthdate. |
 | **@xdecentralix**  | [date]       | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@xdecentralix**  | [date]       | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **@dariohug**      | [date]       | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |

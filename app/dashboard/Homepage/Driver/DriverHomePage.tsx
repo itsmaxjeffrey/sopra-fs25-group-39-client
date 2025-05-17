@@ -320,29 +320,34 @@ const HomePage = () => {
     fetchPendingOffers();
   }, []); // Runs once on mount
 
-  const mapContainerStyle = {
-    width: "100%",
-    height: "calc(100vh - 200px)", // Adjust height to leave space for lists below
-  };
-
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       <div
         style={{
           flexGrow: 1,
           position: "relative",
-          height: mapContainerStyle.height,
+          padding: "10px 20px",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        {/* Map Component */}
-        <DriverMap
-          containerStyle={{ width: "100%", height: "100%" }} // Ensure map fills its container
-          filters={filters}
-          onCenterChanged={(lat, lng) => {
-            updateFilter("lat", lat);
-            updateFilter("lng", lng);
-          }}
-        />
+        {/* Title for the map */}
+        <Typography.Title
+          level={3}
+          style={{ textAlign: "left", marginBottom: "10px" }}
+        >
+          Find Available Contracts Near You
+        </Typography.Title>
+        <div style={{ flexGrow: 1, position: "relative", width: "100%" }}>
+          <DriverMap
+            containerStyle={{ width: "100%", height: "100%" }}
+            filters={filters}
+            onCenterChanged={(lat, lng) => {
+              updateFilter("lat", lat);
+              updateFilter("lng", lng);
+            }}
+          />
+        </div>
       </div>
 
       {/* Button to open filter settings drawer (Floating Action Button) */}
@@ -354,16 +359,16 @@ const HomePage = () => {
           size="large"
           style={{
             position: "fixed",
-            top: 80, // Adjusted position slightly lower
+            top: 80,
             right: 20,
-            zIndex: 1000, // Ensure it's above map controls
+            zIndex: 1000,
             width: "64px",
             height: "64px",
             fontSize: "20px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "black", // Consider theme color
+            backgroundColor: "black",
             border: "none",
             boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
           }}
@@ -376,23 +381,19 @@ const HomePage = () => {
         title="Edit Filters"
         placement="right"
         open={visible}
-        maskClosable={true} // Allow closing by clicking outside
-        keyboard={true} // Allow closing with Esc key
-        onClose={() => setVisible(false)} // Close drawer without applying filters implicitly
-        width={350} // Adjust width as needed
+        maskClosable={true}
+        keyboard={true}
+        onClose={() => setVisible(false)}
+        width={350}
         footer={
-          // Add footer for explicit actions
-
-
-            <div style={{ textAlign: "right" }}>
-              <Button onClick={undoFilter} style={{ marginRight: 8 }}>
-                Reset Filters
-              </Button>
-              <Button type="primary" onClick={applyFilter}>
-                Apply & Close
-              </Button>
-            </div>
-
+          <div style={{ textAlign: "right" }}>
+            <Button onClick={undoFilter} style={{ marginRight: 8 }}>
+              Reset Filters
+            </Button>
+            <Button type="primary" onClick={applyFilter}>
+              Apply & Close
+            </Button>
+          </div>
         }
       >
         {/* Filter controls - Consider using Form component for better structure */}
@@ -496,8 +497,7 @@ const HomePage = () => {
               value={filters.moveDateTime}
               onChange={(date) => updateFilter("moveDateTime", date)}
               style={{ width: "100%" }}
-              showTime // Allow selecting time as well if needed
-              format="YYYY-MM-DD HH:mm" // Adjust format
+              format="YYYY-MM-DD"
             />
           </div>
           <div

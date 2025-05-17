@@ -2,7 +2,6 @@ import "@ant-design/v5-patch-for-react-19";
 import React, { useEffect, useState } from "react";
 import styles from "./components/ProposalsOverview.module.css";
 import axios from "axios";
-import { Spin } from "antd";
 import Link from "next/link";
 import {
   CalendarOutlined,
@@ -109,11 +108,7 @@ const ProposalsOverview = () => {
   const username = localStorage.getItem("username");
 
   if (loading) {
-    return (
-      <div className={styles.center}>
-        <Spin size="large" />
-      </div>
-    );
+    return null;
   }
 
   return (

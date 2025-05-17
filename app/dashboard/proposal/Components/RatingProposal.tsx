@@ -9,7 +9,6 @@ import {
   Input,
   message,
   Rate,
-  Spin,
   Switch,
 } from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
@@ -101,11 +100,7 @@ const RatingProposal = ({ proposalId }: Props) => {
   }, [proposalId]);
 
   if (loading) {
-    return (
-      <div className={styles.registerCenter} style={{ padding: 64 }}>
-        <Spin size="large" />
-      </div>
-    );
+    return null;
   }
 
   if (error || !contractData) {
