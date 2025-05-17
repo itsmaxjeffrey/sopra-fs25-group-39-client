@@ -24,6 +24,7 @@ import axios from "axios";
 import styles from "../login.module.css";
 import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
 import { getApiDomain } from "@/utils/domain";
+import dayjs from "dayjs"; // Import dayjs
 
 interface StepOneData {
   firstName: string;
@@ -161,6 +162,7 @@ const Driver = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [preferredRange, setPreferredRange] = useState<number | null>(null);
   const [formStepTwo] = Form.useForm();
+  const [formStepOne] = Form.useForm<StepOneData>(); // Create form instance for Step 1
 
   // Username availability check states and function
   const [usernameStatus, setUsernameStatus] = useState<
@@ -256,6 +258,28 @@ const Driver = () => {
       setPhoneNumberHelp("Could not check phone number. Try again.");
     }
   };
+
+  // Birthdate validation
+  const birthDate = Form.useWatch("birthDate", formStepOne);
+  const [birthDateStatus, setBirthDateStatus] = useState<
+    "" | "success" | "error"
+  >("");
+  const [birthDateHelp, setBirthDateHelp] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (birthDate) {
+      if (dayjs(birthDate).isAfter(dayjs(), "day")) {
+        setBirthDateStatus("error");
+        setBirthDateHelp("Birthdate cannot be in the future.");
+      } else {
+        setBirthDateStatus(""); // Or "success"
+        setBirthDateHelp(null);
+      }
+    } else {
+      setBirthDateStatus("");
+      setBirthDateHelp(null);
+    }
+  }, [birthDate]);
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -542,7 +566,11 @@ const Driver = () => {
   return (
     <div className={styles.driverContainer}>
       {step === 1 && (
-        <Form layout="vertical" onFinish={handleStepOneFinish}>
+        <Form
+          form={formStepOne} // Pass form instance to Step 1 Form
+          layout="vertical"
+          onFinish={handleStepOneFinish}
+        >
           <div className={styles.formSection}>
             <Row gutter={16}>
               <Col span={12}>
@@ -604,8 +632,16 @@ const Driver = () => {
                       message: "Please select your birthdate",
                     },
                   ]}
+                  validateStatus={birthDateStatus}
+                  help={birthDateHelp}
                 >
-                  <DatePicker style={{ width: "100%" }} />
+                  <DatePicker
+                    style={{ width: "100%" }}
+                    disabledDate={(current) => {
+                      // Can not select days after today
+                      return current && current > dayjs().endOf("day");
+                    }}
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>

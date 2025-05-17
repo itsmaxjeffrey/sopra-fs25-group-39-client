@@ -276,6 +276,10 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
                 birthDate: date?.format("YYYY-MM-DD"),
               });
             }}
+            disabledDate={(current) => {
+              // Can not select days after today
+              return current && current > dayjs().endOf("day");
+            }}
           />
         </div>
         <div>
