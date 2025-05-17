@@ -325,20 +325,19 @@ const HomePage = () => {
       <div
         style={{
           flexGrow: 1,
-          position: "relative", // Keep for potential children like the filter button
-          padding: "10px 20px", // Retain padding for this section
-          display: "flex", // Added: Make this a flex container
-          flexDirection: "column", // Added: Arrange title and map vertically
+          position: "relative", 
+          padding: "10px 20px", 
+          display: "flex", 
+          flexDirection: "column", 
         }}
       >
         {/* Title for the map */}
-        <Typography.Title level={3} style={{ textAlign: "left", marginBottom: "10px" }}> {/* Changed: Align left */}
+        <Typography.Title level={3} style={{ textAlign: "left", marginBottom: "10px" }}> 
           Find Available Contracts Near You
         </Typography.Title>
-        {/* New wrapper for Map Component to handle flex sizing */}
-        <div style={{ flexGrow: 1, position: "relative", width: "100%" }}> {/* Added: Map wrapper takes remaining space */}
+        <div style={{ flexGrow: 1, position: "relative", width: "100%" }}> 
           <DriverMap
-            containerStyle={{ width: "100%", height: "100%" }} // Ensure map fills its new wrapper
+            containerStyle={{ width: "100%", height: "100%" }} 
             filters={filters}
             onCenterChanged={(lat, lng) => {
               updateFilter("lat", lat);
@@ -357,16 +356,16 @@ const HomePage = () => {
           size="large"
           style={{
             position: "fixed",
-            top: 80, // Adjusted position slightly lower
+            top: 80, 
             right: 20,
-            zIndex: 1000, // Ensure it's above map controls
+            zIndex: 1000, 
             width: "64px",
             height: "64px",
             fontSize: "20px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "black", // Consider theme color
+            backgroundColor: "black", 
             border: "none",
             boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
           }}
@@ -379,12 +378,12 @@ const HomePage = () => {
         title="Edit Filters"
         placement="right"
         open={visible}
-        maskClosable={true} // Allow closing by clicking outside
-        keyboard={true} // Allow closing with Esc key
-        onClose={() => setVisible(false)} // Close drawer without applying filters implicitly
-        width={350} // Adjust width as needed
+        maskClosable={true} 
+        keyboard={true} 
+        onClose={() => setVisible(false)} 
+        width={350} 
         footer={
-          // Add footer for explicit actions
+         
 
 
             <div style={{ textAlign: "right" }}>
@@ -499,8 +498,7 @@ const HomePage = () => {
               value={filters.moveDateTime}
               onChange={(date) => updateFilter("moveDateTime", date)}
               style={{ width: "100%" }}
-              showTime // Allow selecting time as well if needed
-              format="YYYY-MM-DD HH:mm" // Adjust format
+              format="YYYY-MM-DD" 
             />
           </div>
           <div
