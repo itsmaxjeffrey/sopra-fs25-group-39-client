@@ -127,6 +127,13 @@ const Sidebar = ({ accountType }: { accountType: string | null }) => {
           >
             <Link href="/dashboard/account">Profile Settings</Link>
           </li>
+          <li
+            className={`${styles.navItem} ${
+              pathname === "/dashboard/faq" ? styles.active : ""
+            }`}
+          >
+            <Link href="/dashboard/faq">FAQ</Link>
+          </li>
         </ul>
       </nav>
 

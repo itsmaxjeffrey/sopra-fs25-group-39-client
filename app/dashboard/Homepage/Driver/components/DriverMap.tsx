@@ -398,7 +398,7 @@ const DriverMap: React.FC<DriverMapProps> = (
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchContracts();
-    }, 30000); // Fetch every 30 seconds
+    }, 5000); // Fetch every 5 seconds
 
     // Set up timeout to stop polling after 5 minutes
     const timeoutId = setTimeout(() => {
