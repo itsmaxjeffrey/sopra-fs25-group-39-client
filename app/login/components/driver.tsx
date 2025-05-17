@@ -394,20 +394,58 @@ const Driver = () => {
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Weight Capacity"
+                label="Weight Capacity (in kg)"
                 name="weightCapacity"
-                rules={[{ required: true }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the weight capacity",
+                  },
+                  {
+                    pattern: /^\d+$/,
+                    message: "Weight capacity must be a positive number",
+                  },
+                  {
+                    validator: (_, value) => {
+                      if (value && (value < 0 || value > 5000)) {
+                        return Promise.reject(
+                          new Error("Weight capacity must be between 0 and 5000 kg"),
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
               >
-                <Input placeholder="5 Tons" />
+                <Input placeholder="e.g., 100" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Volume Capacity"
+                label="Volume Capacity in m³"
                 name="volumeCapacity"
-                rules={[{ required: true }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the volume capacity (in m³)",
+                  },
+                  {
+                    pattern: /^\d+$/,
+                    message: "Volume capacity must be a positive number",
+                  },
+                  {
+                    validator: (_, value) => {
+                      if (value && (value < 0 || value > 100)) {
+                        return Promise.reject(
+                          new Error("Volume capacity must be between 0 and 100 cubic meters"),
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
               >
-                <Input placeholder="15 Cubic" />
+                <Input placeholder="e.g., 15" />
               </Form.Item>
             </Col>
             <Col span={12}>
