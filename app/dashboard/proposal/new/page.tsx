@@ -275,7 +275,7 @@ const NewProposalFormPage = () => {
         <Row gutter={16}>
           <Col span={8}>
             <Form.Item
-              label="Moving Date"
+              label="Moving Date and Time"
               name="moveDate"
               rules={[{ required: true, message: "Please select a move date" }]}
             >
@@ -284,7 +284,8 @@ const NewProposalFormPage = () => {
                 showTime={{ format: "HH:mm", showSecond: false }}
                 disabledDate={(current) =>
                   current && current < dayjs().startOf("minute")}
-              />
+                placeholder="Select Date and Time"
+            />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -309,7 +310,7 @@ const NewProposalFormPage = () => {
                 }}
               >
                 <Form.Item name="from" noStyle>
-                  <Input placeholder="Start typing..." />
+                  <Input placeholder="Enter Your Pick-Up Location" />
                 </Form.Item>
               </Autocomplete>
             </Form.Item>
@@ -336,7 +337,7 @@ const NewProposalFormPage = () => {
                 }}
               >
                 <Form.Item name="to" noStyle>
-                  <Input placeholder="Start typing..." />
+                  <Input placeholder="Enter Your Drop-Off Location" />
                 </Form.Item>
               </Autocomplete>
             </Form.Item>
