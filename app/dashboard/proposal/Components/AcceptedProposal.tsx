@@ -1,15 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Button,
-  Col,
-  DatePicker,
-  Form,
-  Image,
-  Input,
-  Modal,
-  Row,
-} from "antd";
+import { Button, Col, DatePicker, Form, Image, Input, Modal, Row } from "antd";
 import { CameraOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styles from "./Edit.module.css";
 import { useRouter } from "next/navigation";
@@ -72,10 +63,10 @@ interface Props {
 const AcceptedProposal = ({ proposalId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
-  // isLoadingContract: Tracks loading state for the main contract details. No visual spinner will be tied to this.
-  const [isLoadingContract, setIsLoadingContract] = useState(true);
   // fetchContractError: Stores the error message if fetching contract details fails.
-  const [fetchContractError, setFetchContractError] = useState<string | null>(null);
+  const [fetchContractError, setFetchContractError] = useState<string | null>(
+    null,
+  );
   // modalVisible state is removed. Modal visibility is now controlled by fetchContractError.
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
@@ -90,7 +81,6 @@ const AcceptedProposal = ({ proposalId }: Props) => {
   const BASE_URL = getApiDomain();
 
   const fetchContract = async () => {
-    setIsLoadingContract(true);
     setFetchContractError(null); // Reset any previous error message
     try {
       const token = localStorage.getItem("token") || "";
@@ -98,7 +88,6 @@ const AcceptedProposal = ({ proposalId }: Props) => {
 
       if (!token || !userId) {
         setFetchContractError("Authentication details missing."); // Set error message
-        setIsLoadingContract(false);
         console.error("Authentication details missing.");
         return;
       }
@@ -150,9 +139,10 @@ const AcceptedProposal = ({ proposalId }: Props) => {
       // setError(false) and setModalVisible(false) are removed.
     } catch (err: any) {
       console.error("Error fetching contract details:", err);
-      setFetchContractError(err.message || "Something went wrong while fetching the proposal details."); // Set error message
-    } finally {
-      setIsLoadingContract(false);
+      setFetchContractError(
+        err.message ||
+          "Something went wrong while fetching the proposal details.",
+      ); // Set error message
     }
   };
 
@@ -195,16 +185,16 @@ const AcceptedProposal = ({ proposalId }: Props) => {
     const loadData = async () => {
       await fetchContract();
       // console.log("After fetchContract, error state:", fetchContractError);
-      if (!fetchContractError) {
+      if (!fetchContractError) { // Check if fetchContractError is null before fetching driver info
         console.log("Calling fetchDriverInfo");
         await fetchDriverInfo();
       }
     };
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proposalId, fetchContractError]); // Depends on fetchContractError to potentially re-fetch driver info if error is cleared.
+  }, [proposalId]); // Removed fetchContractError from dependency array as it's handled internally
 
-  // No page-level loading spinner is rendered here. 
+  // No page-level loading spinner is rendered here.
   // The page structure will be visible while isLoadingContract is true.
 
   return (
@@ -425,15 +415,15 @@ const AcceptedProposal = ({ proposalId }: Props) => {
         )}
       </Form>
       {/* Modal for displaying fetch errors for the main contract */}
-      <Modal 
+      <Modal
         open={!!fetchContractError} // Modal is open if there is an error message
-        footer={null} 
+        footer={null}
         closable={false} // Consider making closable true or providing explicit close in footer
         centered
-        onCancel={() => { 
-          setFetchContractError(null); 
+        onCancel={() => {
+          setFetchContractError(null);
           // Decide if navigating away is appropriate or allow user to stay on page
-          // router.push("/dashboard"); 
+          // router.push("/dashboard");
         }}
       >
         <div className={styles.registerCenter}>
@@ -442,7 +432,8 @@ const AcceptedProposal = ({ proposalId }: Props) => {
           <div className={styles.registerError}>
             <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
             <p>
-              {fetchContractError || "Something went wrong while fetching the proposal details."}
+              {fetchContractError ||
+                "Something went wrong while fetching the proposal details."}
             </p>
             <Row justify="center" gutter={16}>
               <Col>
@@ -457,7 +448,12 @@ const AcceptedProposal = ({ proposalId }: Props) => {
                 </Button>
               </Col>
               <Col>
-                <Button onClick={() => { setFetchContractError(null); router.push("/dashboard"); }}>
+                <Button
+                  onClick={() => {
+                    setFetchContractError(null);
+                    router.push("/dashboard");
+                  }}
+                >
                   Back to Overview
                 </Button>
               </Col>

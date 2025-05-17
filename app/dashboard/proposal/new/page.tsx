@@ -290,7 +290,7 @@ const NewProposalFormPage = () => {
                 disabledDate={(current) =>
                   current && current < dayjs().startOf("minute")}
                 placeholder="Select Date and Time"
-            />
+              />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -478,10 +478,11 @@ const NewProposalFormPage = () => {
         </Form.Item>
       </Form>
       {/* Modal: Now only for success or error */}
-      <Modal 
-        open={modalVisible && (modalState === "success" || modalState === "error")} 
-        footer={null} 
-        closable={false} 
+      <Modal
+        open={modalVisible &&
+          (modalState === "success" || modalState === "error")}
+        footer={null}
+        closable={false}
         centered
         onCancel={() => { // Define onCancel behavior if needed, e.g., for error modal
           setModalVisible(false);
@@ -496,7 +497,14 @@ const NewProposalFormPage = () => {
                 style={{ fontSize: 48, color: "green", marginBottom: "20px" }}
               />
               <p>Proposal successfully created!</p>
-              <Button type="primary" onClick={() => { setModalVisible(false); setModalState(null); router.push("/dashboard");}}>
+              <Button
+                type="primary"
+                onClick={() => {
+                  setModalVisible(false);
+                  setModalState(null);
+                  router.push("/dashboard");
+                }}
+              >
                 Great!
               </Button>
             </div>
@@ -510,7 +518,14 @@ const NewProposalFormPage = () => {
                 {errorMessage ||
                   "Something went wrong while creating your proposal."}
               </p>
-              <Button onClick={() => { setModalVisible(false); setModalState(null); }}>OK</Button>
+              <Button
+                onClick={() => {
+                  setModalVisible(false);
+                  setModalState(null);
+                }}
+              >
+                OK
+              </Button>
             </div>
           )}
         </div>

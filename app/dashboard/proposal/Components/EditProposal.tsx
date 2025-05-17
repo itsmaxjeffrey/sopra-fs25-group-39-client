@@ -36,10 +36,10 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [changed, setChanged] = useState(false);
-  // isLoadingContract: Tracks loading state for the initial contract details. No visual spinner will be tied to this.
-  const [isLoadingContract, setIsLoadingContract] = useState(true);
   // fetchContractError: Stores the error message if fetching initial contract details fails.
-  const [fetchContractError, setFetchContractError] = useState<string | null>(null);
+  const [fetchContractError, setFetchContractError] = useState<string | null>(
+    null,
+  );
   // modalVisible state is removed. Modal visibility is now controlled by fetchContractError.
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
@@ -53,7 +53,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
   ]); // Ensure 3 slots, initialized to null
 
   const fetchContract = async () => {
-    setIsLoadingContract(true);
+    // setIsLoadingContract(true); // Removed
     setFetchContractError(null); // Reset any previous error message
     try {
       if (!proposalId) {
@@ -115,9 +115,12 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       setChanged(false);
     } catch (error: any) { // Ensure error is typed if accessing properties like error.message
       console.error("Error fetching contract:", error);
-      setFetchContractError(error.message || "Something went wrong while fetching the proposal details."); // Set error message
+      setFetchContractError(
+        error.message ||
+          "Something went wrong while fetching the proposal details.",
+      ); // Set error message
     } finally {
-      setIsLoadingContract(false);
+      // setIsLoadingContract(false); // Removed
     }
   };
 
@@ -151,7 +154,7 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
   useEffect(() => {
     fetchContract();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proposalId]); 
+  }, [proposalId]);
 
   const handleImageUpload = async (file: File, idx: number) => {
     const token = localStorage.getItem("token");
@@ -532,15 +535,15 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
         </Form.Item>
       </Form>
       {/* Modal: Now only for fetch errors */}
-      <Modal 
+      <Modal
         open={!!fetchContractError} // Modal is open if there is an error message
-        footer={null} 
+        footer={null}
         closable={false} // Consider making closable true or providing explicit close in footer
         centered
-        onCancel={() => { 
-          setFetchContractError(null); 
+        onCancel={() => {
+          setFetchContractError(null);
           // Decide if navigating away is appropriate or allow user to stay on page
-          // router.push("/dashboard"); 
+          // router.push("/dashboard");
         }}
       >
         <div className={styles.registerCenter}>
@@ -550,7 +553,8 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
             <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
             <p>
               {/* Use the specific error message from fetchContractError */}
-              {fetchContractError || "Something went wrong while fetching the proposal details."}
+              {fetchContractError ||
+                "Something went wrong while fetching the proposal details."}
             </p>
             <Row justify="center" gutter={16}>
               <Col>
@@ -565,7 +569,12 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
                 </Button>
               </Col>
               <Col>
-                <Button onClick={() => { setFetchContractError(null); router.push("/dashboard"); }}>
+                <Button
+                  onClick={() => {
+                    setFetchContractError(null);
+                    router.push("/dashboard");
+                  }}
+                >
                   Back to Overview
                 </Button>
               </Col>

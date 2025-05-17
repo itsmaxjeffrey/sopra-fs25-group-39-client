@@ -30,8 +30,9 @@ interface Props {
 const ViewProposal = ({ proposalId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
-  const [isLoadingContract, setIsLoadingContract] = useState(true);
-  const [fetchContractError, setFetchContractError] = useState<string | null>(null);
+  const [fetchContractError, setFetchContractError] = useState<string | null>(
+    null,
+  );
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [toCoords, setToCoords] = useState({ address: "", lat: 0, lng: 0 });
   const [imagePaths, setImagePaths] = useState<string[]>([]);
@@ -40,7 +41,6 @@ const ViewProposal = ({ proposalId }: Props) => {
   const [isSubmittingOffer, setIsSubmittingOffer] = useState(false); // For "Accept Proposal" button loading
 
   const fetchContract = async () => {
-    setIsLoadingContract(true);
     setFetchContractError(null); // Reset any previous error message
     try {
       // console.log(`userId: ${userId}`);
@@ -125,10 +125,13 @@ const ViewProposal = ({ proposalId }: Props) => {
     } catch (err: any) {
       // setError(true) is removed.
       const backendMessage = err.response?.data?.message;
-      setFetchContractError(backendMessage || err.message || "An unknown error occurred while fetching contract details.");
+      setFetchContractError(
+        backendMessage || err.message ||
+          "An unknown error occurred while fetching contract details.",
+      );
       // Static Modal.error call is removed.
     } finally {
-      setIsLoadingContract(false);
+      // setIsLoadingContract(false); // Removed
     }
   };
 
@@ -413,7 +416,8 @@ const ViewProposal = ({ proposalId }: Props) => {
                       backgroundColor: "#52c41a",
                       borderColor: "#52c41a",
                     }}
-                    disabled={(contractStatus === "OFFERED" && hasUserOffered) || isSubmittingOffer}
+                    disabled={(contractStatus === "OFFERED" &&
+                      hasUserOffered) || isSubmittingOffer}
                     loading={isSubmittingOffer} // Button loading state
                     title={contractStatus === "OFFERED" && hasUserOffered
                       ? "You have already made an offer for this proposal."
@@ -439,43 +443,44 @@ const ViewProposal = ({ proposalId }: Props) => {
             )}
         </Form.Item>
       </Form>
-        {/* Modal: Now only for fetch errors */}
-        <Modal
-          open={!!fetchContractError} // Modal is open if there is an error message
-          footer={null}
-          closable={false} // Consider making closable true or providing explicit close in footer
-          centered
-          onCancel={() => {
-            setFetchContractError(null);
-            // Decide if navigating away is appropriate or allow user to stay on page
-            // router.push("/dashboard/contract-overview");
-          }}
-        >
-          <div className={styles.registerCenter}>
-            {/* Modal content is now only for error display */}
-            {/* No loading condition inside the modal */}
-            <div className={styles.registerError}>
-              <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
-              <p>
-                {/* Use the specific error message from fetchContractError */}
-                {fetchContractError || "Something went wrong while fetching the proposal details."}
-              </p>
-              <Row justify="center" gutter={16}>
-                <Col>
-                  <Button
-                    onClick={() => {
-                      setFetchContractError(null); // Clear error
-                      router.push("/dashboard/contract-overview");
-                    }}
-                  >
-                    Back to Overview
-                  </Button>
-                </Col>
-              </Row>
-            </div>
+      {/* Modal: Now only for fetch errors */}
+      <Modal
+        open={!!fetchContractError} // Modal is open if there is an error message
+        footer={null}
+        closable={false} // Consider making closable true or providing explicit close in footer
+        centered
+        onCancel={() => {
+          setFetchContractError(null);
+          // Decide if navigating away is appropriate or allow user to stay on page
+          // router.push("/dashboard/contract-overview");
+        }}
+      >
+        <div className={styles.registerCenter}>
+          {/* Modal content is now only for error display */}
+          {/* No loading condition inside the modal */}
+          <div className={styles.registerError}>
+            <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
+            <p>
+              {/* Use the specific error message from fetchContractError */}
+              {fetchContractError ||
+                "Something went wrong while fetching the proposal details."}
+            </p>
+            <Row justify="center" gutter={16}>
+              <Col>
+                <Button
+                  onClick={() => {
+                    setFetchContractError(null); // Clear error
+                    router.push("/dashboard/contract-overview");
+                  }}
+                >
+                  Back to Overview
+                </Button>
+              </Col>
+            </Row>
           </div>
-        </Modal>
-      </div>
+        </div>
+      </Modal>
+    </div>
   );
 };
 

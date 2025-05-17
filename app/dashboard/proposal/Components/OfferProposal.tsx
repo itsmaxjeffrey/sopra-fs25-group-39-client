@@ -32,8 +32,9 @@ interface Props {
 const OfferProposal = ({ proposalId }: Props) => {
   const router = useRouter();
   const [form] = Form.useForm();
-  const [isLoadingContract, setIsLoadingContract] = useState(true);
-  const [fetchContractError, setFetchContractError] = useState<string | null>(null);
+  const [fetchContractError, setFetchContractError] = useState<string | null>(
+    null,
+  );
   const fromRef = useRef<any>(null);
   const toRef = useRef<any>(null);
   const [fromCoords, setFromCoords] = useState({ address: "", lat: 0, lng: 0 });
@@ -127,7 +128,6 @@ const OfferProposal = ({ proposalId }: Props) => {
   };
 
   const fetchContract = useCallback(async () => {
-    setIsLoadingContract(true);
     setFetchContractError(null); // Reset any previous error message
     try {
       const res = await axios.get<{ contract: any }>(
@@ -172,9 +172,10 @@ const OfferProposal = ({ proposalId }: Props) => {
       setImagePaths(data.contractPhotos || []);
     } catch (err: any) {
       const backendMessage = err.response?.data?.message;
-      setFetchContractError(backendMessage || err.message || "An unknown error occurred while fetching contract details.");
-    } finally {
-      setIsLoadingContract(false);
+      setFetchContractError(
+        backendMessage || err.message ||
+          "An unknown error occurred while fetching contract details.",
+      );
     }
   }, [BASE_URL, form, proposalId]);
 
@@ -555,15 +556,15 @@ const OfferProposal = ({ proposalId }: Props) => {
         </Form.Item>
       </Form>
       {/* Modal: Now only for fetch errors of the main contract */}
-      <Modal 
+      <Modal
         open={!!fetchContractError} // Modal is open if there is an error message
-        footer={null} 
+        footer={null}
         closable={false} // Consider making closable true or providing explicit close in footer
         centered
-        onCancel={() => { 
-          setFetchContractError(null); 
+        onCancel={() => {
+          setFetchContractError(null);
           // Decide if navigating away is appropriate or allow user to stay on page
-          // router.push("/dashboard"); 
+          // router.push("/dashboard");
         }}
       >
         <div className={styles.registerCenter}>
@@ -573,7 +574,8 @@ const OfferProposal = ({ proposalId }: Props) => {
             <CloseCircleOutlined style={{ fontSize: 48, color: "red" }} />
             <p>
               {/* Use the specific error message from fetchContractError */}
-              {fetchContractError || "Something went wrong while fetching the proposal details."}
+              {fetchContractError ||
+                "Something went wrong while fetching the proposal details."}
             </p>
             <Row justify="center" gutter={16}>
               <Col>
@@ -588,7 +590,12 @@ const OfferProposal = ({ proposalId }: Props) => {
                 </Button>
               </Col>
               <Col>
-                <Button onClick={() => { setFetchContractError(null); router.push("/dashboard"); }}>
+                <Button
+                  onClick={() => {
+                    setFetchContractError(null);
+                    router.push("/dashboard");
+                  }}
+                >
                   Back to Overview
                 </Button>
               </Col>

@@ -325,19 +325,22 @@ const HomePage = () => {
       <div
         style={{
           flexGrow: 1,
-          position: "relative", 
-          padding: "10px 20px", 
-          display: "flex", 
-          flexDirection: "column", 
+          position: "relative",
+          padding: "10px 20px",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         {/* Title for the map */}
-        <Typography.Title level={3} style={{ textAlign: "left", marginBottom: "10px" }}> 
+        <Typography.Title
+          level={3}
+          style={{ textAlign: "left", marginBottom: "10px" }}
+        >
           Find Available Contracts Near You
         </Typography.Title>
-        <div style={{ flexGrow: 1, position: "relative", width: "100%" }}> 
+        <div style={{ flexGrow: 1, position: "relative", width: "100%" }}>
           <DriverMap
-            containerStyle={{ width: "100%", height: "100%" }} 
+            containerStyle={{ width: "100%", height: "100%" }}
             filters={filters}
             onCenterChanged={(lat, lng) => {
               updateFilter("lat", lat);
@@ -356,16 +359,16 @@ const HomePage = () => {
           size="large"
           style={{
             position: "fixed",
-            top: 80, 
+            top: 80,
             right: 20,
-            zIndex: 1000, 
+            zIndex: 1000,
             width: "64px",
             height: "64px",
             fontSize: "20px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "black", 
+            backgroundColor: "black",
             border: "none",
             boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
           }}
@@ -378,23 +381,19 @@ const HomePage = () => {
         title="Edit Filters"
         placement="right"
         open={visible}
-        maskClosable={true} 
-        keyboard={true} 
-        onClose={() => setVisible(false)} 
-        width={350} 
+        maskClosable={true}
+        keyboard={true}
+        onClose={() => setVisible(false)}
+        width={350}
         footer={
-         
-
-
-            <div style={{ textAlign: "right" }}>
-              <Button onClick={undoFilter} style={{ marginRight: 8 }}>
-                Reset Filters
-              </Button>
-              <Button type="primary" onClick={applyFilter}>
-                Apply & Close
-              </Button>
-            </div>
-
+          <div style={{ textAlign: "right" }}>
+            <Button onClick={undoFilter} style={{ marginRight: 8 }}>
+              Reset Filters
+            </Button>
+            <Button type="primary" onClick={applyFilter}>
+              Apply & Close
+            </Button>
+          </div>
         }
       >
         {/* Filter controls - Consider using Form component for better structure */}
@@ -498,7 +497,7 @@ const HomePage = () => {
               value={filters.moveDateTime}
               onChange={(date) => updateFilter("moveDateTime", date)}
               style={{ width: "100%" }}
-              format="YYYY-MM-DD" 
+              format="YYYY-MM-DD"
             />
           </div>
           <div
