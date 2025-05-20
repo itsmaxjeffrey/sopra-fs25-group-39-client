@@ -347,35 +347,34 @@ const HomePage = () => {
               updateFilter("lng", lng);
             }}
           />
+          {/* Button to open filter settings drawer (Floating Action Button) */}
+          <Tooltip title="Filter Results">
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<FilterOutlined style={{ fontSize: "28px", color: "white" }} />}
+              size="large"
+              style={{
+                position: "absolute", 
+                top: 20,             
+                right: 20,            
+                zIndex: 1000,
+                width: "64px",
+                height: "64px",
+                fontSize: "20px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "black",
+                border: "none",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              }}
+              onClick={() =>
+                setVisible(true)}
+            />
+          </Tooltip>
         </div>
       </div>
-
-      {/* Button to open filter settings drawer (Floating Action Button) */}
-      <Tooltip title="Filter Results">
-        <Button
-          type="primary"
-          shape="circle"
-          icon={<FilterOutlined style={{ fontSize: "28px", color: "white" }} />}
-          size="large"
-          style={{
-            position: "fixed",
-            top: 80,
-            right: 20,
-            zIndex: 1000,
-            width: "64px",
-            height: "64px",
-            fontSize: "20px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "black",
-            border: "none",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-          }}
-          onClick={() =>
-            setVisible(true)}
-        />
-      </Tooltip>
 
       <Drawer
         title="Edit Filters"
