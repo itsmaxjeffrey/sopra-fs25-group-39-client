@@ -94,8 +94,8 @@ const FAQPage = () => {
                 </div>
                 <div className={styles.answer}>
                   Go to the map view, find a proposal that fits your route, and
-                  click &quot;Accept&quot;. The requester will then review and possibly
-                  confirm you.
+                  click &quot;Accept&quot;. The requester will then review and
+                  possibly confirm you.
                 </div>
               </div>
               <div className={styles.qaBox}>
@@ -126,8 +126,8 @@ const FAQPage = () => {
                   How do I create a new proposal?
                 </div>
                 <div className={styles.answer}>
-                  Click &quot;New Proposal&quot;, then fill in your pickup and drop-off
-                  points, item details, and your offered price.
+                  Click &quot;New Proposal&quot;, then fill in your pickup and
+                  drop-off points, item details, and your offered price.
                 </div>
               </div>
               <div className={styles.qaBox}>
@@ -135,8 +135,8 @@ const FAQPage = () => {
                   What happens after a driver accepts my proposal?
                 </div>
                 <div className={styles.answer}>
-                  You’ll see all interested drivers if you go to your pending offers. 
-                  Confirm the one you trust most.
+                  You’ll see all interested drivers if you go to your pending
+                  offers. Confirm the one you trust most.
                 </div>
               </div>
               <div className={styles.qaBox}>

@@ -406,46 +406,83 @@ filesystem. You can do this either by
 # Project Overview
 
 ## Introduction
-This project is a web-based platform developed as part of the Software Engineering Lab (SoPra) at the University of Zurich (UZH). The primary goal of the project is to streamline the collaboration between drivers and requesters for managing delivery contracts. By providing an intuitive interface, the platform ensures that users can create, manage, and track delivery proposals and contracts efficiently. The motivation behind this project is to address the challenges of transparency, communication, and efficiency in delivery management systems.
+
+This project is a web-based platform developed as part of the Software
+Engineering Lab (SoPra) at the University of Zurich (UZH). The primary goal of
+the project is to streamline the collaboration between drivers and requesters
+for managing delivery contracts. By providing an intuitive interface, the
+platform ensures that users can create, manage, and track delivery proposals and
+contracts efficiently. The motivation behind this project is to address the
+challenges of transparency, communication, and efficiency in delivery management
+systems.
 
 ## Technologies Used
-- **Frontend Framework**: [Next.js](https://nextjs.org/) for building the user interface.
+
+- **Frontend Framework**: [Next.js](https://nextjs.org/) for building the user
+  interface.
 - **Styling**: CSS Modules and Ant Design for consistent and responsive design.
 - **Backend Integration**: RESTful APIs for communication with the backend.
 - **State Management**: React Context API for managing global state.
-- **Development Tools**: Determinate Nix for environment setup, Docker for containerization.
+- **Development Tools**: Determinate Nix for environment setup, Docker for
+  containerization.
 
 ## High-Level Components
 
-1. **Dashboard**: The main interface for users to manage their profiles, contracts, and proposals. It serves as the central hub for both drivers and requesters. Key files:
-   - [Dashboard Layout](./app/dashboard/layout.tsx): Defines the overall structure of the dashboard.
-   - [Account Page](./app/dashboard/account/page.tsx): Allows users to view and edit their personal and vehicle information.
+1. **Dashboard**: The main interface for users to manage their profiles,
+   contracts, and proposals. It serves as the central hub for both drivers and
+   requesters. Key files:
+   - [Dashboard Layout](./app/dashboard/layout.tsx): Defines the overall
+     structure of the dashboard.
+   - [Account Page](./app/dashboard/account/page.tsx): Allows users to view and
+     edit their personal and vehicle information.
 
-2. **Sidebar**: Provides navigation across different sections of the application. It ensures a seamless user experience by allowing quick access to key features. Key file:
-   - [Sidebar Component](./app/components/sidebar/sidebar.tsx): Implements the navigation menu.
+2. **Sidebar**: Provides navigation across different sections of the
+   application. It ensures a seamless user experience by allowing quick access
+   to key features. Key file:
+   - [Sidebar Component](./app/components/sidebar/sidebar.tsx): Implements the
+     navigation menu.
 
-3. **Driver Map**: Displays real-time updates for drivers, including available proposals and ongoing contracts. This component is crucial for drivers to manage their tasks efficiently. Key file:
-   - [Driver Map](./app/dashboard/Homepage/Driver/components/DriverMap.tsx): Handles map rendering and updates.
+3. **Driver Map**: Displays real-time updates for drivers, including available
+   proposals and ongoing contracts. This component is crucial for drivers to
+   manage their tasks efficiently. Key file:
+   - [Driver Map](./app/dashboard/Homepage/Driver/components/DriverMap.tsx):
+     Handles map rendering and updates.
 
-4. **Proposal Management**: Handles the creation, editing, and viewing of proposals. This component is essential for requesters to communicate their delivery needs and for drivers to accept tasks. Key files:
-   - [New Proposal Page](./app/dashboard/proposal/new/page.tsx): Allows requesters to create new proposals.
-   - [Edit Proposal Component](./app/dashboard/proposal/Components/EditProposal.tsx): Enables editing of existing proposals.
-   - [View Proposal Component](./app/dashboard/proposal/Components/ViewProposal.tsx): Displays detailed information about a proposal.
+4. **Proposal Management**: Handles the creation, editing, and viewing of
+   proposals. This component is essential for requesters to communicate their
+   delivery needs and for drivers to accept tasks. Key files:
+   - [New Proposal Page](./app/dashboard/proposal/new/page.tsx): Allows
+     requesters to create new proposals.
+   - [Edit Proposal Component](./app/dashboard/proposal/Components/EditProposal.tsx):
+     Enables editing of existing proposals.
+   - [View Proposal Component](./app/dashboard/proposal/Components/ViewProposal.tsx):
+     Displays detailed information about a proposal.
 
-5. **FAQ Page**: Provides answers to frequently asked questions, tailored to the user's role (Driver or Requester). This component helps users quickly find solutions to common issues. Key file:
+5. **FAQ Page**: Provides answers to frequently asked questions, tailored to the
+   user's role (Driver or Requester). This component helps users quickly find
+   solutions to common issues. Key file:
    - [FAQ Page](./app/dashboard/faq/page.tsx): Implements the FAQ interface.
 
-6. **Login System**: Manages user authentication and role-based access. This component ensures secure access to the platform. Key files:
+6. **Login System**: Manages user authentication and role-based access. This
+   component ensures secure access to the platform. Key files:
    - [Login Page](./app/login/page.tsx): The main login interface.
-   - [Driver Login Component](./app/login/components/driver.tsx): Handles driver-specific login logic.
-   - [Requester Login Component](./app/login/components/requester.tsx): Handles requester-specific login logic.
+   - [Driver Login Component](./app/login/components/driver.tsx): Handles
+     driver-specific login logic.
+   - [Requester Login Component](./app/login/components/requester.tsx): Handles
+     requester-specific login logic.
 
-7. **Ratings System**: Allows users to rate and review completed contracts. This component fosters trust and accountability between drivers and requesters. Key files:
-   - [Rating Proposal Component](./app/dashboard/proposal/Components/RatingProposal.tsx): Enables users to submit ratings.
-   - [Ratings Page](./app/dashboard/ratings/[id]/page.tsx): Displays ratings for a specific user or contract.
+7. **Ratings System**: Allows users to rate and review completed contracts. This
+   component fosters trust and accountability between drivers and requesters.
+   Key files:
+   - [Rating Proposal Component](./app/dashboard/proposal/Components/RatingProposal.tsx):
+     Enables users to submit ratings.
+   - [Ratings Page](./app/dashboard/ratings/[id]/page.tsx): Displays ratings for
+     a specific user or contract.
 
 ## Launch & Deployment
+
 ### Local Development
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/YOUR_USERNAME/YOUR-CLIENT-REPO
@@ -469,6 +506,7 @@ This project is a web-based platform developed as part of the Software Engineeri
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Deployment
+
 1. Build the production application to make sure its properly running:
    ```bash
    deno task build
@@ -477,63 +515,70 @@ This project is a web-based platform developed as part of the Software Engineeri
    ```bash
    git checkout main
    git add .
-   git push 
+   git push
    ```
 3. For Docker deployment, follow the steps in the Docker section above.
 
 ## Illustrations
+
 ### User Flow
+
 1. **Requester**:
-   1. **Home Screen Overview**:  
-      Provides the user with a quick overview of the most important information.  
+   1. **Home Screen Overview**:\
+      Provides the user with a quick overview of the most important
+      information.\
       ![Home Screen Overview](./readme_illustrations/requester_home_screen_overview.png)
-   2. **Create New Proposal**:  
-      Allows Requesters to create a new proposal.  
+   2. **Create New Proposal**:\
+      Allows Requesters to create a new proposal.\
       ![Create New Proposal](./readme_illustrations/requester_create_new_proposal.png)
-   3. **Account Overview**:  
-      Enables Requesters to view and edit their account details.  
+   3. **Account Overview**:\
+      Enables Requesters to view and edit their account details.\
       ![Account Overview](./readme_illustrations/requester_account_overview.png)
-   4. **Requester FAQ**:  
-      Offers guidance to Requesters on how to use the web application.  
+   4. **Requester FAQ**:\
+      Offers guidance to Requesters on how to use the web application.\
       ![Requester FAQ](./readme_illustrations/requester_faq.png)
 2. **Driver**:
-   1. **View Available Proposals**:  
-      Allows Drivers to browse and view proposals available in the map.  
+   1. **View Available Proposals**:\
+      Allows Drivers to browse and view proposals available in the map.\
       ![View Available Proposals](./readme_illustrations/driver_home_screen_map.png)
-   2. **Account Overview**:  
-      Enables Drivers manage and see their own account.  
+   2. **Account Overview**:\
+      Enables Drivers manage and see their own account.\
       ![Manage Driver Account](./readme_illustrations/driver_account_overview.png)
-   3. **Manage critical Account settings**:  
-      Lets Drivers Delete their account or change passwords.  
+   3. **Manage critical Account settings**:\
+      Lets Drivers Delete their account or change passwords.\
       ![Manage critical Account Settings](./readme_illustrations/driver_account_actions.png).png)
 
 ## Roadmap for further Improvements
+
 1. **Real-Time Notifications**: Implement email notifications for updates.
 2. **Enhanced Analytics**: Add a dashboard for tracking performance metrics.
 3. **In App chat function**: Let users chat in App.
 
 ## Authors and Acknowledgment
-This project was developed by the Software Engineering Lab team at the University of Zurich. Special thanks to our mentors and peers for their guidance and support.
+
+This project was developed by the Software Engineering Lab team at the
+University of Zurich. Special thanks to our mentors and peers for their guidance
+and support.
 
 ## License
+
 UZH License
 
 Copyright (c) [2025] [F. Kossmann, M. Jeffreys, F. Ritzi, O. Groener, D. Hug]
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

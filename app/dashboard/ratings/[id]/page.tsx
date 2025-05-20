@@ -2,7 +2,7 @@
 //probably best to create a new folder "ratings"
 //then insert this page at root/ratings/{userId}
 import React, { useEffect, useState } from "react";
-import { Button, Input, Rate, Result, Spin } from "antd"; 
+import { Button, Input, Rate, Result, Spin } from "antd";
 import { getApiDomain } from "@/utils/domain";
 import { useParams, useRouter } from "next/navigation";
 // Removed unused import 'parseAppSegmentConfig'

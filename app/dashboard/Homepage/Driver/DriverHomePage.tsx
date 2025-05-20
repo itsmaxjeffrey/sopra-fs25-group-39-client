@@ -352,12 +352,14 @@ const HomePage = () => {
             <Button
               type="primary"
               shape="circle"
-              icon={<FilterOutlined style={{ fontSize: "28px", color: "white" }} />}
+              icon={
+                <FilterOutlined style={{ fontSize: "28px", color: "white" }} />
+              }
               size="large"
               style={{
-                position: "absolute", 
-                top: 20,             
-                right: 20,            
+                position: "absolute",
+                top: 20,
+                right: 20,
                 zIndex: 1000,
                 width: "64px",
                 height: "64px",
