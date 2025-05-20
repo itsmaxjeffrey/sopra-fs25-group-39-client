@@ -2,7 +2,7 @@
 //probably best to create a new folder "ratings"
 //then insert this page at root/ratings/{userId}
 import React, { useEffect, useState } from "react";
-import { Button, Image, Input, Rate, Result, Spin } from "antd"; // Removed unused 'message'
+import { Button, Input, Rate, Result, Spin } from "antd"; 
 import { getApiDomain } from "@/utils/domain";
 import { useParams, useRouter } from "next/navigation";
 // Removed unused import 'parseAppSegmentConfig'
@@ -341,24 +341,6 @@ const RatingPage: React.FC = () => {
         >
           {user?.username || "Rater (Unknown)"}&apos;s Rating
         </h1>
-
-        {/* Image container - conditionally rendered */}
-        {user?.profilePicturePath && (
-          <div style={{ textAlign: "center", marginBottom: "24px" }}>
-            <Image
-              src={`${BASE_URL}/api/v1/files/download?filePath=${user.profilePicturePath}`}
-              alt={`${user?.username || "Rater"}'s Profile`}
-              style={{
-                borderRadius: "50%",
-                width: "120px",
-                height: "120px",
-                objectFit: "cover",
-                border: "3px solid #eee",
-              }}
-              preview={false}
-            />
-          </div>
-        )}
 
         {/* Rated Driver Name - will be centered */}
         <h2
