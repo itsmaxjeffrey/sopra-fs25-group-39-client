@@ -280,12 +280,6 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
       );
     }
   };
-
-  // Disable cancel button if moveDate is within 72 hours from now
-  const isWithin72Hours = form.getFieldValue("moveDate")
-    ? dayjs(form.getFieldValue("moveDate")).diff(dayjs(), "hour") < 72
-    : false;
-
   // No page-level loading spinner is rendered here.
   // The page structure will be visible while isLoadingContract is true.
 
@@ -526,7 +520,6 @@ const EditProposalFormPage = ({ proposalId }: Props) => {
                 danger
                 type="primary"
                 onClick={() => setIsCancelModalOpen(true)}
-                disabled={isWithin72Hours}
               >
                 Cancel Proposal
               </Button>
