@@ -19,7 +19,7 @@ const FAQPage = () => {
         <h1>Frequently Asked Questions</h1>
         <p>
           <InfoCircleOutlined /> This platform connects people who need to
-          <strong>shift items</strong>{" "}
+          <strong> shift items</strong>{" "}
           (like furniture) with drivers who have the right vehicle. We{" "}
           <strong>do not handle payments</strong>{" "}
           – phone numbers are swaped so both parties can connect directly.
