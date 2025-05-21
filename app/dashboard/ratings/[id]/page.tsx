@@ -183,7 +183,7 @@ const RatingPage: React.FC = () => {
         const responseData = await ratingResponse.json();
         // According to the log, the rating object is nested
         const fetchedRatingData: Rating = responseData.rating;
-        console.log("Fetched Rating Data (actual):", fetchedRatingData);
+        // console.log("Fetched Rating Data (actual):", fetchedRatingData);
 
         if (!fetchedRatingData || typeof fetchedRatingData !== "object") {
           setError("Invalid rating data structure received from server.");

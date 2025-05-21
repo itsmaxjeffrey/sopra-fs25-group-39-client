@@ -62,7 +62,7 @@ const AccountPage = () => {
         });
         // Use the updated User interface for type assertion
         const user = response.data as User;
-        console.log("Fetched user data:", user); // Log fetched data
+        // console.log("Fetched user data:", user); // Log fetched data
 
         // Normalize fetched data: ensure car details are under 'car' key
         // Explicitly type normalizedUser to allow for both car and carDTO initially
@@ -70,7 +70,7 @@ const AccountPage = () => {
         if (normalizedUser.carDTO) {
           normalizedUser.car = { ...normalizedUser.carDTO }; // Spread to create a new object
           delete normalizedUser.carDTO;
-          console.log("Normalized user data:", normalizedUser); // Log normalized data
+          // console.log("Normalized user data:", normalizedUser); // Log normalized data
         }
 
         setUserData({ // Use normalized data for userData state

@@ -21,7 +21,7 @@ const ActionsTab = () => {
       .validateFields()
       .then(async (values) => {
         setLoading(true);
-        console.log("Submitting password change:", values);
+        // console.log("Submitting password change:", values);
 
         try {
           const endpoint = `/api/v1/auth/change-password`;
@@ -51,7 +51,7 @@ const ActionsTab = () => {
         }
       })
       .catch((info) => {
-        console.log("Validation failed:", info);
+        console.error("Validation failed:", info);
       });
   };
 

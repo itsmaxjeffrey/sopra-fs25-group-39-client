@@ -84,7 +84,7 @@ const NewProposalFormPage = () => {
   };
 
   const handleFinish = async (values: any) => {
-    console.log("Submitting values:", values);
+    // console.log("Submitting values:", values);
     setIsSubmitting(true); // Set button loading state
     // setModalState("loading") and setModalVisible(true) for loading are removed
 
@@ -92,8 +92,8 @@ const NewProposalFormPage = () => {
     const token = localStorage.getItem("token");
 
     // *** Log the specific values being used for address ***
-    console.log("Address from values.from:", values.from);
-    console.log("Address from values.to:", values.to);
+    // console.log("Address from values.from:", values.from);
+    // console.log("Address from values.to:", values.to);
 
     const payload = {
       title: values.title,
@@ -216,7 +216,7 @@ const NewProposalFormPage = () => {
                             },
                           },
                         );
-                        console.log("File deleted from server:", pathToRemove);
+                        // console.log("File deleted from server:", pathToRemove);
                       } catch (error) {
                         console.error(
                           "Error deleting file from server:",

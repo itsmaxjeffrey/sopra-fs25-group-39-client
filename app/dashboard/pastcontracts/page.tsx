@@ -77,14 +77,14 @@ const PastContracts = () => {
           ]);
 
           // --- DEBUGGING: Log raw API responses ---
-          console.log(
-            "Raw API response for COMPLETED contracts:",
-            completedRes.data,
-          );
-          console.log(
-            "Raw API response for FINALIZED contracts:",
-            finalizedRes.data,
-          );
+          // console.log(
+          //   "Raw API response for COMPLETED contracts:",
+          //   completedRes.data,
+          // );
+          // console.log(
+          //   "Raw API response for FINALIZED contracts:",
+          //   finalizedRes.data,
+          // );
           // --- END DEBUGGING ---
           const completedContracts = (completedRes.data?.contracts &&
               Array.isArray(completedRes.data.contracts))
@@ -104,7 +104,7 @@ const PastContracts = () => {
           );
 
           // --- DEBUGGING: Log combined and sorted contracts ---
-          console.log("Combined and sorted past contracts:", sortedContracts);
+          // console.log("Combined and sorted past contracts:", sortedContracts);
           // --- END DEBUGGING ---
           setContracts(sortedContracts);
         } catch (err) {

@@ -44,7 +44,7 @@ const ViewProposal = ({ proposalId }: Props) => {
     setFetchContractError(null); // Reset any previous error message
     try {
       // console.log(`userId: ${userId}`);
-      console.log(`proposalId (from prop): ${proposalId}`); // Use proposalId from props
+      // console.log(`proposalId (from prop): ${proposalId}`); // Use proposalId from props
       if (!proposalId) { // Check proposalId from props
         throw new Error("Proposal ID is missing");
       }
@@ -59,13 +59,13 @@ const ViewProposal = ({ proposalId }: Props) => {
       );
       const data = res.data.contract;
       // *** Log the entire received contract object ***
-      console.log("Received Contract Data:", JSON.stringify(data, null, 2));
+      // console.log("Received Contract Data:", JSON.stringify(data, null, 2));
 
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
       setContractStatus(data.contractStatus); // Store the contract status
-      console.log("Contract Status:", data.contractStatus); // Log the contract status
+      // console.log("Contract Status:", data.contractStatus); // Log the contract status
 
       // Check if the user has already made an offer on this contract
       const userId = localStorage.getItem("userId");
@@ -74,7 +74,7 @@ const ViewProposal = ({ proposalId }: Props) => {
           (offer: any) => offer.driverId === Number(userId),
         );
         setHasUserOffered(!!userOffer); // Set to true if the user has already offered
-        console.log("User has already made an offer:", !!userOffer); // Log the result
+        // console.log("User has already made an offer:", !!userOffer); // Log the result
       }
 
       form.setFieldsValue({
@@ -104,18 +104,18 @@ const ViewProposal = ({ proposalId }: Props) => {
         lng: data.toLocation?.longitude,
       });
       // Update logging to check the correct field
-      console.log("Fetched From Address:", data.fromLocation?.formattedAddress);
-      console.log("Set From Coords State:", {
-        address: data.fromLocation?.formattedAddress || "",
-        lat: data.fromLocation?.latitude,
-        lng: data.fromLocation?.longitude,
-      });
-      console.log("Fetched To Address:", data.toLocation?.formattedAddress);
-      console.log("Set To Coords State:", {
-        address: data.toLocation?.formattedAddress || "",
-        lat: data.toLocation?.latitude,
-        lng: data.toLocation?.longitude,
-      });
+      // console.log("Fetched From Address:", data.fromLocation?.formattedAddress);
+      // console.log("Set From Coords State:", {
+      //   address: data.fromLocation?.formattedAddress || "",
+      //   lat: data.fromLocation?.latitude,
+      //   lng: data.fromLocation?.longitude,
+      // });
+      // console.log("Fetched To Address:", data.toLocation?.formattedAddress);
+      // console.log("Set To Coords State:", {
+      //   address: data.toLocation?.formattedAddress || "",
+      //   lat: data.toLocation?.latitude,
+      //   lng: data.toLocation?.longitude,
+      // });
 
       setImagePaths(
         // Use contractPhotos which is populated by the backend
@@ -170,10 +170,10 @@ const ViewProposal = ({ proposalId }: Props) => {
       }
 
       // Log the values being sent
-      console.log("Submitting offer with:", {
-        contractId: Number(proposalId),
-        driverId: Number(driverId),
-      });
+      // console.log("Submitting offer with:", {
+      //   contractId: Number(proposalId),
+      //   driverId: Number(driverId),
+      // });
 
       const response = await axios.post(
         `${BASE_URL}/api/v1/offers`,

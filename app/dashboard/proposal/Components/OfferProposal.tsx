@@ -119,7 +119,7 @@ const OfferProposal = ({ proposalId }: Props) => {
     } catch (error: any) {
       // Check if the error is a 404, meaning no ratings exist for the user
       if (error.response && error.response.status === 404) {
-        console.log(`No ratings found for driver ${driverId}.`);
+        // console.log(`No ratings found for driver ${driverId}.`);
         return 0; // Return 0 if no ratings are found (404)
       }
       console.error(`Error fetching ratings for driver ${driverId}:`, error);
@@ -265,7 +265,7 @@ const OfferProposal = ({ proposalId }: Props) => {
           },
         );
 
-        console.log("Offers API Response:", res.data);
+        // console.log("Offers API Response:", res.data);
         if (Array.isArray(res.data.offers)) {
           const offersWithDetails = await Promise.all(
             res.data.offers.map(async (baseOffer) => {

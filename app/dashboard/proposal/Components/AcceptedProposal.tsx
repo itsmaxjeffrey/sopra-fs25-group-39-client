@@ -105,7 +105,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
       }
-      console.log("fetchContract: Contract data found:", data);
+      // console.log("fetchContract: Contract data found:", data);
       setContractData(data); // Store the full contract data
 
       form.setFieldsValue({
@@ -147,7 +147,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
   };
 
   const fetchDriverInfo = async () => {
-    console.log("fetchDriverInfo called");
+    // console.log("fetchDriverInfo called");
     setLoadingDriver(true);
     setErrorDriver(false);
     try {
@@ -168,7 +168,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
         },
       );
       if (res.data && res.data.driver) {
-        console.log("fetchDriverInfo: Driver data found:", res.data.driver);
+        // console.log("fetchDriverInfo: Driver data found:", res.data.driver);
         setDriverInfo(res.data.driver);
       } else {
         throw new Error("Driver data not found in response");
@@ -186,7 +186,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
       await fetchContract();
       // console.log("After fetchContract, error state:", fetchContractError);
       if (!fetchContractError) { // Check if fetchContractError is null before fetching driver info
-        console.log("Calling fetchDriverInfo");
+        // console.log("Calling fetchDriverInfo");
         await fetchDriverInfo();
       }
     };
@@ -369,7 +369,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
         </Row>
 
         {/* Conditionally render the Driver section only for the Requester */}
-        {(() => {
+        {/* {(() => {
           // DEBUG block
           console.log("Driver Section Render Check:");
           console.log("  loggedInUserId:", loggedInUserId);
@@ -388,7 +388,7 @@ const AcceptedProposal = ({ proposalId }: Props) => {
           console.log("  errorDriver:", errorDriver);
           console.log("  driverInfo:", driverInfo);
           return null; // This block is just for logging
-        })()}
+        })()} */}
         {loggedInUserId && contractData &&
           Number(loggedInUserId) === contractData.requesterId && (
           <>

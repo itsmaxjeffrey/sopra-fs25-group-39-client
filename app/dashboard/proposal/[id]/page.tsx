@@ -125,24 +125,24 @@ const Page = () => {
     case "REQUESTED":
       return <EditProposal proposalId={id.toString()} />;
     case "OFFERED":
-      console.log(
-        "isRequester:",
-        isRequester,
-        "hasUserOffered:",
-        hasUserOffered,
-      ); // Debugging state values
+      // console.log(
+      //   "isRequester:",
+      //   isRequester,
+      //   "hasUserOffered:",
+      //   hasUserOffered,
+      // ); // Debugging state values
       if (isRequester === null || hasUserOffered === null) {
         return <p style={{ padding: 24 }}>⏳ Determining user role...</p>;
       }
       if (isRequester) {
-        console.log("Routing to OfferProposal as requester");
+        // console.log("Routing to OfferProposal as requester");
         return <OfferProposal proposalId={id.toString()} />;
       }
       if (hasUserOffered) {
-        console.log("Routing to OfferProposal as driver who has offered");
+        // console.log("Routing to OfferProposal as driver who has offered");
         return <ViewOfferedProposal proposalId={id.toString()} />;
       }
-      console.log("Routing to ViewProposal");
+      // console.log("Routing to ViewProposal");
       return <ViewProposal proposalId={id.toString()} />;
     case "ACCEPTED":
       if (isRequester === null || hasUserOffered === null) {

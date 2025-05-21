@@ -37,7 +37,7 @@ export default function DashboardLayout({
       const userId = localStorage.getItem("userId");
       const token = localStorage.getItem("token");
 
-      console.log("UserId:", userId, "Token:", token); // Debugging log
+      // console.log("UserId:", userId, "Token:", token); // Debugging log
 
       // Check for token/userId first and redirect if missing
       if (!userId || !token) {
@@ -57,7 +57,7 @@ export default function DashboardLayout({
             withCredentials: true,
           },
         );
-        console.log("API Response:", response.data);
+        // console.log("API Response:", response.data);
         setAccountType(response.data.userAccountType);
         setLoading(false); // Stop loading on success
       } catch (error) {
@@ -69,9 +69,9 @@ export default function DashboardLayout({
             axiosError.response?.status === 401 ||
             axiosError.response?.status === 403
           ) {
-            console.log(
-              "Authentication error detected, clearing storage and redirecting to login.",
-            );
+            // console.log(
+            //   "Authentication error detected, clearing storage and redirecting to login.",
+            // );
             localStorage.removeItem("token");
             localStorage.removeItem("userId");
             router.push("/login"); // Redirect to login on auth error

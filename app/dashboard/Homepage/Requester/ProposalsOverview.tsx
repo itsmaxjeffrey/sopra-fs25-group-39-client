@@ -53,7 +53,7 @@ const ProposalsOverview = () => {
             },
           },
         );
-        console.log("API Response:", res.data); // Debugging the API response
+        // console.log("API Response:", res.data); // Debugging the API response
 
         // Deconstruct the contracts array from the response
         const { contracts } = res.data as { contracts: Proposal[] };
@@ -84,7 +84,7 @@ const ProposalsOverview = () => {
 
     const timeoutId = setTimeout(() => {
       clearInterval(intervalId); // Stop polling after 5 minutes
-      console.log("Polling stopped after 5 minutes to save traffic.");
+      // console.log("Polling stopped after 5 minutes to save traffic.");
     }, 300000); // 5 minutes in milliseconds
 
     fetchContracts(); // Fetch immediately on mount

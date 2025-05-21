@@ -7,7 +7,7 @@ import AccountTypeContext from "./AccountTypeContext";
 
 const HomePage = () => {
   const accountType = useContext(AccountTypeContext);
-  console.log("Account Type:", accountType); // Debugging
+  // console.log("Account Type:", accountType); // Debugging
 
   if (!accountType) {
     return <p>Loading account type...</p>;

@@ -55,7 +55,7 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Fetched user instance from backend:", data);
+        // console.log("Fetched user instance from backend:", data);
         setEditedData(data);
       })
       .catch((error) => {
@@ -87,7 +87,7 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
       }
 
       const data = await response.json();
-      console.log("Upload response:", data);
+      // console.log("Upload response:", data);
 
       if (data.filePath) {
         setEditedData({
@@ -128,7 +128,7 @@ const UserDataTab: React.FC<UserDataTabProps> = ({
           },
         );
         message.success("Profile picture deleted successfully.");
-        console.log("File deleted from server:", pathToDelete);
+        // console.log("File deleted from server:", pathToDelete);
       } catch (error) {
         console.error(
           "Error deleting profile picture from server:",

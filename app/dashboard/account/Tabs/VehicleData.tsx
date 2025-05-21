@@ -68,7 +68,7 @@ const VehicleData: React.FC<VehicleDataProps> = ({
       }
 
       const data = await response.json();
-      console.log(`${type} upload response:`, data);
+      // console.log(`${type} upload response:`, data);
 
       if (data.filePath) {
         if (type === "license") {
@@ -135,7 +135,7 @@ const VehicleData: React.FC<VehicleDataProps> = ({
             type.charAt(0).toUpperCase() + type.slice(1)
           } deleted successfully.`,
         );
-        console.log("File deleted from server:", pathToDelete);
+        // console.log("File deleted from server:", pathToDelete);
       } catch (error) {
         console.error("Error deleting file from server:", pathToDelete, error);
         message.error(`Error deleting ${type} from server.`);
@@ -170,10 +170,10 @@ const VehicleData: React.FC<VehicleDataProps> = ({
       delete dataToSend.carDTO; // Always remove carDTO before sending
     }
 
-    console.log(
-      "Data being sent to backend:",
-      JSON.stringify(dataToSend, null, 2),
-    );
+    // console.log(
+    //   "Data being sent to backend:",
+    //   JSON.stringify(dataToSend, null, 2),
+    // );
 
     try {
       // Send the dataToSend, which is guaranteed to have 'car' if vehicle data exists

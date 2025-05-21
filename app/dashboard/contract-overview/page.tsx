@@ -165,7 +165,7 @@ const ProposalsOverview = () => {
 
     const timeoutId = setTimeout(() => {
       clearInterval(intervalId); // Stop polling after 5 minutes
-      console.log("Polling stopped after 5 minutes to save traffic.");
+      // console.log("Polling stopped after 5 minutes to save traffic.");
     }, 300000); // 5 minutes in milliseconds
 
     fetchDriverData(); // Fetch immediately on mount
@@ -198,7 +198,7 @@ const ProposalsOverview = () => {
           { headers },
         );
         const pendingOffers = offersRes.data.offers || [];
-        console.log("Fetched Pending Offers:", pendingOffers);
+        // console.log("Fetched Pending Offers:", pendingOffers);
 
         const pendingContractPromises = pendingOffers.map((offer) =>
           axios
@@ -219,10 +219,10 @@ const ProposalsOverview = () => {
           (await Promise.all(pendingContractPromises)).filter(
             (contract): contract is Proposal => contract !== null,
           );
-        console.log(
-          "Fetched Pending Contract Details:",
-          pendingContractsDetails,
-        );
+        // console.log(
+        //   "Fetched Pending Contract Details:",
+        //   pendingContractsDetails,
+        // );
         setDriverPendingOfferContracts(
           pendingContractsDetails.sort(
             (a, b) =>
@@ -260,7 +260,7 @@ const ProposalsOverview = () => {
           c.contractStatus === "ACCEPTED"
         );
 
-        console.log("Fetched Accepted Contracts:", acceptedContracts);
+        // // console.log("Fetched Accepted Contracts:", acceptedContracts);
         setDriverAcceptedContracts(
           acceptedContracts.sort(
             (a, b) =>
@@ -297,9 +297,9 @@ const ProposalsOverview = () => {
           "contracts" in responseData &&
           Array.isArray((responseData as RequesterContractsResponse).contracts)
         ) {
-          console.log(
-            "Found 'contracts' array in response object (Requester).",
-          );
+          // console.log(
+          //   "Found 'contracts' array in response object (Requester).",
+          // );
           proposals = (responseData as RequesterContractsResponse).contracts;
         } else {
           console.error(
@@ -314,7 +314,7 @@ const ProposalsOverview = () => {
             "contractStatus" in item,
         );
 
-        console.log("Extracted Proposals (Requester):", proposals);
+        // console.log("Extracted Proposals (Requester):", proposals);
 
         if (proposals.length > 0) {
           const sorted = proposals.sort(
@@ -323,9 +323,9 @@ const ProposalsOverview = () => {
               new Date(a.creationDateTime).getTime(),
           );
           setRequesterContracts(sorted);
-          console.log("Sorted Contracts Set (Requester):", sorted);
+          // console.log("Sorted Contracts Set (Requester):", sorted);
         } else {
-          console.log("No valid proposals found in response (Requester).");
+          // console.log("No valid proposals found in response (Requester).");
           setRequesterContracts([]);
         }
       } catch (err) {

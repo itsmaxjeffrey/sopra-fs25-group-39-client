@@ -222,7 +222,7 @@ const DriverMap: React.FC<DriverMapProps> = (
         );
 
         const data = await response.json();
-        console.log("Fetched contracts:", data.contracts);
+        // console.log("Fetched contracts:", data.contracts);
 
         if (Array.isArray(data.contracts)) {
           setAllContracts(data.contracts);
@@ -248,7 +248,7 @@ const DriverMap: React.FC<DriverMapProps> = (
       contract.contractStatus === "REQUESTED"
     );
     // We set the displayContracts here initially, but filtercontractsByBounds will refine it
-    console.log("Filtered contracts based on status:", filtered);
+    // console.log("Filtered contracts based on status:", filtered);
     setDisplayContracts(filtered);
   }, [allContracts]);
 
@@ -403,7 +403,7 @@ const DriverMap: React.FC<DriverMapProps> = (
     // Set up timeout to stop polling after 5 minutes
     const timeoutId = setTimeout(() => {
       clearInterval(intervalId); // Stop polling
-      console.log("Polling stopped after 5 minutes to save traffic.");
+      // console.log("Polling stopped after 5 minutes to save traffic.");
     }, 300000); // 5 minutes in milliseconds
 
     return () => {

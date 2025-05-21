@@ -39,7 +39,7 @@ const Sidebar = ({ accountType }: { accountType: string | null }) => {
         },
       );
 
-      console.log("Successfully logged out");
+      // console.log("Successfully logged out");
       message.success("Successfully logged out!");
     } catch (error: unknown) {
       console.error("Failed to log out:", error);

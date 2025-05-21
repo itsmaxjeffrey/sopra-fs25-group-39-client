@@ -22,7 +22,7 @@ export class ApiService {
     };
 
     if (this.authToken) {
-      console.log("Using auth token for request:", this.authToken);
+      // console.log("Using auth token for request:", this.authToken);
       headers["Authorization"] = this.authToken;
     }
     if (this.userId) {

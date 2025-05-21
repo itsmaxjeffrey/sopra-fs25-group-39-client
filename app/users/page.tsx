@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
         },
       );
 
-      console.log("Successfully logged out");
+      // console.log("Successfully logged out");
     } catch (error) {
       console.error("Failed to log out:", error);
     } finally {
@@ -90,7 +90,7 @@ const Dashboard: React.FC = () => {
         // thus we can simply assign it to our users variable.
         const users: User[] = await apiService.get<User[]>("/users");
         setUsers(users);
-        console.log("Fetched users:", users);
+        // console.log("Fetched users:", users);
       } catch (error) {
         if (error instanceof Error) {
           alert(`Something went wrong while fetching users:\n${error.message}`);

@@ -121,7 +121,7 @@ const RatingProposal = ({ proposalId }: Props) => {
   }
 
   const onFinishRating = async (values: any) => {
-    console.log("Rating form values:", values); // Log form values
+    // console.log("Rating form values:", values); // Log form values
     try {
       const payload = {
         contractId: parseInt(proposalId, 10),
@@ -129,7 +129,7 @@ const RatingProposal = ({ proposalId }: Props) => {
         flagIssues: values.issues || false,
         comment: values.issues ? values.issueDetails || "" : "",
       };
-      console.log("Submitting rating payload:", payload); // Log payload before sending
+      // console.log("Submitting rating payload:", payload); // Log payload before sending
       const response = await axios.post(`${BASE_URL}/api/v1/ratings`, payload, {
         headers: {
           Authorization: localStorage.getItem("token") || "",

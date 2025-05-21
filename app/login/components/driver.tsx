@@ -62,12 +62,12 @@ interface LocationInputProps {
 const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
   const autoRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [inputValue, setInputValue] = useState(value?.formattedAddress || "");
-  console.log(
-    "LocationInput rendered. Initial value:",
-    value,
-    "Initial inputValue:",
-    inputValue,
-  );
+  // console.log(
+  //   "LocationInput rendered. Initial value:",
+  //   value,
+  //   "Initial inputValue:",
+  //   inputValue,
+  // );
 
   useEffect(() => {
     // This effect synchronizes the local inputValue with the external `value` prop.
@@ -80,9 +80,9 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
   }, [value]); // Dependency array is still [value]
 
   const handlePlaceChanged = () => {
-    console.log("handlePlaceChanged triggered");
+    // console.log("handlePlaceChanged triggered");
     const place = autoRef.current?.getPlace();
-    console.log("Place selected:", place);
+    // console.log("Place selected:", place);
 
     if (place && place.geometry?.location && place.formatted_address) {
       const newLocation: Location = {
@@ -90,16 +90,16 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
         longitude: place.geometry.location.lng(),
         formattedAddress: place.formatted_address,
       };
-      console.log(
-        "Valid place selected. Updating input and calling onChange with:",
-        newLocation,
-      );
+      // console.log(
+      //   "Valid place selected. Updating input and calling onChange with:",
+      //   newLocation,
+      // );
       setInputValue(newLocation.formattedAddress);
       onChange?.(newLocation);
     } else {
-      console.log(
-        "Invalid place or place cleared. Clearing input and calling onChange(null).",
-      );
+      // console.log(
+      //   "Invalid place or place cleared. Clearing input and calling onChange(null).",
+      // );
       setInputValue("");
       onChange?.(null);
     }
@@ -107,14 +107,14 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange }) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentInputText = e.target.value;
-    console.log("handleInputChange triggered. New text:", currentInputText);
+    // console.log("handleInputChange triggered. New text:", currentInputText);
     setInputValue(currentInputText);
   };
 
   const handleAutocompleteLoad = (
     autocomplete: google.maps.places.Autocomplete,
   ) => {
-    console.log("Autocomplete loaded:", autocomplete);
+    // console.log("Autocomplete loaded:", autocomplete);
     autoRef.current = autocomplete;
   };
 

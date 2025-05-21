@@ -38,7 +38,7 @@ const ViewOfferedProposal = ({ proposalId }: Props) => {
   const fetchContract = async () => {
     setFetchContractError(null);
     try {
-      console.log(`proposalId (from prop): ${proposalId}`);
+      // console.log(`proposalId (from prop): ${proposalId}`);
       if (!proposalId) {
         throw new Error("Proposal ID is missing");
       }
@@ -52,7 +52,7 @@ const ViewOfferedProposal = ({ proposalId }: Props) => {
         },
       );
       const data = res.data.contract;
-      console.log("Received Contract Data:", JSON.stringify(data, null, 2));
+      // console.log("Received Contract Data:", JSON.stringify(data, null, 2));
 
       if (!data || !data.contractId) {
         throw new Error("Invalid contract data");
