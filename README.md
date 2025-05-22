@@ -554,11 +554,10 @@ systems.
 2. **Enhanced Analytics**: Add a dashboard for tracking performance metrics.
 3. **In App chat function**: Let users chat in App.
 
-## Authors and Acknowledgment
+## Authors & Acknowledgments
 
-This project was developed by the Software Engineering Lab team at the
-University of Zurich. Special thanks to our mentors and peers for their guidance
-and support.
+- Authors: @xdecentralix; @itsmaxjeffrey; @dariohug; @ojg; @fksm2003
+- Special thanks to the SoPra teaching team at the University of Zurich.
 
 ## License
 
