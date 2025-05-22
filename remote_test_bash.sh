@@ -3,7 +3,7 @@
 # --- Configuration ---
 BASE_URL="https://sopra-fs25-group-39-server.oa.r.appspot.com/api/v1" # Adjust if your backend runs elsewhere
 TIMESTAMP=$(date +%s)
-REQ_USERNAME="testreq_rating_auto_${TIMESTAMP}" # Unique username
+REQ_USERNAME="TestCustomer" # Unique username
 REQ_PASSWORD="password"
 REQ_EMAIL="${REQ_USERNAME}@example.com" # Unique email
 REQ_PHONE="079${TIMESTAMP: -7}" # Generate a unique-ish phone number
@@ -11,7 +11,7 @@ REQ_FIRSTNAME="TestReq"
 REQ_LASTNAME="AutoRating"
 REQ_BIRTHDATE="1990-01-15" # Example birth date
 
-DRV_USERNAME="testdrv_rating_auto_${TIMESTAMP}" # Unique username
+DRV_USERNAME="TestDriver" # Unique username
 DRV_PASSWORD="password"
 DRV_EMAIL="${DRV_USERNAME}@example.com" # Unique email
 DRV_PHONE="078${TIMESTAMP: -7}" # Generate a different unique-ish phone number
